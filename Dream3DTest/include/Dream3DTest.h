@@ -5,12 +5,17 @@
 #include "Engine/Scene.h"
 #include "Engine/Camera.h"
 #include "Engine/Node.h"
+#include "Engine/Light.h"
 #include <Common/RandomAccessFile.h>
 
 #include <assimp/cimport.h>
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
+
+#define POINT_LIGHT_COUNT	1
+#define SPOT_LIGHT_COUNT	1
+
 
 class Logger {
 
@@ -56,6 +61,10 @@ class Dream3DTest : EngineManager
 		void					recurseScene(aiNode* pAINode, const aiScene* pAIScene, Vector3& vPosition, float fScale);
 
 		Logger*					m_pLogger;
+		Light*					m_pPointLight[POINT_LIGHT_COUNT];
+
+	private:
+		void					moveLight();
 };
 
 #endif

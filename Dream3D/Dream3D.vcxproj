@@ -28,6 +28,7 @@
     <ClInclude Include="..\include\Engine\FrameBuffer.h" />
     <ClInclude Include="..\include\Engine\Image.h" />
     <ClInclude Include="..\include\Engine\KeyboardManager.h" />
+    <ClInclude Include="..\include\Engine\Light.h" />
     <ClInclude Include="..\include\Engine\Material.h" />
     <ClInclude Include="..\include\Engine\MaterialParameter.h" />
     <ClInclude Include="..\include\Engine\MaterialReader.h" />
@@ -95,6 +96,7 @@
     <ClCompile Include="..\src\Engine\FrameBuffer.cpp" />
     <ClCompile Include="..\src\Engine\Image.cpp" />
     <ClCompile Include="..\src\Engine\KeyboardManager.cpp" />
+    <ClCompile Include="..\src\Engine\Light.cpp" />
     <ClCompile Include="..\src\Engine\Material.cpp" />
     <ClCompile Include="..\src\Engine\MaterialParameter.cpp" />
     <ClCompile Include="..\src\Engine\MaterialReader.cpp" />

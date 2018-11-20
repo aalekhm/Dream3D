@@ -45,6 +45,8 @@ O -'        .'''       .'                                     "8b d8"   Veilleux
 #include "Engine/Technique.h"
 #include "Engine/MaterialParameter.h"
 
+#include "Engine/Light.h"
+
 #ifdef USE_YAGUI
 #include "Engine/UI/WComponentFactory.h"
 #endif
@@ -52,16 +54,6 @@ O -'        .'''       .'                                     "8b d8"   Veilleux
 #define CARTOON_TGA			"data/cartoon.tga"
 #define COLOURFUL_TGA		"data/ColorFul_2048x1300.tga"
 #define CORE_UI				"data/core.tga"
-
-#define POINT_LIGHT_COUNT	1
-#define SPOT_LIGHT_COUNT	1
-
-struct PointLight 
-{
-	Node*		m_pNode;
-	Vector3		m_vPosition;
-	Vector3		m_vColour;
-};
 
 struct SpotLight
 {
@@ -86,7 +78,6 @@ Node* magniQuadModelNode;
 Node* medivhQuadModelNode;
 Node* testShaderQuadModelNode;
 
-PointLight	g_PointLight[POINT_LIGHT_COUNT];
 SpotLight	g_SpotLight[SPOT_LIGHT_COUNT];
 
 Node* createTriangleModelNode();
@@ -634,11 +625,15 @@ void Dream3DTest::initialize() {
 	
 	// Init Point Light
 	{
-		g_PointLight[0].m_pNode = createCubeModelIndexedNode(0.1f);
-		g_PointLight[0].m_pNode->setPosition(Vector3(0.0, 0.0, 0.0));
-		g_PointLight[0].m_vColour = Vector3(0.7, 0.0, 0.0);
+		for (int i = 0; i < POINT_LIGHT_COUNT; i++)
+		{
+			m_pPointLight[i] = Light::createPointLight(Vector3(0.7f, 0.0f, 0.0f), 5.0f);
 
-		m_pScene->addNode(g_PointLight[0].m_pNode);
+			Node* pLightNode = createCubeModelIndexedNode(0.1f);
+			m_pPointLight[i]->setNode(pLightNode);
+			m_pScene->addNode(pLightNode);
+		}
+		m_pPointLight[0]->getNode()->setPosition(Vector3(0.0, 0.0, 0.0));
 	}
 
 	// Init Spot Light
@@ -895,11 +890,11 @@ void Dream3DTest::processScene(aiMesh* pAIMesh, const aiScene* pAIScene, Vector3
 
 			cStr = "u_pointLightPosition[";	cStr += sBuf; cStr += "]";
 			MaterialParameter* pPointLightPosition_MaterialParameter = pTechnique->getParameter(cStr.c_str());
-			pPointLightPosition_MaterialParameter->bindValue(g_PointLight[i].m_pNode, &Node::getTranslationWorld);
+			pPointLightPosition_MaterialParameter->bindValue(m_pPointLight[i]->getNode(), &Node::getTranslationWorld);
 
 			cStr = "u_pointLightColour["; cStr += sBuf; cStr += "]";
 			MaterialParameter* pPointLightColour_MaterialParameter = pTechnique->getParameter(cStr.c_str());
-			pPointLightColour_MaterialParameter->setValue(g_PointLight[i].m_vColour);
+			pPointLightColour_MaterialParameter->setValue(m_pPointLight[i]->getLightColour());
 		}
 
 		// Spot Light
@@ -1706,9 +1701,9 @@ static float rAngle = 0.0f;
 const float ROTATION_PER_SECOND = 2;//360deg/sec = 360/1000;;
 bool bIncreasing = true;
 
-void moveLight()
+void Dream3DTest::moveLight()
 {
-	Node* pNode = g_PointLight[0].m_pNode;
+	Node* pNode = m_pPointLight[0]->getNode();
 	if (pNode != NULL)
 	{
 		Vector3 vPos = pNode->getPosition();
@@ -1724,7 +1719,7 @@ void moveLight()
 				bIncreasing = (vPos.x < -3.0);
 			}
 
-			g_PointLight[0].m_pNode->translateLeft(iSign * 0.01f);
+			pNode->translateLeft(iSign * 0.01f);
 		}
 	}
 }
