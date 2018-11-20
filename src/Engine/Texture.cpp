@@ -5,7 +5,7 @@
 static std::vector<Texture*> __textureCache;
 static GLuint __currentTextureID;
 
-Texture::Texture() :	m_tHandle(0),
+Texture::Texture() :	m_hTexture(0),
 						m_Format(UNKNOWN),
 						m_iWidth(0),
 						m_iHeight(0),
@@ -16,9 +16,9 @@ Texture::Texture() :	m_tHandle(0),
 }
 
 Texture::~Texture() {
-	if(m_tHandle) {
-		GL_ASSERT( glDeleteTextures(1, &m_tHandle) );
-		m_tHandle = 0;
+	if(m_hTexture) {
+		GL_ASSERT( glDeleteTextures(1, &m_hTexture) );
+		m_hTexture = 0;
 	}
 
 	// Remove ourself from the texture cache.
@@ -119,7 +119,7 @@ Texture* Texture::create(Format format, unsigned int width, unsigned int height,
 	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, generateMipmaps ? GL_NEAREST_MIPMAP_LINEAR : GL_LINEAR) );
 
 	Texture* texture = new Texture();
-	texture->m_tHandle = textureID;
+	texture->m_hTexture = textureID;
 	texture->m_Format = format;
 	texture->m_iWidth = width;
 	texture->m_iHeight = height;
@@ -137,7 +137,7 @@ Texture* Texture::create(TextureHandle handle, int width, int height, Format for
 	GP_ASSERT(handle);
 
 	Texture* texture = new Texture();
-	texture->m_tHandle = handle;
+	texture->m_hTexture = handle;
 	texture->m_Format = format;
 	texture->m_iWidth = width;
 	texture->m_iHeight = height;
@@ -170,19 +170,35 @@ bool Texture::isCompressed() const {
 }
 
 GLuint Texture::getHandle() const {
-	return m_tHandle;
+	return m_hTexture;
 }
 
 void Texture::setWrapMode(Wrap wrapS, Wrap wrapT)
 {
-	GL_ASSERT( glBindTexture(GL_TEXTURE_2D, m_tHandle) );
+	GL_ASSERT( glBindTexture(GL_TEXTURE_2D, m_hTexture) );
 	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (GLenum)wrapS) );
 	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (GLenum)wrapT) );
 }
 
 void Texture::setFilterMode(Filter minificationFilter, Filter magnificationFilter)
 {
-	GL_ASSERT( glBindTexture(GL_TEXTURE_2D, m_tHandle) );
+	GL_ASSERT( glBindTexture(GL_TEXTURE_2D, m_hTexture) );
 	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (GLenum)minificationFilter) );
 	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (GLenum)magnificationFilter) );
+}
+
+void Texture::bind() {
+	GL_ASSERT( m_hTexture );
+
+	GL_ASSERT( glActiveTexture(GL_TEXTURE0) );
+
+	GL_ASSERT( glEnable(GL_TEXTURE_2D) );
+	GL_ASSERT( glBindTexture(GL_TEXTURE_2D, m_hTexture) );
+
+	setWrapMode(CLAMP_TO_EGDE, CLAMP_TO_EGDE);
+	setFilterMode(NEAREST, NEAREST);
+}
+
+void Texture::unbind() {
+	GL_ASSERT( glBindTexture(GL_TEXTURE_2D, 0) );
 }

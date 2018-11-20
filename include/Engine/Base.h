@@ -1,7 +1,7 @@
 #ifndef BASE_H
 #define BASE_H
 
-#define USE_VAO
+//#define USE_VAO
 
 //C/C++
 #include <algorithm>
@@ -19,12 +19,13 @@
 #endif
 
 typedef GLuint VertexAttribute;				// Vertex Attribute
-typedef GLuint VBOHandle;					// Vertex Buffer Handle
-typedef GLuint VAOHandle;					// Vertex Array Handle
+typedef GLuint VBOHandle;					// Vertex Buffer Object Handle
+typedef GLuint VAOHandle;					// Vertex Array Object Handle
+typedef GLuint IBOHandle;					// Indexed Buffer Object Handle
 
 #define gl_Vertex 			0
-#define gl_TexCoord 		1
-#define gl_Normal 			2
+#define gl_Normal 			1
+#define gl_TexCoord 		2
 #define gl_Color 			3
 #define gl_SecondaryColor 	4
 #define gl_FogCoord 		5

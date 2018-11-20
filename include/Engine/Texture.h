@@ -1,6 +1,8 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
+class Image;
+
 class Texture {
 
 	public:
@@ -34,7 +36,8 @@ class Texture {
 		enum Wrap
 		{
 			REPEAT = GL_REPEAT,
-			CLAMP = GL_CLAMP
+			CLAMP = GL_CLAMP,
+			CLAMP_TO_EGDE = GL_CLAMP_TO_EDGE
 		};
 
 		static Texture* create(const char* path, bool generateMipmaps = false);
@@ -52,6 +55,8 @@ class Texture {
 		void setWrapMode(Wrap wrapS, Wrap wrapT);
 		void setFilterMode(Filter minificationFilter, Filter magnificationFilter);
 
+		void bind();
+		void unbind();
 	private:
 		/**
 		* Constructor.
@@ -74,7 +79,7 @@ class Texture {
 		Texture& operator=(const Texture&);
 		
 		std::string		m_sPath;
-		GLuint			m_tHandle;
+		GLuint			m_hTexture;
 		Format			m_Format;
 		unsigned int	m_iWidth;
 		unsigned int	m_iHeight;

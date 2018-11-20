@@ -4,6 +4,9 @@
 #include "Base.h"
 #include "Engine/VertexFormat.h"
 
+class MeshPart;
+class VertexAttributeBinding;
+
 class Mesh {
 	public:
 		enum PrimitiveType {
@@ -12,6 +15,12 @@ class Mesh {
 			LINES = GL_LINES,
 			LINE_STRIP = GL_LINE_STRIP,
 			POINTS = GL_POINTS
+		};
+
+		enum IndexFormat {
+			INDEX8 = GL_UNSIGNED_BYTE,
+			INDEX16 = GL_UNSIGNED_SHORT,
+			INDEX32 = GL_UNSIGNED_INT
 		};
 		
 		virtual ~Mesh();
@@ -27,6 +36,16 @@ class Mesh {
 		void					setPrimitiveType(Mesh::PrimitiveType type);
 		void					setVertexData(const float* vertexData, unsigned int vertexStart, unsigned int vertexCount);
 
+		MeshPart*				addMeshPart(Mesh::PrimitiveType primitiveType, Mesh::IndexFormat indexFormat, unsigned int indexCount, bool isDynamic = false);
+		unsigned int			getMeshPartCount() const;
+		MeshPart*				getMeshPart(unsigned int index);
+
+		///////////////////////////////////// TO BE PUT IN 'MODEL' /////////////////////////////////////
+		void					draw(bool bWireframe = false);
+		void					setVertexAttributeBinding(VertexAttributeBinding* vaBinding);
+		VertexAttributeBinding*	m_pVertexAttributeBinding;
+		///////////////////////////////////// TO BE PUT IN 'MODEL' /////////////////////////////////////
+
 	private:
 		Mesh(const VertexFormat& vertexFormat);
 		Mesh(const Mesh& copy);
@@ -36,6 +55,9 @@ class Mesh {
 		VBOHandle			m_hVBO;
 		PrimitiveType		m_PrimitiveType;
 		bool				m_bDynamic;
+
+		MeshPart**			m_ppMeshParts;
+		unsigned int		m_iPartCount;
 };
 
 #endif

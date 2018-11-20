@@ -52,7 +52,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\external-deps\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -82,6 +82,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\Engine\MeshPart.cpp" />
     <ClCompile Include="..\src\Engine\VertexAttributeBinding.cpp" />
     <ClCompile Include="..\src\WinMain.cpp" />
     <ClCompile Include="..\src\Engine\Camera.cpp" />
@@ -104,6 +105,7 @@
     <ClInclude Include="..\include\Engine\Image.h" />
     <ClInclude Include="..\include\Engine\KeyboardManager.h" />
     <ClInclude Include="..\include\Engine\Mesh.h" />
+    <ClInclude Include="..\include\Engine\MeshPart.h" />
     <ClInclude Include="..\include\Engine\MouseManager.h" />
     <ClInclude Include="..\include\Engine\Texture.h" />
     <ClInclude Include="..\include\Engine\TGA.h" />
