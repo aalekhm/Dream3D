@@ -25,8 +25,8 @@ struct WListBox : public WContainer {
 		int					getSize();
 		void					clearList();
 
-		virtual void			onKeyBDownEx(unsigned int iVirtualKeycode, unsigned short ch);
-		virtual void			onKeyBUpEx(unsigned int iVirtualKeycode, unsigned short ch);
+		virtual void			onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch);
+		virtual void			onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch);
 	private:
 		enum ListBoxState {
 			NORMAL,

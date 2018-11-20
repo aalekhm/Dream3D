@@ -24,11 +24,8 @@
 #include "Engine/UI/WCanvas.h"
 #include "Engine/UI/WInspectorTab.h"
 #include "Engine/UI/WInspector.h"
-#include "Engine/UI/WGraph.h"
-#include "Engine/UI/WSprite.h"
 
 typedef H_WND (__stdcall* CreateFn)(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam); 
-static H_WND			CreateComponentEx(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 static H_WND			CreateComponent(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 static H_FONT		CreateFontQ(const char* sFontFile, unsigned int iFontSize, unsigned int iFontDPI);
 static bool				SelectFontQ(H_FONT hFont);
@@ -70,20 +67,13 @@ struct WComponentFactory {
 		void Register(const std::string& lpClassName, CreateFn pfnCreate);
 };
 
-H_WND CreateComponentEx(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam) {
-
-	dwStyle |= WM_CUSTOM;
-	return CreateComponent(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpParam);
-}
-
 H_WND CreateComponent(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam) {
 
 	WComponentFactory* factory = WComponentFactory::Get();
 
 	std::map<std::string, CreateFn>::iterator itr = factory->m_WComponentMap.find(lpClassName);
-	if( itr != factory->m_WComponentMap.end() ) {
+	if( itr != factory->m_WComponentMap.end() )
 		return itr->second(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpParam);
-	}
 
 	return NULL;
 }

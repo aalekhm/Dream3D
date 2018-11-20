@@ -32,7 +32,7 @@ H_WND WTextField::Create(		const char* lpClassName,
 	WTextField* pWTextField = new WTextField();
 	pWTextField->setText(lpWindowName);
 
-	((WComponent*)pWTextField)->Create(	lpClassName, 
+	((WContainer*)pWTextField)->Create(	lpClassName, 
 															"WTextField", 
 															dwStyle, 
 															x, 
@@ -430,7 +430,7 @@ bool WTextField::isReadOnlyChar(char ch) {
 	return bRet;
 }
 
-void WTextField::onKeyBDownEx(unsigned int iVirtualKeycode, unsigned short ch) {
+void WTextField::onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch) {
 //printf("In onKeyBDown\n");
 	
 	if(mState == READONLY && !isReadOnlyChar(iVirtualKeycode))
@@ -774,7 +774,7 @@ void WTextField::setCaretDrawPosition() {
 //printf("Ex setCaretDrawPosition\n");
 }
 
-void WTextField::onKeyBUpEx(unsigned int iVirtualKeycode, unsigned short ch) {
+void WTextField::onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch) {
 
 }
 

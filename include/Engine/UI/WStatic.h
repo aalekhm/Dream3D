@@ -20,12 +20,12 @@ struct WStatic : public WComponent {
 		virtual void	frameRender();
 		virtual void	onUpdate();
 		virtual void	onRender();
-		virtual void	onMouseDownEx(int x, int y, int iButton);
-		virtual void	onMouseUpEx(int x, int y, int iButton);
-		virtual void	onMouseMoveEx(int mCode, int x, int y, int prevX, int prevY);
-		virtual void	onMouseWheelEx(WPARAM wParam, LPARAM lParam);
-		virtual void	onKeyBDownEx(unsigned int iVirtualKeycode, unsigned short ch);
-		virtual void	onKeyBUpEx(unsigned int iVirtualKeycode, unsigned short ch);
+		virtual void	onMouseDown(int x, int y, int iButton);
+		virtual void	onMouseUp(int x, int y, int iButton);
+		virtual void	onMouseMove(int mCode, int x, int y, int prevX, int prevY);
+		virtual void	onMouseWheel(WPARAM wParam, LPARAM lParam);
+		virtual void	onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch);
+		virtual void	onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch);
 		virtual void	onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	public:
 		WStatic();

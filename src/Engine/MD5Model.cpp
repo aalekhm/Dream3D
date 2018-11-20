@@ -234,6 +234,7 @@ bool MD5Model::updateMesh( const MD5Animation::FrameSkeleton* pFrameSkeleton ) {
 	Mesh* pMesh = m_pModel->getMesh();
 	GLvoid* pMapBuffer = pMesh->getMapBuffer();
 	float* pVertices = (float*)pMapBuffer;
+	int iStride = 5;
 	for( unsigned int i = 0, m = 0; i < m_iNumMeshes; i++ ) {
 
 		Mesh_* pMesh = (Mesh_*)m_Meshes[ i ];
@@ -251,9 +252,9 @@ bool MD5Model::updateMesh( const MD5Animation::FrameSkeleton* pFrameSkeleton ) {
 				pSkeletonJoint->m_qOrient.rotate( vRotatedPos );
 
 				vPos += ( pSkeletonJoint->m_vPos + vRotatedPos ) * pWeight->m_fBias;
-				pVertices[ 0 + m * m_iStride ] = vPos.x;
-				pVertices[ 1 + m * m_iStride ] = vPos.y;
-				pVertices[ 2 + m * m_iStride ] = vPos.z;
+				pVertices[ 0 + m * iStride ] = vPos.x;
+				pVertices[ 1 + m * iStride ] = vPos.y;
+				pVertices[ 2 + m * iStride ] = vPos.z;
 			}
 
 			m++;
@@ -291,10 +292,10 @@ Node* MD5Model::createModel() {
 	}
 	mesh->setPrimitiveType(Mesh::TRIANGLES);
 
-	m_iStride = 0;
+	int iStride = 0;
 	for(int i = 0; i < vertexElementCount; i++) {
 		VertexFormat::Element& vElement = vertexElements[i];
-		m_iStride += vElement.size;
+		iStride += vElement.size;
 	}
 
 	GLvoid* pMapBuffer = mesh->getMapBuffer();
@@ -304,14 +305,14 @@ Node* MD5Model::createModel() {
 		Mesh_* pMesh = (Mesh_*)m_Meshes[i];
 		for(unsigned int j = 0; j < pMesh->m_iNumVertices; j++) {
 
-			memcpy(&pVertices[0 + k * m_iStride], &pMesh->m_PositionBuffer[j], sizeof(float) * 3);
-			//pVertices[ 0 + k * m_iStride ] = pMesh->m_PositionBuffer[j].x;
-			//pVertices[ 1 + k * m_iStride ] = pMesh->m_PositionBuffer[j].y;
-			//pVertices[ 2 + k * m_iStride ] = pMesh->m_PositionBuffer[j].z;
+			memcpy(&pVertices[0 + k * iStride], &pMesh->m_PositionBuffer[j], sizeof(float) * 3);
+			//pVertices[ 0 + k * iStride ] = pMesh->m_PositionBuffer[j].x;
+			//pVertices[ 1 + k * iStride ] = pMesh->m_PositionBuffer[j].y;
+			//pVertices[ 2 + k * iStride ] = pMesh->m_PositionBuffer[j].z;
 
-			memcpy(&pVertices[3 + k * m_iStride], &pMesh->m_Tex2DBuffer[j], sizeof(float) * 2);
-			//pVertices[ 3 + k * m_iStride ] = pMesh->m_Tex2DBuffer[j].x;
-			//pVertices[ 4 + k * m_iStride ] = pMesh->m_Tex2DBuffer[j].y;
+			memcpy(&pVertices[3 + k * iStride], &pMesh->m_Tex2DBuffer[j], sizeof(float) * 2);
+			//pVertices[ 3 + k * iStride ] = pMesh->m_Tex2DBuffer[j].x;
+			//pVertices[ 4 + k * iStride ] = pMesh->m_Tex2DBuffer[j].y;
 
 			k++;
 		}

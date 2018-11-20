@@ -79,8 +79,8 @@ void WCanvas::onCreateEx(LPVOID lpVoid) {
 											m_DummyWidget->widgetSize.height,
 											&wndRect,
 											&idealRect,
-											verticalSBChild->align.eHAlign,
-											verticalSBChild->align.eVAlign
+											verticalSBChild->align.iHAlign,
+											verticalSBChild->align.iVAlign
 											);
 	if(m_sbVertical == NULL) {
 	hWnd = 
@@ -116,8 +116,8 @@ void WCanvas::onCreateEx(LPVOID lpVoid) {
 												m_DummyWidget->widgetSize.height,
 												&wndRect,
 												&idealRect,
-												horizontalSBChild->align.eHAlign,
-												horizontalSBChild->align.eVAlign
+												horizontalSBChild->align.iHAlign,
+												horizontalSBChild->align.iVAlign
 												);
 		if(m_sbHorizontal == NULL) {
 			hWnd = 
@@ -157,8 +157,8 @@ void WCanvas::onCreateEx(LPVOID lpVoid) {
 												m_DummyWidget->widgetSize.height,
 												&wndRect,
 												&idealRect,
-												btnChild->align.eHAlign,
-												btnChild->align.eVAlign
+												btnChild->align.iHAlign,
+												btnChild->align.iVAlign
 												);
 		if(m_ButtonWResizeLeft == NULL) {
 			hWnd = 
@@ -194,8 +194,8 @@ void WCanvas::onCreateEx(LPVOID lpVoid) {
 												m_DummyWidget->widgetSize.height,
 												&wndRect,
 												&idealRect,
-												btnChild->align.eHAlign,
-												btnChild->align.eVAlign
+												btnChild->align.iHAlign,
+												btnChild->align.iVAlign
 												);
 		if(m_ButtonWResizeRight == NULL) {
 			hWnd = 
@@ -237,8 +237,8 @@ void WCanvas::onCreateEx(LPVOID lpVoid) {
 												m_DummyWidget->widgetSize.height,
 												&wndRect,
 												&idealRect,
-												clientArea->align.eHAlign,
-												clientArea->align.eVAlign
+												clientArea->align.iHAlign,
+												clientArea->align.iVAlign
 												);
 		m_ClientRect.X = destRect.X - getLeft();
 		m_ClientRect.Y = destRect.Y - getTop();

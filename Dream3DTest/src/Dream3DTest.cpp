@@ -52,7 +52,6 @@ O -'        .'''       .'                                     "8b d8"   Veilleux
 // Declare our game instance
 Dream3DTest game;
 
-void initMD5Models(Scene* pScene);
 void initLights();
 void drawTriangle(const Vector3& p1, const Vector3& p2, const Vector3& p3);
 void drawGrid(int iSize, float fStep);
@@ -79,7 +78,8 @@ Node* quadModelNode;
 Node* createObjNode();
 Node* objModelNode;
 
-std::vector<MD5Model*>	v_pMD5Models;
+Node* md5ModelNode;
+MD5Model* m_pMD5Model;
 
 SpriteBatch* createSpriteBatch();
 SpriteBatch* spriteBatch;
@@ -87,9 +87,9 @@ SpriteBatch* spriteBatch;
 Texture*  gTexture0;
 Texture*  gTexture1;
 
-#ifdef USE_YAGUI
 Node* gCanvasCameraNode;
 
+#ifdef USE_YAGUI
 L_RESULT CALLBACK UICallback(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	switch(msg) {
@@ -325,16 +325,16 @@ L_RESULT CALLBACK UICallback(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 								H_WND pTab = (H_WND)tcim.lParam;
 
 								H_WND hWnd = 
-									CreateComponentEx(	"WTextField", 
-																"I'm just messing around with thread hooks. I've got one now that displays the clipboard, if it is in CF_TEXT format, whenever the user pastes in my application. The problem I've run into is that it can get the clipboard data fine if I've copied it from another application, but if I copy it from my own, it pastes just fine on the screen, but when I retrieve the clipboard data, its garbled. Heres the code.", 
-																WM_ANCHOR_TOPLEFT, 
-																20,
-																20, 
-																200, 
-																23,
-																pTab, 
-																HMENU(99), 
-																NULL);
+									CreateComponent(	"WTextField", 
+									"I'm just messing around with thread hooks. I've got one now that displays the clipboard, if it is in CF_TEXT format, whenever the user pastes in my application. The problem I've run into is that it can get the clipboard data fine if I've copied it from another application, but if I copy it from my own, it pastes just fine on the screen, but when I retrieve the clipboard data, its garbled. Heres the code.", 
+									0, 
+									20,
+									20, 
+									200, 
+									23,
+									pTab, 
+									HMENU(99), 
+									NULL);
 								((WTextField*)hWnd)->setComponentAsChild(true);
 							}
 
@@ -353,16 +353,16 @@ L_RESULT CALLBACK UICallback(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 								H_WND pTab = (H_WND)tcim.lParam;
 
 								H_WND hWnd = 
-									CreateComponentEx(	"WButton", 
-																"Press Me !!!", 
-																WM_ANCHOR_TOPLEFT, 
-																20,
-																20, 
-																200, 
-																23,
-																pTab, 
-																HMENU(909), 
-																"Button");
+									CreateComponent(	"WButton", 
+									"Press Me !!!", 
+									0, 
+									20,
+									20, 
+									200, 
+									23,
+									pTab, 
+									HMENU(909), 
+									"Button");
 							}
 
 							///////TABBED PANE //////
@@ -445,7 +445,6 @@ L_RESULT CALLBACK UICallback(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-void addDummyWindows_(H_WND hParent);
 void addDummyWindows(H_WND hParent);
 #endif
 
@@ -561,7 +560,94 @@ void Dream3DTest::initialize() {
 
 	//initLights();
 
-	initMD5Models(m_pScene);
+	//MeshMD5Loader::loadObject("data/hellknight.md5mesh");
+
+	m_pMD5Model = new MD5Model();
+	
+	//md5ModelNode = m_pMD5Model->loadModel("data/MD5Models/boblamp/bob_lamp_update/bob_lamp_update.md5mesh");
+	//	m_pMD5Model->loadAnim("data/MD5Models/boblamp/bob_lamp_update/bob_lamp_update.md5anim");
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/bob_body.material", 0);
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/bob_head.material", 1);
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/bob_helmet.material", 2);
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/lantern.material", 3);
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/lantern_top.material", 4);
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/bob_body.material", 5);
+
+
+	md5ModelNode = m_pMD5Model->loadModel("data/MD5Models/hellknight/hellknight1.md5mesh");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/attack2.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/attack3.md5anim");
+		////m_pMD5Model->loadAnim("data/MD5Models/hellknight/chest.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/headpain.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/idle2.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/idle22.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/ik_pose.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/initial.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/leftslash.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/pain1.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/pain_luparm.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/pain_ruparm.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/range_attack2.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/roar1.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/stand.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/turret_attack.md5anim");
+		m_pMD5Model->loadAnim("data/MD5Models/hellknight/walk7.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/walk7_left.md5anim");
+	md5ModelNode->getModel()->setMaterial("data/MD5Models/hellknight/hellknight.material", 0);
+	md5ModelNode->getModel()->setMaterial("data/MD5Models/hellknight/gob2.material", 1);
+	md5ModelNode->getModel()->setMaterial("data/MD5Models/hellknight/gob.material", 2);
+	md5ModelNode->getModel()->setMaterial("data/MD5Models/hellknight/tongue.material", 3);
+		
+	//md5ModelNode = m_pMD5Model->loadModel("data/MD5Models/Player_BasicMovement/body.md5mesh");
+	//m_pMD5Model->loadAnim("data/MD5Models/Player_BasicMovement/step.md5anim");
+	//md5ModelNode->getModel()->setMaterial("data/MD5Models/Player_BasicMovement/player.material", 0);
+	
+	//md5ModelNode = m_pMD5Model->loadModel("data/MD5Models/zfat/zfat.md5mesh");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/attack2.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/attack3.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/attack_leftslap.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/barrel_Idle.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/barrel_Throw.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/bellypain.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/death1_pose.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/facepain.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/idle1.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/initial.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/leftarmpain.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/pipeattack1.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/pipeidle.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/pipesight.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/pipewalk4.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/rightarmpain.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/sight3.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/walk1.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/walk2.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/walk3.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/walk4.md5anim");
+	//md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/zfat.material", 0);
+	//md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/monkeywrench.material", 1);
+	//md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/skeleton01.material", 3);
+
+	//md5ModelNode = m_pMD5Model->loadModel("data/MD5Models/lostsoul/lostsoul.md5mesh");
+	//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/attack1.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/attack2.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/charge.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/initial.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/pain1.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/pain2.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/sight.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/walk1.md5anim");
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/zfat.material", 0);
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/zfat.material", 1);
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/zfat.material", 2);
+
+	if(md5ModelNode != NULL) {
+		md5ModelNode->scale(0.01f);
+		md5ModelNode->setPosition(Vector3(100.0f, 0.0f, -10.0f));
+		md5ModelNode->rotateX(-90.0f);
+		m_pScene->addNode(md5ModelNode);
+	}
+	
 	//////////////////////////////////////////////
 
 #ifdef USE_YAGUI
@@ -570,121 +656,6 @@ void Dream3DTest::initialize() {
 	addDummyWindows(GetWindowQ(0));
 	////////////////////////////////////////////
 #endif
-}
-
-void initMD5Models(Scene* pScene) {
-	for(int i = 0; i < 1; i++) {
-		MD5Model* pMD5Model = new MD5Model();
-
-		//md5ModelNode = m_pMD5Model->loadModel("data/MD5Models/boblamp/bob_lamp_update/bob_lamp_update.md5mesh");
-		//	m_pMD5Model->loadAnim("data/MD5Models/boblamp/bob_lamp_update/bob_lamp_update.md5anim");
-		//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/bob_body.material", 0);
-		//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/bob_head.material", 1);
-		//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/bob_helmet.material", 2);
-		//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/lantern.material", 3);
-		//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/lantern_top.material", 4);
-		//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/bob_body.material", 5);
-
-
-		Node* pMd5ModelNode = pMD5Model->loadModel("data/MD5Models/doom3/hellknight/hellknight1.md5mesh");
-		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/attack2.md5anim");
-		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/attack3.md5anim");
-		////m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/chest.md5anim");
-		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/headpain.md5anim");
-		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/idle2.md5anim");
-		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/idle22.md5anim");
-		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/ik_pose.md5anim");
-		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/initial.md5anim");
-		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/leftslash.md5anim");
-		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/pain1.md5anim");
-		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/pain_luparm.md5anim");
-		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/pain_ruparm.md5anim");
-		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/range_attack2.md5anim");
-		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/roar1.md5anim");
-		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/stand.md5anim");
-		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/turret_attack.md5anim");
-		pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/walk7.md5anim");
-		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/walk7_left.md5anim");
-		pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/hellknight/hellknight.material", 0);
-		pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/hellknight/gob2.material", 1);
-		pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/hellknight/gob.material", 2);
-		pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/hellknight/tongue.material", 3);
-
-		//Node* pMd5ModelNode = pMD5Model->loadModel("data/MD5Models/doom3/cacodemon/cacodemon.md5mesh");
-		//pMD5Model->loadAnim("data/MD5Models/doom3/cacodemon/walk.md5anim");
-		//pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/cacodemon/cacodemon.material", 0);
-		//pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/cacodemon/cacoeye.material", 1);
-		//pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/cacodemon/cacodemon.material", 2);
-		//pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/cacodemon/cacodemon.material", 3);
-		//pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/cacodemon/cacodemon.material", 4);
-
-		//Node* pMd5ModelNode = pMD5Model->loadModel("data/MD5Models/doom3/cyberdemon/cyberdemon.md5mesh");
-		//pMD5Model->loadAnim("data/MD5Models/doom3/cyberdemon/walk3.md5anim");
-		//pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/cyberdemon/cyberdemon.material", 0);
-		//pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/cyberdemon/rocketlauncher.material", 1);
-		//pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/cyberdemon/rocketlauncher.material", 2);
-		//pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/cyberdemon/rocketlauncher.material", 3);
-		//pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/cyberdemon/rocketlauncher.material", 4);
-		//pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/cyberdemon/rocketlauncher.material", 5);
-
-		//Node* pMd5ModelNode = pMD5Model->loadModel("data/MD5Models/doom3/vagary/vagary.md5mesh");
-		//pMD5Model->loadAnim("data/MD5Models/doom3/vagary/walk3.md5anim");
-		//pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/vagary/vagary.material", 0);
-		//pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/vagary/teeth.material", 1);
-		//pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/vagary/sac.material", 2);
-
-		//md5ModelNode = m_pMD5Model->loadModel("data/MD5Models/Player_BasicMovement/body.md5mesh");
-		//m_pMD5Model->loadAnim("data/MD5Models/Player_BasicMovement/step.md5anim");
-		//md5ModelNode->getModel()->setMaterial("data/MD5Models/Player_BasicMovement/player.material", 0);
-
-		//md5ModelNode = m_pMD5Model->loadModel("data/MD5Models/zfat/zfat.md5mesh");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/attack2.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/attack3.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/attack_leftslap.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/barrel_Idle.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/barrel_Throw.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/bellypain.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/death1_pose.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/facepain.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/idle1.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/initial.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/leftarmpain.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/pipeattack1.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/pipeidle.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/pipesight.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/pipewalk4.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/rightarmpain.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/sight3.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/walk1.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/walk2.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/walk3.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/zfat/walk4.md5anim");
-		//md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/zfat.material", 0);
-		//md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/monkeywrench.material", 1);
-		//md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/skeleton01.material", 3);
-
-		//md5ModelNode = m_pMD5Model->loadModel("data/MD5Models/lostsoul/lostsoul.md5mesh");
-		//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/attack1.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/attack2.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/charge.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/initial.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/pain1.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/pain2.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/sight.md5anim");
-		//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/walk1.md5anim");
-		//	md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/zfat.material", 0);
-		//	md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/zfat.material", 1);
-		//	md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/zfat.material", 2);
-
-		if(pMd5ModelNode != NULL) {
-			pMd5ModelNode->scale(0.005f);
-			pMd5ModelNode->setPosition(Vector3(i * 100.0f + 200.0f, 0.0f, i * -10.0f - 200.0f));
-			pMd5ModelNode->rotateX(-90.0f);
-			pScene->addNode(pMd5ModelNode);
-
-			v_pMD5Models.push_back(pMD5Model);
-		}
-	}
 }
 
 void initLights() {
@@ -1214,12 +1185,8 @@ void Dream3DTest::update(float deltaTimeMs) {
 	m_pScene->getActiveCamera()->update(deltaTimeMs);
 #endif
 
-	for(int i = 0; i < 1; i++) {
-		MD5Model* pMD5Model = (MD5Model*)v_pMD5Models[i];
-		pMD5Model->update( deltaTimeMs );
-	}
+	m_pMD5Model->update( deltaTimeMs );
 }
-
 
 void Dream3DTest::render(float deltaTimeMs) {
 	glClearColor(0.1f, 0.1f, 0.1f, 1);
@@ -1239,9 +1206,9 @@ void addDummyWindows(H_WND hParent) {
 	H_WND hWnd = NULL;
 
 	hWnd = 
-	CreateComponentEx(	"WStatic", 
+	CreateComponent(	"WStatic", 
 								"Static Text... !!!", 
-								WM_ANCHOR_TOPLEFT, 
+								0, 
 								iXPos,
 								40, 
 								189, 
@@ -1251,9 +1218,9 @@ void addDummyWindows(H_WND hParent) {
 								(LPVOID)255);
 
 	hWnd = 
-	CreateComponentEx(	"WButton", 
-								"Simple Button...", 
-								WM_ALIGN_WRT_PARENT_TOPLEFT | WM_ANCHOR_TOPLEFT, 
+	CreateComponent(	"WButton", 
+								"Simple Button", 
+								0, 
 								iXPos,
 								90, 
 								189, 
@@ -1264,35 +1231,9 @@ void addDummyWindows(H_WND hParent) {
 
 	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 	hWnd = 
-	CreateComponentEx(	"WSprite", 
-									"Simple Sprite...", 
-									WM_ALIGN_WRT_PARENT_TOPLEFT | WM_ANCHOR_TOPLEFT, 
-									iXPos + 150,
-									iYPos, 
-									100, 
-									100,
-									hParent, 
-									NULL, 
-									"Exclamation");
-	{
-		hWnd = 
-		CreateComponentEx(	"WSprite", 
-										"Simple Sprite inside Sprite...", 
-										WM_ALIGN_WRT_PARENT_TOPLEFT | WM_ANCHOR_TOPLEFT, 
-										10,
-										10, 
-										50, 
-										50,
-										hWnd, 
-										NULL, 
-										"Exclamation");
-	}
-
-	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
-	hWnd = 
-	CreateComponentEx(	"WCheckbox", 
+	CreateComponent(	"WCheckbox", 
 								"CheckBox text", 
-								WM_ANCHOR_TOPLEFT, 
+								0, 
 								iXPos,
 								iYPos, 
 								100, 
@@ -1303,9 +1244,9 @@ void addDummyWindows(H_WND hParent) {
 
 	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 	hWnd = 
-	CreateComponentEx(	"WCanvas", 
+	CreateComponent(	"WCanvas", 
 								"WCanvas window", 
-								WM_ANCHOR_TOPLEFT, 
+								0, 
 								iXPos,
 								iYPos, 
 								100, 
@@ -1315,9 +1256,9 @@ void addDummyWindows(H_WND hParent) {
 								NULL);
 		{
 			H_WND hBtn = 
-			CreateComponentEx(	"WButton", 
+			CreateComponent(	"WButton", 
 										"Simple Button", 
-										WM_ANCHOR_TOPLEFT, 
+										0, 
 										10,
 										10, 
 										50, 
@@ -1328,9 +1269,9 @@ void addDummyWindows(H_WND hParent) {
 		}
 	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 	hWnd = 
-	CreateComponentEx(	"WTextField", 
+	CreateComponent(	"WTextField", 
 								"_______I'm just messing around with thread hooks. I've got one now that displays the clipboard, if it is in CF_TEXT format, whenever the user pastes in my application. The problem I've run into is that it can get the clipboard data fine if I've copied it from another application, but if I copy it from my own, it pastes just fine on the screen, but when I retrieve the clipboard data, its garbled. Heres the code.", 
-								WM_ANCHOR_TOPLEFT, 
+								0, 
 								iXPos,
 								iYPos, 
 								200, 
@@ -1341,9 +1282,9 @@ void addDummyWindows(H_WND hParent) {
 
 	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 	hWnd = 
-	CreateComponentEx(	"WTextField", 
+	CreateComponent(	"WTextField", 
 								"sprintf(m_pText, \"%s%c%s\", leftHalfSubstr, iKey, rightHalfSubstr); g->SetClip(RectF(m_pParent->getLeft(), m_pParent->getTop(), m_pParent->getWidth(), m_pParent->getHeight()));", 
-								WM_ANCHOR_TOPLEFT, 
+								0, 
 								iXPos,
 								iYPos, 
 								220, 
@@ -1354,9 +1295,9 @@ void addDummyWindows(H_WND hParent) {
 
 	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 	hWnd = 
-	CreateComponentEx(	"WTextField", 
+	CreateComponent(	"WTextField", 
 								"**sprintf(m_pText, \"%s%c%s\", leftHalfSubstr, iKey, rightHalfSubstr); g->SetClip(RectF(m_pParent->getLeft(), m_pParent->getTop(), m_pParent->getWidth(), m_pParent->getHeight()));", 
-								WM_ANCHOR_TOPLEFT, 
+								0, 
 								iXPos,
 								iYPos, 
 								220, 
@@ -1394,9 +1335,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 	hWnd = 
-	CreateComponentEx(	"WConsoleLog", 
+	CreateComponent(	"WConsoleLog", 
 								sText.c_str(), 
-								WM_ANCHOR_TOPLEFT, 
+								0, 
 								iXPos,
 								iYPos, 
 								397, 
@@ -1407,9 +1348,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 	hWnd = 
-	CreateComponentEx(	"WTextBox", 
+	CreateComponent(	"WTextBox", 
 								sText.c_str(), 
-								WM_ANCHOR_TOPLEFT, 
+								0, 
 								iXPos,
 								iYPos, 
 								319, 
@@ -1420,9 +1361,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 	hWnd = 
-	CreateComponentEx(	"WTextBox", 
+	CreateComponent(	"WTextBox", 
 								sText.c_str(), 
-								WM_ANCHOR_TOPLEFT, 
+								0, 
 								iXPos,
 								iYPos, 
 								600, 
@@ -1433,9 +1374,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 	hWnd = 
-	CreateComponentEx(	"WTabbedPane", 
+	CreateComponent(	"WTabbedPane", 
 								"",
-								WM_ANCHOR_TOPLEFT,
+								0,
 								iXPos,
 								iYPos, 
 								400, 
@@ -1447,9 +1388,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 	hWnd = 
-	CreateComponentEx(	"WListBox", 
+	CreateComponent(	"WListBox", 
 								"", 
-								WM_ANCHOR_TOPLEFT, 
+								0, 
 								iXPos,
 								iYPos, 
 								400, 
@@ -1488,9 +1429,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 	hWnd = 
-	CreateComponentEx(	"WComboBox", 
+	CreateComponent(	"WComboBox", 
 								"", 
-								WM_ANCHOR_TOPLEFT, 
+								0, 
 								iXPos,
 								iYPos, 
 								250, 
@@ -1516,9 +1457,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 	hWnd = 
-	CreateComponentEx(	"WTextBox", 
+	CreateComponent(	"WTextBox", 
 								sText.c_str(), 
-								WM_ANCHOR_TOPLEFT, 
+								0, 
 								iXPos,
 								iYPos, 
 								800, 
@@ -1530,9 +1471,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 	hWnd = 
-	CreateComponentEx(	"WTree", 
+	CreateComponent(	"WTree", 
 								"Title2", 
-								WM_ANCHOR_TOPLEFT, 
+								0, 
 								iXPos,
 								iYPos, 
 								450, 
@@ -1543,9 +1484,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 	hWnd = 
-	CreateComponentEx(	"WTable", 
+	CreateComponent(	"WTable", 
 								"Table", 
-								WM_ANCHOR_TOPLEFT, 
+								0, 
 								iXPos,
 								iYPos, 
 								450, 
@@ -1595,9 +1536,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 	iYPos = 40;
 	/////////////////////////////////////////////////
 	H_WND hWnd0 = 
-	CreateComponentEx(	"WWindow", 
+	CreateComponent(	"WWindow", 
 								"Title", 
-								WM_ANCHOR_TOPLEFT, 
+								0, 
 								iXPos,
 								iYPos, 
 								500, 
@@ -1610,9 +1551,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			iXPos = 20;
 			iYPos = 40;
 			hWnd = 
-			CreateComponentEx(	"WButton", 
+			CreateComponent(	"WButton", 
 										"Simple Button !!!", 
-										WM_ANCHOR_TOPLEFT, 
+										0, 
 										iXPos,
 										iYPos, 
 										125, 
@@ -1624,22 +1565,22 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 			iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 			hWnd = 
-			CreateComponentEx(	"WCheckbox", 
-										"CheckBox text111", 
-										WM_ANCHOR_TOPLEFT, 
+			CreateComponent(	"WCheckbox", 
+										"CheckBox text", 
+										0, 
 										iXPos,
 										iYPos, 
 										100, 
 										25,
 										hWnd0, 
-										HMENU(1190), 
+										HMENU(111), 
 										NULL);
 
 			iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 				hWnd = 
-				CreateComponentEx(	"WTextField", 
+				CreateComponent(	"WTextField", 
 											"I'm just messing around with thread hooks. I've got one now that displays the clipboard, if it is in CF_TEXT format, whenever the user pastes in my application. The problem I've run into is that it can get the clipboard data fine if I've copied it from another application, but if I copy it from my own, it pastes just fine on the screen, but when I retrieve the clipboard data, its garbled. Heres the code.", 
-											WM_ALIGN_WRT_PARENT_CENTERRIGHT | WM_ANCHOR_TOPCENTER,
+											0, 
 											iXPos,
 											iYPos, 
 											200, 
@@ -1651,9 +1592,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 			iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 				hWnd = 
-				CreateComponentEx(	"WTextBox", 
+				CreateComponent(	"WTextBox", 
 											sText.c_str(), 
-											WM_ANCHOR_TOPLEFT, 
+											0, 
 											iXPos,
 											iYPos, 
 											250, 
@@ -1665,9 +1606,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 			iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 				hWnd = 
-				CreateComponentEx(	"WTextBox", 
+				CreateComponent(	"WTextBox", 
 											sText.c_str(), 
-											WM_ANCHOR_TOPLEFT, 
+											0, 
 											iXPos,
 											iYPos, 
 											260, 
@@ -1678,9 +1619,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 			iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 				hWnd = 
-				CreateComponentEx(	"WComboBox", 
+				CreateComponent(	"WComboBox", 
 											"", 
-											WM_ANCHOR_TOPLEFT, 
+											0, 
 											iXPos,
 											iYPos, 
 											250, 
@@ -1693,9 +1634,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 			{
 				hWnd = 
-				CreateComponentEx(	"WListBox", 
+				CreateComponent(	"WListBox", 
 											"", 
-											WM_ANCHOR_TOPLEFT, 
+											0, 
 											iXPos,
 											iYPos, 
 											400, 
@@ -1732,9 +1673,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			}
 
 		H_WND hWndW0 = 
-		CreateComponentEx(	"WWindow", 
+		CreateComponent(	"WWindow", 
 									"Title1", 
-									WM_ANCHOR_TOPLEFT, 
+									0, 
 									300,
 									40, 
 									300, 
@@ -1747,9 +1688,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 				iXPos = 20;
 				iYPos = 40;
 					hWnd = 
-					CreateComponentEx(	"WTextField", 
+					CreateComponent(	"WTextField", 
 												"00 I'm just messing around with thread hooks. I've got one now that displays the clipboard, if it is in CF_TEXT format, whenever the user pastes in my application. The problem I've run into is that it can get the clipboard data fine if I've copied it from another application, but if I copy it from my own, it pastes just fine on the screen, but when I retrieve the clipboard data, its garbled. Heres the code.", 
-												WM_ANCHOR_TOPLEFT, 
+												0, 
 												iXPos,
 												iYPos, 
 												220, 
@@ -1761,9 +1702,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 				iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 					hWnd = 
-					CreateComponentEx(	"WComboBox", 
+					CreateComponent(	"WComboBox", 
 												"", 
-												WM_ANCHOR_TOPLEFT, 
+												0, 
 												iXPos,
 												iYPos, 
 												200, 
@@ -1776,9 +1717,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 				iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 				{
 					H_WND hWind1 = 
-					CreateComponentEx(	"WWindow", 
+					CreateComponent(	"WWindow", 
 												"Title1", 
-												WM_ANCHOR_TOPLEFT, 
+												0, 
 												iXPos,
 												iYPos, 
 												250, 
@@ -1790,9 +1731,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 					iXPos = 20;
 					iYPos = 40;
 					hWnd = 
-					CreateComponentEx(	"WTextBox", 
+					CreateComponent(	"WTextBox", 
 												sText.c_str(), 
-												WM_ANCHOR_TOPLEFT, 
+												0, 
 												iXPos,
 												iYPos, 
 												200, 
@@ -1804,9 +1745,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 					iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 					hWnd = 
-					CreateComponentEx(	"WWindow", 
+					CreateComponent(	"WWindow", 
 												"Title1", 
-												WM_ANCHOR_TOPLEFT, 
+												0, 
 												iXPos,
 												iYPos, 
 												200, 
@@ -1822,9 +1763,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 	iYPos = 40;
 	/////////////////////////////////////////////////
 	H_WND wind0 = 
-	CreateComponentEx(	"WWindow", 
+	CreateComponent(	"WWindow", 
 								"Title", 
-								WM_ANCHOR_TOPLEFT, 
+								0, 
 								iXPos,
 								iYPos, 
 								500, 
@@ -1838,9 +1779,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 		iXPos = 20;
 		iYPos = 40;
 		hWnd = 
-		CreateComponentEx(	"WButton", 
+		CreateComponent(	"WButton", 
 									"SSSSimple Button", 
-									WM_ANCHOR_TOPLEFT, 
+									0, 
 									iXPos,
 									iYPos, 
 									125, 
@@ -1852,9 +1793,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 		iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 		hWnd = 
-		CreateComponentEx(	"WCheckbox", 
+		CreateComponent(	"WCheckbox", 
 									"CheckBox text", 
-									WM_ANCHOR_TOPLEFT, 
+									0, 
 									iXPos,
 									iYPos, 
 									100, 
@@ -1865,9 +1806,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 		iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 		hWnd = 
-		CreateComponentEx(	"WTextField", 
+		CreateComponent(	"WTextField", 
 										"I'm just messing around with thread hooks. I've got one now that displays the clipboard, if it is in CF_TEXT format, whenever the user pastes in my application. The problem I've run into is that it can get the clipboard data fine if I've copied it from another application, but if I copy it from my own, it pastes just fine on the screen, but when I retrieve the clipboard data, its garbled. Heres the code.", 
-										WM_ANCHOR_TOPLEFT, 
+										0, 
 										iXPos,
 										iYPos, 
 										200, 
@@ -1880,9 +1821,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 		iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 		WTextBox* tbW1 = new WTextBox();
 			hWnd = 
-			CreateComponentEx(	"WTextBox", 
+			CreateComponent(	"WTextBox", 
 												sText.c_str(), 
-												WM_ANCHOR_TOPLEFT, 
+												0, 
 												iXPos,
 												iYPos, 
 												250, 
@@ -1894,9 +1835,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 		iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 			hWnd = 
-			CreateComponentEx(	"WTextBox", 
+			CreateComponent(	"WTextBox", 
 										sText.c_str(), 
-										WM_ANCHOR_TOPLEFT, 
+										0, 
 										iXPos,
 										iYPos, 
 										260, 
@@ -1907,9 +1848,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 		iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 			hWnd = 
-			CreateComponentEx(	"WComboBox", 
+			CreateComponent(	"WComboBox", 
 																"", 
-																WM_ANCHOR_TOPLEFT, 
+																0, 
 																iXPos,
 																iYPos, 
 																250, 
@@ -1922,9 +1863,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 		iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 		{
 			hWnd = 
-			CreateComponentEx(	"WListBox", 
+			CreateComponent(	"WListBox", 
 										"", 
-										WM_ANCHOR_TOPLEFT, 
+										0, 
 										iXPos,
 										iYPos, 
 										400, 
@@ -1961,9 +1902,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 		}
 
 		H_WND windW0 = 
-			CreateComponentEx(	"WWindow", 
+			CreateComponent(	"WWindow", 
 										"Title1", 
-										WM_ANCHOR_TOPLEFT, 
+										0, 
 										300,
 										40, 
 										300, 
@@ -1975,9 +1916,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			iXPos = 20;
 			iYPos = 40;
 			hWnd = 
-			CreateComponentEx(	"WTextField", 
+			CreateComponent(	"WTextField", 
 												"00 I'm just messing around with thread hooks. I've got one now that displays the clipboard, if it is in CF_TEXT format, whenever the user pastes in my application. The problem I've run into is that it can get the clipboard data fine if I've copied it from another application, but if I copy it from my own, it pastes just fine on the screen, but when I retrieve the clipboard data, its garbled. Heres the code.", 
-												WM_ANCHOR_TOPLEFT, 
+												0, 
 												iXPos,
 												iYPos, 
 												220, 
@@ -1989,9 +1930,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 			iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 			hWnd = 
-			CreateComponentEx(	"WComboBox", 
+			CreateComponent(	"WComboBox", 
 																"", 
-																WM_ANCHOR_TOPLEFT, 
+																0, 
 																iXPos,
 																iYPos, 
 																200, 
@@ -2003,9 +1944,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 			iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 			H_WND hwind1 = 
-			CreateComponentEx(	"WWindow", 
+			CreateComponent(	"WWindow", 
 										"Title1", 
-										WM_ANCHOR_TOPLEFT, 
+										0, 
 										iXPos,
 										iYPos, 
 										250, 
@@ -2015,9 +1956,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 										(LPVOID)ID_TYPE_WND_CMX);
 			
 			hWnd = 
-			CreateComponentEx(	"WWindow", 
+			CreateComponent(	"WWindow", 
 										"Title1", 
-										WM_ANCHOR_TOPLEFT, 
+										0, 
 										iXPos,
 										iYPos, 
 										250, 
@@ -2029,9 +1970,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 				iXPos = 20;
 				iYPos = 40;
 				hWnd = 
-				CreateComponentEx(	"WTextBox", 
+				CreateComponent(	"WTextBox", 
 												sText.c_str(), 
-												WM_ANCHOR_TOPLEFT, 
+												0, 
 												iXPos,
 												iYPos, 
 												200, 
@@ -2043,9 +1984,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 				iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 				hWnd = 
-				CreateComponentEx(	"WWindow", 
+				CreateComponent(	"WWindow", 
 												"Title1", 
-												WM_ANCHOR_TOPLEFT, 
+												0, 
 												iXPos,
 												iYPos, 
 												200, 
@@ -2060,9 +2001,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 	iXPos = ((WComponent*)wind0)->getOffsetX() + ((WComponent*)wind0)->getWidth() + 10;
 	iYPos = 40;
 	H_WND hwind1 = 
-	CreateComponentEx(	"WWindow", 
+	CreateComponent(	"WWindow", 
 									"Title1", 
-									WM_ANCHOR_TOPLEFT, 
+									0, 
 									iXPos,
 									iYPos, 
 									200, 
@@ -2074,9 +2015,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 		iXPos = 20;
 		iYPos = 40;
 		hWnd = 
-		CreateComponentEx(	"WTextField", 
+		CreateComponent(	"WTextField", 
 												"100 I'm just messing around with thread hooks. I've got one now that displays the clipboard, if it is in CF_TEXT format, whenever the user pastes in my application. The problem I've run into is that it can get the clipboard data fine if I've copied it from another application, but if I copy it from my own, it pastes just fine on the screen, but when I retrieve the clipboard data, its garbled. Heres the code.", 
-												WM_ANCHOR_TOPLEFT, 
+												0, 
 												iXPos,
 												iYPos, 
 												150, 
@@ -2088,9 +2029,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 
 		iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 		hWnd = 
-		CreateComponentEx(	"WComboBox", 
+		CreateComponent(	"WComboBox", 
 																"", 
-																WM_ANCHOR_TOPLEFT, 
+																0, 
 																iXPos,
 																iYPos, 
 																250, 
@@ -2104,9 +2045,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 	iXPos = ((WComponent*)wind0)->getOffsetX();
 	iYPos = ((WComponent*)wind0)->getOffsetY() + ((WComponent*)wind0)->getHeight() + 5;
 	H_WND wind2 = 
-	CreateComponentEx(	"WFrame", 
+	CreateComponent(	"WFrame", 
 											"Title2", 
-											WM_ANCHOR_TOPLEFT, 
+											0, 
 											iXPos,
 											iYPos, 
 											550, 
@@ -2117,9 +2058,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 		((WFrame*)wind2)->setBorderVisibility(true);
 		{
 			hWnd = 
-			CreateComponentEx(	"WButton", 
+			CreateComponent(	"WButton", 
 										"Simple Button", 
-										WM_ANCHOR_TOPLEFT, 
+										0, 
 										20,
 										40, 
 										125, 
@@ -2130,9 +2071,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			((WButton*)hWnd)->setComponentAsChild(true);
 
 			hWnd = 
-			CreateComponentEx(	"WCheckbox", 
+			CreateComponent(	"WCheckbox", 
 														"CheckBox text", 
-														WM_ANCHOR_TOPLEFT, 
+														0, 
 														20,
 														70, 
 														100, 
@@ -2142,9 +2083,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 														NULL);
 
 			hWnd = 
-			CreateComponentEx(	"WTextField", 
+			CreateComponent(	"WTextField", 
 										"I'm just messing around with thread hooks. I've got one now that displays the clipboard, if it is in CF_TEXT format, whenever the user pastes in my application. The problem I've run into is that it can get the clipboard data fine if I've copied it from another application, but if I copy it from my own, it pastes just fine on the screen, but when I retrieve the clipboard data, its garbled. Heres the code.", 
-										WM_ANCHOR_TOPLEFT, 
+										0, 
 										20,
 										100, 
 										200, 
@@ -2155,9 +2096,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			((WTextField*)hWnd)->setComponentAsChild(true);
 
 			hWnd = 
-			CreateComponentEx(	"WTextBox", 
+			CreateComponent(	"WTextBox", 
 												sText.c_str(), 
-												WM_ANCHOR_TOPLEFT, 
+												0, 
 												20,
 												130, 
 												250, 
@@ -2168,9 +2109,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			((WTextBox*)hWnd)->showLineNumbers(true);
 
 			hWnd = 
-			CreateComponentEx(	"WTextBox", 
+			CreateComponent(	"WTextBox", 
 											sText.c_str(), 
-											WM_ANCHOR_TOPLEFT, 
+											0, 
 											20,
 											300, 
 											260, 
@@ -2180,9 +2121,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 											NULL);
 
 			hWnd = 
-			CreateComponentEx(	"WComboBox", 
+			CreateComponent(	"WComboBox", 
 											"", 
-											WM_ANCHOR_TOPLEFT, 
+											0, 
 											20,
 											470, 
 											250, 
@@ -2193,9 +2134,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			((WComboBox*)hWnd)->addDefaultTestItems();
 
 			hWnd = 
-			CreateComponentEx(	"WListBox", 
+			CreateComponent(	"WListBox", 
 												"", 
-												WM_ANCHOR_TOPLEFT, 
+												0, 
 												20,
 												560, 
 												400, 
@@ -2233,9 +2174,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			}
 
 			hWnd = 
-			CreateComponentEx(	"WComboBox", 
+			CreateComponent(	"WComboBox", 
 												"", 
-												WM_ANCHOR_TOPLEFT, 
+												0, 
 												20,
 												720, 
 												250, 
@@ -2246,9 +2187,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			((WComboBox*)hWnd)->addDefaultTestItems();
 
 			H_WND wind1 = 
-			CreateComponentEx(	"WWindow", 
+			CreateComponent(	"WWindow", 
 										"Title1", 
-										WM_ANCHOR_TOPLEFT, 
+										0, 
 										300,
 										40, 
 										200, 
@@ -2258,9 +2199,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 										(LPVOID)ID_TYPE_WND_CX);
 			{
 				hWnd = 
-				CreateComponentEx(	"WTextField", 
+				CreateComponent(	"WTextField", 
 											"I'm just messing around with thread hooks. I've got one now that displays the clipboard, if it is in CF_TEXT format, whenever the user pastes in my application. The problem I've run into is that it can get the clipboard data fine if I've copied it from another application, but if I copy it from my own, it pastes just fine on the screen, but when I retrieve the clipboard data, its garbled. Heres the code.", 
-											WM_ANCHOR_TOPLEFT, 
+											0, 
 											20,
 											40, 
 											150, 
@@ -2271,9 +2212,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 				((WTextField*)hWnd)->setComponentAsChild(true);
 
 				hWnd = 
-				CreateComponentEx(	"WComboBox", 
+				CreateComponent(	"WComboBox", 
 											"", 
-											WM_ANCHOR_TOPLEFT, 
+											0, 
 											20,
 											70, 
 											250, 
@@ -2285,9 +2226,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			}
 
 			hWnd = 
-			CreateComponentEx(	"WTree", 
+			CreateComponent(	"WTree", 
 										"Title2", 
-										WM_ANCHOR_TOPLEFT, 
+										0, 
 										50,
 										140, 
 										450, 
@@ -2297,9 +2238,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 										NULL);
 
 			hWnd = 
-			CreateComponentEx(	"WTable", 
+			CreateComponent(	"WTable", 
 										"Table", 
-										WM_ANCHOR_TOPLEFT, 
+										0, 
 										50,
 										140, 
 										450, 
@@ -2343,9 +2284,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			}
 
 			hWnd = 
-			CreateComponentEx(	"WInspector", 
+			CreateComponent(	"WInspector", 
 										"Title1", 
-										WM_ANCHOR_TOPLEFT, 
+										0, 
 										120,
 										40, 
 										350, 
@@ -2363,9 +2304,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 	iXPos = ((WComponent*)wind2)->getOffsetX();
 	iYPos = ((WComponent*)wind2)->getOffsetY() + ((WComponent*)wind2)->getHeight() + 10;
 	wind2 = 
-	CreateComponentEx(	"WFrame", 
+	CreateComponent(	"WFrame", 
 								"Title2", 
-								WM_ANCHOR_TOPLEFT, 
+								0, 
 								iXPos,
 								iYPos, 
 								550, 
@@ -2377,9 +2318,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 		((WFrame*)wind2)->setBorderVisibility(true);
 		{
 			hWnd = 
-			CreateComponentEx(	"WButton", 
+			CreateComponent(	"WButton", 
 										"Simple Button", 
-										WM_ANCHOR_TOPLEFT, 
+										0, 
 										20,
 										40, 
 										125, 
@@ -2390,9 +2331,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			((WButton*)hWnd)->setComponentAsChild(true);
 
 			hWnd = 
-			CreateComponentEx(	"WCheckbox", 
+			CreateComponent(	"WCheckbox", 
 										"CheckBox text", 
-										WM_ANCHOR_TOPLEFT, 
+										0, 
 										20,
 										70, 
 										100, 
@@ -2402,9 +2343,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 										NULL);
 
 			hWnd = 
-			CreateComponentEx(	"WTextField", 
+			CreateComponent(	"WTextField", 
 										"I'm just messing around with thread hooks. I've got one now that displays the clipboard, if it is in CF_TEXT format, whenever the user pastes in my application. The problem I've run into is that it can get the clipboard data fine if I've copied it from another application, but if I copy it from my own, it pastes just fine on the screen, but when I retrieve the clipboard data, its garbled. Heres the code.", 
-										WM_ANCHOR_TOPLEFT, 
+										0, 
 										20,
 										100, 
 										200, 
@@ -2415,9 +2356,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			((WTextField*)hWnd)->setComponentAsChild(true);
 
 			hWnd = 
-			CreateComponentEx(	"WTextBox", 
+			CreateComponent(	"WTextBox", 
 											sText.c_str(), 
-											WM_ANCHOR_TOPLEFT, 
+											0, 
 											20,
 											130, 
 											260, 
@@ -2428,9 +2369,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 		((WTextBox*)hWnd)->showLineNumbers(true);
 
 			hWnd = 
-			CreateComponentEx(	"WTextBox", 
+			CreateComponent(	"WTextBox", 
 												sText.c_str(), 
-												WM_ANCHOR_TOPLEFT, 
+												0, 
 												20,
 												300, 
 												260, 
@@ -2440,9 +2381,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 												NULL);
 
 			hWnd = 
-			CreateComponentEx(	"WComboBox", 
+			CreateComponent(	"WComboBox", 
 															"", 
-															WM_ANCHOR_TOPLEFT, 
+															0, 
 															20,
 															470, 
 															250, 
@@ -2453,9 +2394,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			((WComboBox*)hWnd)->addDefaultTestItems();
 
 			hWnd = 
-			CreateComponentEx(	"WListBox", 
+			CreateComponent(	"WListBox", 
 													"", 
-													WM_ANCHOR_TOPLEFT, 
+													0, 
 													20,
 													560, 
 													400, 
@@ -2493,9 +2434,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			}
 
 			hWnd = 
-			CreateComponentEx(	"WComboBox", 
+			CreateComponent(	"WComboBox", 
 																"", 
-																WM_ANCHOR_TOPLEFT, 
+																0, 
 																20,
 																720, 
 																250, 
@@ -2506,9 +2447,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			((WComboBox*)hWnd)->addDefaultTestItems();
 
 			H_WND wind1 = 
-			CreateComponentEx(	"WWindow", 
+			CreateComponent(	"WWindow", 
 												"Title1", 
-												WM_ANCHOR_TOPLEFT, 
+												0, 
 												300,
 												40, 
 												200, 
@@ -2518,9 +2459,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 												(LPVOID)ID_TYPE_WND_CX);
 			{
 				hWnd = 
-				CreateComponentEx(	"WTextField", 
+				CreateComponent(	"WTextField", 
 																"I'm just messing around with thread hooks. I've got one now that displays the clipboard, if it is in CF_TEXT format, whenever the user pastes in my application. The problem I've run into is that it can get the clipboard data fine if I've copied it from another application, but if I copy it from my own, it pastes just fine on the screen, but when I retrieve the clipboard data, its garbled. Heres the code.", 
-																WM_ANCHOR_TOPLEFT, 
+																0, 
 																20,
 																40, 
 																150, 
@@ -2531,9 +2472,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 				((WTextField*)hWnd)->setComponentAsChild(true);
 
 				hWnd = 
-				CreateComponentEx(	"WComboBox", 
+				CreateComponent(	"WComboBox", 
 																"", 
-																WM_ANCHOR_TOPLEFT, 
+																0, 
 																20,
 																70, 
 																250, 
@@ -2545,21 +2486,21 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			}
 
 				hWnd = 
-				CreateComponentEx(	"WTree", 
-											"Title2", 
-											WM_ANCHOR_TOPLEFT, 
-											50,
-											140, 
-											450, 
-											450,
-											wind2, 
-											HMENU(1001), 
-											NULL);
+				CreateComponent(	"WTree", 
+					"Title2", 
+					0, 
+					50,
+					140, 
+					450, 
+					450,
+					wind2, 
+					HMENU(1001), 
+					NULL);
 
 				hWnd = 
-				CreateComponentEx(	"WTable", 
+				CreateComponent(	"WTable", 
 											"Table", 
-											WM_ANCHOR_TOPLEFT, 
+											0, 
 											50,
 											140, 
 											450, 
@@ -2608,9 +2549,9 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			}
 
 			hWnd = 
-			CreateComponentEx(	"WInspector", 
+			CreateComponent(	"WInspector", 
 													"Title1", 
-													WM_ANCHOR_TOPLEFT, 
+													0, 
 													120,
 													40, 
 													350, 
@@ -2625,69 +2566,5 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 			}
 		}
 	}
-}
-
-void addDummyWindows_(H_WND hParent) {
-	unsigned int iYPos = 0;
-	unsigned int iXPos = 20;
-
-	//NEW_OBJECT("WStatic");
-	WComponentFactory* factory = WComponentFactory::Get();
-	H_WND hWnd = NULL;
-
-	hWnd = 
-		CreateComponentEx(	"WGraph", 
-									"WGraph... !!!", 
-									WM_ANCHOR_TOPLEFT,
-									iXPos,
-									40, 
-									500, 
-									500,
-									hParent, 
-									HMENU(1234), 
-									&GraphScale(1.0f, 1.0f));
-			WGraph* pGraph = (WGraph*)hWnd;
-			pGraph->setBorderVisibility(true);
-			pGraph->addDot(0.3f, 0.5f);
-			pGraph->addDot(0.6f, 0.9f);
-			pGraph->addDot(1.1f, 1.2f);
-	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 10;
-
-	hWnd = 
-	CreateComponentEx(	"WButton",
-								"Simple Button", 
-								WM_ANCHOR_BOTTOMRIGHT, 
-								iXPos + (((WComponent*)hWnd)->getWidth() >> 1),
-								iYPos, 
-								189, 
-								25,
-								hParent, 
-								HMENU(121), 
-								"Button");
-
-	hWnd = 
-	CreateComponentEx(	"WTextField", 
-								"**sprintf(m_pText, \"%s%c%s\", leftHalfSubstr, iKey, rightHalfSubstr); g->SetClip(RectF(m_pParent->getLeft(), m_pParent->getTop(), m_pParent->getWidth(), m_pParent->getHeight()));", 
-								WM_ANCHOR_TOPLEFT, 
-								iXPos + (((WComponent*)hWnd)->getWidth() + 10),
-								iYPos, 
-								220, 
-								23,
-								hParent, 
-								NULL, 
-								NULL);
-
-	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 10;
-	hWnd = 
-	CreateComponentEx(	"WWindow", 
-								"Title", 
-								WM_ANCHOR_TOPCENTER, 
-								iXPos,
-								iYPos, 
-								500, 
-								650,
-								hParent, 
-								HMENU(1212), 
-								(LPVOID)ID_TYPE_WND_C);
 }
 #endif

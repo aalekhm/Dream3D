@@ -88,8 +88,8 @@ void WScrollbar::onCreateEx(LPVOID lpVoid) {
 															m_ScrollbarWidget->widgetSize.height,
 															&wndRect,
 															&idealRect,
-															leftScrollChild->align.eHAlign,
-															leftScrollChild->align.eVAlign
+															leftScrollChild->align.iHAlign,
+															leftScrollChild->align.iVAlign
 															);
 	hWnd = 
 	CreateComponent(	"WButton", 
@@ -118,8 +118,8 @@ void WScrollbar::onCreateEx(LPVOID lpVoid) {
 															m_ScrollbarWidget->widgetSize.height,
 															&wndRect,
 															&idealRect,
-															rightScrollChild->align.eHAlign,
-															rightScrollChild->align.eVAlign
+															rightScrollChild->align.iHAlign,
+															rightScrollChild->align.iVAlign
 														);
 	hWnd = 
 	CreateComponent(	"WButton", 
@@ -149,8 +149,8 @@ void WScrollbar::onCreateEx(LPVOID lpVoid) {
 															m_ScrollbarWidget->widgetSize.height,
 															&wndRect,
 															&idealRect,
-															scrollTrackChild->align.eHAlign,
-															scrollTrackChild->align.eVAlign
+															scrollTrackChild->align.iHAlign,
+															scrollTrackChild->align.iVAlign
 															);
 	m_minSliderPos = (bIsHorizontal)?destRect.X - m_iLeft:destRect.Y - m_iTop;
 	m_curSliderPos = m_minSliderPos;
@@ -276,8 +276,8 @@ void WScrollbar::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 														m_ScrollbarWidget->widgetSize.height,
 														&wndRect,
 														&idealRect,
-														rightScrollChild->align.eHAlign,
-														rightScrollChild->align.eVAlign
+														rightScrollChild->align.iHAlign,
+														rightScrollChild->align.iVAlign
 													);
 				m_ButtonRight->setPositionX(destRect.X - m_iLeft);
 			}
@@ -303,8 +303,8 @@ void WScrollbar::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 														m_ScrollbarWidget->widgetSize.height,
 														&wndRect,
 														&idealRect,
-														bottomScrollChild->align.eHAlign,
-														bottomScrollChild->align.eVAlign
+														bottomScrollChild->align.iHAlign,
+														bottomScrollChild->align.iVAlign
 													);
 				m_ButtonRight->setPositionY(destRect.Y - m_iTop);
 			}
@@ -415,11 +415,11 @@ void WScrollbar::onMouseWheelEx(WPARAM wParam, LPARAM lParam) {
 
 }
 
-void WScrollbar::onKeyBDownEx(unsigned int iVirtualKeycode, unsigned short ch) {
+void WScrollbar::onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch) {
 
 }
 
-void WScrollbar::onKeyBUpEx(unsigned int iVirtualKeycode, unsigned short ch) {
+void WScrollbar::onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch) {
 
 }
 

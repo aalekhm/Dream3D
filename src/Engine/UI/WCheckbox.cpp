@@ -48,6 +48,11 @@ void WCheckbox::onCreateEx(LPVOID lpVoid) {
 
 	CHECKBOX_TEXT_HEIGHT = WWidgetManager::CHARACTER_HEIGHT + (CHECKBOX_TOP_GUTTER << 1);
 
+	m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_pParent->m_iMainX;
+	m_iTop = m_pParent->getTop() + m_iOffsetY + m_pParent->m_iMainY;
+	m_iRight = m_iLeft + CHECKBOX_STRING_STARTX + WWidgetManager::getStringWidthTillPos(m_pTitle, strlen(m_pTitle));
+	m_iBottom = m_iTop + CHECKBOX_TEXT_HEIGHT;
+
 	m_bChecked = false;
 	m_State = NORMAL;
 
@@ -136,14 +141,14 @@ void WCheckbox::onRender() {
 	WWidgetManager::resetColor();
 }
 
-void WCheckbox::onMouseDownEx(int x, int y, int iButton) {
+void WCheckbox::onMouseDown(int x, int y, int iButton) {
 	if(m_State == INACTIVE)
 		return;
 
 	m_State = PUSHED;
 }
 
-void WCheckbox::onMouseUpEx(int x, int y, int iButton) {
+void WCheckbox::onMouseUp(int x, int y, int iButton) {
 	if(m_State == INACTIVE)
 		return;
 	
@@ -156,19 +161,19 @@ void WCheckbox::onMouseUpEx(int x, int y, int iButton) {
 	m_State = NORMAL;
 }
 
-void WCheckbox::onMouseEnterEx(int mCode, int x, int y, int prevX, int prevY) {
+void WCheckbox::onMouseEnter(int mCode, int x, int y, int prevX, int prevY) {
 	m_State = HIGHLIGHTED;
 }
 
-void WCheckbox::onMouseHoverEx(int mCode, int x, int y, int prevX, int prevY) {
+void WCheckbox::onMouseHover(int mCode, int x, int y, int prevX, int prevY) {
 	m_State = HIGHLIGHTED;
 }
 
-void WCheckbox::onMouseLeaveEx(int mCode, int x, int y, int prevX, int prevY) {
+void WCheckbox::onMouseLeave(int mCode, int x, int y, int prevX, int prevY) {
 	m_State = NORMAL;
 }
 
-void WCheckbox::onMouseMoveEx(int mCode, int x, int y, int prevX, int prevY) {
+void WCheckbox::onMouseMove(int mCode, int x, int y, int prevX, int prevY) {
 	if(	!(	m_State == INACTIVE
 			||
 			m_State == PUSHED
@@ -177,15 +182,15 @@ void WCheckbox::onMouseMoveEx(int mCode, int x, int y, int prevX, int prevY) {
 		m_State = HIGHLIGHTED;
 }
 
-void WCheckbox::onMouseWheelEx(WPARAM wParam, LPARAM lParam) {
+void WCheckbox::onMouseWheel(WPARAM wParam, LPARAM lParam) {
 
 }
 
-void WCheckbox::onKeyBDownEx(unsigned int iVirtualKeycode, unsigned short ch) {
+void WCheckbox::onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch) {
 	
 }
 
-void WCheckbox::onKeyBUpEx(unsigned int iVirtualKeycode, unsigned short ch) {
+void WCheckbox::onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch) {
 
 }
 

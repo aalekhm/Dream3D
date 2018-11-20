@@ -48,6 +48,11 @@ void WButton::onCreateEx(LPVOID lpVoid) {
 
 	bool bHasText = (strlen(m_pTitle) > 0);
 
+	m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_pParent->m_iMainX;
+	m_iTop = m_pParent->getTop() + m_iOffsetY + m_pParent->m_iMainY;
+	m_iRight = m_iLeft + (bHasText ? (WWidgetManager::getStringWidthTillPos(m_pTitle, strlen(m_pTitle)) + (BUTTON_GUTTER_X << 1)) : getWidth());
+	m_iBottom = m_iTop + (bHasText ? BUTTON_TEXT_HEIGHT : getHeight());
+
 	m_State = NORMAL;
 
 	m_pButtonStateNameNormal = new char[32];
@@ -110,7 +115,7 @@ void WButton::onRender() {
 	}
 }
 
-void WButton::onMouseDownEx(int x, int y, int iButton) {
+void WButton::onMouseDown(int x, int y, int iButton) {
 	if(m_State != INACTIVE)
 		m_State = PUSHED;
 
@@ -128,7 +133,7 @@ void WButton::onMouseDownEx(int x, int y, int iButton) {
 		WWidgetManager::onEvent((H_WND)this, WM_BTN_RBUTTONDOWN, getComponentID(), 0);
 }
 
-void WButton::onMouseUpEx(int x, int y, int iButton) {
+void WButton::onMouseUp(int x, int y, int iButton) {
 	if(m_State != INACTIVE)
 		m_State = NORMAL;
 		
@@ -146,11 +151,11 @@ void WButton::onMouseUpEx(int x, int y, int iButton) {
 		WWidgetManager::onEvent((H_WND)this, WM_BTN_RBUTTONUP, getComponentID(), 0);
 }
 
-void WButton::onMouseEnterEx(int mCode, int x, int y, int prevX, int prevY) {
+void WButton::onMouseEnter(int mCode, int x, int y, int prevX, int prevY) {
 	m_State = HOVER;
 }
 
-void WButton::onMouseHoverEx(int mCode, int x, int y, int prevX, int prevY) {
+void WButton::onMouseHover(int mCode, int x, int y, int prevX, int prevY) {
 	m_State = HOVER;
 	WWidgetManager::setCursor(IDC__ARROW);
 
@@ -162,11 +167,11 @@ void WButton::onMouseHoverEx(int mCode, int x, int y, int prevX, int prevY) {
 	}
 }
 
-void WButton::onMouseLeaveEx(int mCode, int x, int y, int prevX, int prevY) {
+void WButton::onMouseLeave(int mCode, int x, int y, int prevX, int prevY) {
 	m_State = NORMAL;
 }
 
-void WButton::onMouseMoveEx(int mCode, int x, int y, int prevX, int prevY) {
+void WButton::onMouseMove(int mCode, int x, int y, int prevX, int prevY) {
 	if(m_pParent) {
 		int dwDiffX = (-(prevX-x) & 0xffff);
 		int dwDiffY = (-(prevY-y) & 0xffff);
@@ -175,15 +180,15 @@ void WButton::onMouseMoveEx(int mCode, int x, int y, int prevX, int prevY) {
 	}
 }
 
-void WButton::onMouseWheelEx(WPARAM wParam, LPARAM lParam) {
+void WButton::onMouseWheel(WPARAM wParam, LPARAM lParam) {
 
 }
 
-void WButton::onKeyBDownEx(unsigned int iVirtualKeycode, unsigned short ch) {
+void WButton::onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch) {
 	
 }
 
-void WButton::onKeyBUpEx(unsigned int iVirtualKeycode, unsigned short ch) {
+void WButton::onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch) {
 
 }
 

@@ -78,8 +78,8 @@ void WFrame::onCreateEx(LPVOID lpVoid) {
 												m_FrameWidget->widgetSize.height,
 												&wndRect,
 												&idealRect,
-												verticalSBChild->align.eHAlign,
-												verticalSBChild->align.eVAlign
+												verticalSBChild->align.iHAlign,
+												verticalSBChild->align.iVAlign
 												);
 		if(m_sbVertical == NULL) {
 			hWnd = 
@@ -115,8 +115,8 @@ void WFrame::onCreateEx(LPVOID lpVoid) {
 												m_FrameWidget->widgetSize.height,
 												&wndRect,
 												&idealRect,
-												horizontalSBChild->align.eHAlign,
-												horizontalSBChild->align.eVAlign
+												horizontalSBChild->align.iHAlign,
+												horizontalSBChild->align.iVAlign
 												);
 		if(m_sbHorizontal == NULL) {
 			hWnd = 
@@ -157,8 +157,8 @@ void WFrame::onCreateEx(LPVOID lpVoid) {
 												m_FrameWidget->widgetSize.height,
 												&wndRect,
 												&idealRect,
-												btnChild->align.eHAlign,
-												btnChild->align.eVAlign
+												btnChild->align.iHAlign,
+												btnChild->align.iVAlign
 												);
 		if(m_ButtonWResizeLeft == NULL) {
 			hWnd = 
@@ -194,8 +194,8 @@ void WFrame::onCreateEx(LPVOID lpVoid) {
 												m_FrameWidget->widgetSize.height,
 												&wndRect,
 												&idealRect,
-												btnChild->align.eHAlign,
-												btnChild->align.eVAlign
+												btnChild->align.iHAlign,
+												btnChild->align.iVAlign
 												);
 		if(m_ButtonWResizeRight == NULL) {
 			hWnd = 
@@ -235,8 +235,8 @@ void WFrame::onCreateEx(LPVOID lpVoid) {
 												m_FrameWidget->widgetSize.height,
 												&wndRect,
 												&idealRect,
-												clientArea->align.eHAlign,
-												clientArea->align.eVAlign
+												clientArea->align.iHAlign,
+												clientArea->align.iVAlign
 												);
 		m_ClientRect.X = destRect.X - getLeft();
 		m_ClientRect.Y = destRect.Y - getTop();
@@ -382,7 +382,23 @@ void WFrame::onMouseDownEx(int x, int y, int iButton) {
 }
 
 void WFrame::onMouseMoveEx(int mCode, int x, int y, int prevx, int prevy) {
+	// If click was on the title bar, drag window
+	// If resizing, resize window
 
+	// Drag window around:
+	int diffX = (x - prevx);
+	int diffY = (y - prevy);
+
+	if((mCode & MK_LBUTTON) != 0) {
+		if(m_pParent != NULL) {
+			setPosition(getOffsetX() + diffX, getOffsetY() + diffY);
+		}
+		else 
+		if((H_WND)this == WWidgetManager::getInstance()->GetWindow(0)) {
+			setLeft(diffX);
+			setTop(diffY);
+		}
+	}
 }
 
 void WFrame::onMouseUpEx(int x, int y, int iButton) {

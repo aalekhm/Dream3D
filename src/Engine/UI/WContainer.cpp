@@ -20,7 +20,6 @@ H_WND WContainer::Create(		const char* lpClassName,
 												bool bIsContainer, 
 												bool bIsChild
 ) {
-	m_pChildren.clear();
 	WComponent::Create(	lpClassName, 
 									lpWindowName, 
 									dwStyle, 
@@ -119,7 +118,6 @@ void WContainer::frameRender() {
 	WWidgetManager::setClip(reclaimRect.X, reclaimRect.Y, reclaimRect.Width, reclaimRect.Height);
 
 	postRender();
-	postRenderInternal();
 }
 
 void WContainer::postRender() {
@@ -207,7 +205,7 @@ void WContainer::onMouseDown(int x, int y, int iButton) {
 	}
 	else {
 		// Custom mouse handling
-		WComponent::onMouseDown(x, y, iButton);
+		onMouseDownEx(x, y, iButton);
 	}
 }
 
@@ -223,7 +221,7 @@ void WContainer::onMouseUp(int x, int y, int iButton) {
 	else {
 
 		// custom handling
-		WComponent::onMouseUp(x, y, iButton);
+		onMouseUpEx(x, y, iButton);
 	}
 }
 
@@ -235,7 +233,7 @@ void WContainer::onMouseEnter(int mCode, int x, int y, int prevX, int prevY) {
 		}
 	}
 
-	WComponent::onMouseEnter(mCode, x, y, prevX, prevY);
+	onMouseEnterEx(mCode, x, y, prevX, prevY);
 }
 
 void WContainer::onMouseHover(int mCode, int x, int y, int prevX, int prevY) {
@@ -255,7 +253,7 @@ void WContainer::onMouseHover(int mCode, int x, int y, int prevX, int prevY) {
 		}
 	}
 
-	WComponent::onMouseHover(mCode, x, y, prevX, prevY);
+	onMouseHoverEx(mCode, x, y, prevX, prevY);
 }
 
 void WContainer::onMouseLeave(int mCode, int x, int y, int prevX, int prevY) {
@@ -266,7 +264,7 @@ void WContainer::onMouseLeave(int mCode, int x, int y, int prevX, int prevY) {
 		}
 	}
 
-	WComponent::onMouseLeave(mCode, x, y, prevX, prevY);
+	onMouseLeaveEx(mCode, x, y, prevX, prevY);
 }
 
 void WContainer::onMouseMove(int mCode, int x, int y, int prevX, int prevY) {
@@ -289,7 +287,20 @@ void WContainer::onMouseMove(int mCode, int x, int y, int prevX, int prevY) {
 	}
 	else {
 		// custom handling
-		WComponent::onMouseMove(mCode, x, y, prevX, prevY);
+		onMouseMoveEx(mCode, x, y, prevX, prevY);
+	}
+}
+
+void WContainer::onMouseMoveEx(int mCode, int x, int y, int prevX, int prevY) {
+
+	// Drag window around:
+	int diffX = (x - prevX);
+	int diffY = (y - prevY);
+
+	if((mCode & MK_LBUTTON) != 0) {
+		if(m_pParent != NULL) {
+			setPosition(getOffsetX() + diffX, getOffsetY() + diffY);
+		}
 	}
 }
 
@@ -305,7 +316,7 @@ void WContainer::onMouseWheel(WPARAM wParam, LPARAM lParam) {
 	else {
 
 		// custom handling
-		WComponent::onMouseWheel(wParam, lParam);
+		onMouseWheelEx(wParam, lParam);
 	}
 }
 
@@ -318,7 +329,7 @@ void WContainer::onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch) {
 		m_pActiveComponent->onKeyBDown(iVirtualKeycode, ch);
 	}
 	else
-		WComponent::onKeyBDown(iVirtualKeycode, ch);
+		onKeyBDownEx(iVirtualKeycode, ch);
 }
 
 void WContainer::onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch) {
@@ -326,7 +337,7 @@ void WContainer::onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch) {
 		m_pActiveComponent->onKeyBUp(iVirtualKeycode, ch);
 	}
 	else
-		WComponent::onKeyBUp(iVirtualKeycode, ch);
+		onKeyBUpEx(iVirtualKeycode, ch);
 }
 
 void WContainer::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {

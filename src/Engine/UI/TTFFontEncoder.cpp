@@ -11,7 +11,7 @@ TTFFontEncoder::~TTFFontEncoder() {
 	
 }
 
-int TTFFontEncoder::encode(const char* ttfFileName, unsigned int iFontSize, unsigned int iFontDPI, bool bFontpreview) {
+int TTFFontEncoder::encode(const char* ttfFileName, unsigned int iFontSize, unsigned int iFontDPI, bool bFontpreview = false) {
 	
 	Glyph glyphArray[ASCII_END_INDEX - ASCII_START_INDEX];
 	Glyph_ glyphArrayMy[ASCII_END_INDEX - ASCII_START_INDEX];

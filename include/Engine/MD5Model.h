@@ -26,7 +26,6 @@ class MD5Model {
 			, m_LocalToWorldMatrix()
 			, m_pMD5Animation(NULL)
 			, m_pModel(NULL)
-			, m_iStride(0)
 		{
 			m_Joints.clear();
 			m_Meshes.clear();
@@ -160,8 +159,6 @@ class MD5Model {
 		Model*				m_pModel;
 
 		Matrix4				m_LocalToWorldMatrix;			
-
-		int					m_iStride;
 };
 
 #endif

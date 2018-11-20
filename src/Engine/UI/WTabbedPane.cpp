@@ -76,8 +76,8 @@ void WTabbedPane::onCreateEx(LPVOID lpVoid) {
 											m_TabbedWidget->widgetSize.height,
 											&wndRect,
 											&idealRect,
-											btnScrollLeft->align.eHAlign,
-											btnScrollLeft->align.eVAlign
+											btnScrollLeft->align.iHAlign,
+											btnScrollLeft->align.iVAlign
 										);
 	hWnd = 
 	CreateComponent(	"WButton", 
@@ -106,8 +106,8 @@ void WTabbedPane::onCreateEx(LPVOID lpVoid) {
 											m_TabbedWidget->widgetSize.height,
 											&wndRect,
 											&idealRect,
-											btnScrollRight->align.eHAlign,
-											btnScrollRight->align.eVAlign
+											btnScrollRight->align.iHAlign,
+											btnScrollRight->align.iVAlign
 											);
 	hWnd = 
 	CreateComponent(	"WButton", 
@@ -138,8 +138,8 @@ void WTabbedPane::onCreateEx(LPVOID lpVoid) {
 												m_TabbedWidget->widgetSize.height,
 												&wndRect,
 												&idealRect,
-												clientArea->align.eHAlign,
-												clientArea->align.eVAlign
+												clientArea->align.iHAlign,
+												clientArea->align.iVAlign
 												);
 		m_ClientRect.X = destRect.X - getLeft();
 		m_ClientRect.Y = destRect.Y - getTop();

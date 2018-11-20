@@ -88,8 +88,8 @@ void WComboBox::onCreateEx(LPVOID lpVoid) {
 															m_ComboBoxWidget->widgetSize.height,
 															&wndRect,
 															&idealRect,
-															cbTextField->align.eHAlign,
-															cbTextField->align.eVAlign
+															cbTextField->align.iHAlign,
+															cbTextField->align.iVAlign
 															);
 	hWnd = 
 	CreateComponent(	"WTextField", 
@@ -116,8 +116,8 @@ void WComboBox::onCreateEx(LPVOID lpVoid) {
 															m_ComboBoxWidget->widgetSize.width, m_ComboBoxWidget->widgetSize.height,
 															&wndRect,
 															&idealRect,
-															cbButton->align.eHAlign,
-															cbButton->align.eVAlign
+															cbButton->align.iHAlign,
+															cbButton->align.iVAlign
 														);
 	hWnd = 
 	CreateComponent(	"WButton", 
@@ -142,8 +142,8 @@ void WComboBox::onCreateEx(LPVOID lpVoid) {
 															m_ComboBoxWidget->widgetSize.width, m_ComboBoxWidget->widgetSize.height,
 															&wndRect,
 															&idealRect,
-															cbListBox->align.eHAlign,
-															cbListBox->align.eVAlign
+															cbListBox->align.iHAlign,
+															cbListBox->align.iVAlign
 															);
 	hWnd = 
 	CreateComponent(	"WListBox", 
@@ -188,7 +188,7 @@ void WComboBox::onMouseWheelEx(WPARAM wParam, LPARAM lParam) {
 		m_cbListBox->onMouseWheel(wParam, lParam);
 }
 
-void WComboBox::onKeyBDownEx(unsigned int iVirtualKeycode, unsigned short ch) {
+void WComboBox::onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch) {
 	if((getSize() <= 0))
 		return;
 
@@ -226,7 +226,7 @@ void WComboBox::onKeyBDownEx(unsigned int iVirtualKeycode, unsigned short ch) {
 	}
 }
 
-void WComboBox::onKeyBUpEx(unsigned int iVirtualKeycode, unsigned short ch) {
+void WComboBox::onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch) {
 	if((getSize() <= 0))
 		return;
 

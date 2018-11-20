@@ -14,7 +14,6 @@ WWidgetManager*		WWidgetManager::m_pInstance = NULL;
 YAGUICallback			WWidgetManager::m_lpfnWWndProc = NULL;
 std::vector<WIDGET*>	WWidgetManager::m_pWidgets;
 RectF						WWidgetManager::m_ClipRect = RectF(0, 0, 0, 0);
-RectF						WWidgetManager::m_reclaimRect = RectF(0, 0, 0, 0);
 int							WWidgetManager::m_SpriteCount;
 int							WWidgetManager::m_FrameCount;
 int							WWidgetManager::m_iRenderColor;
@@ -60,8 +59,6 @@ WWidgetManager::WWidgetManager() {
 	WComponentFactory::Get()->Register("WCanvas", &WCanvas::Create);
 	WComponentFactory::Get()->Register("WInspectorTab", &WInspectorTab::Create);
 	WComponentFactory::Get()->Register("WInspector", &WInspector::Create);
-	WComponentFactory::Get()->Register("WGraph", &WGraph::Create);
-	WComponentFactory::Get()->Register("WSprite", &WSprite::Create);
 
 	if(!loadMainWindowDefaults())
 		MessageBox(NULL, "Error", "Error loading WWidgetManager!!!", MB_OK);
@@ -296,20 +293,6 @@ void WWidgetManager::setClip(int x, int y, int w, int h ) {
 	WWidgetManager::m_ClipRect.Height = h;
 }
 
-void WWidgetManager::SET_CLIP(int x, int y , int width, int height) {
-	WWidgetManager::GetClipBounds(&m_reclaimRect);
-
-	RectF clipRect(x, y, width, height);
-	RectF::Intersect(clipRect, m_reclaimRect, clipRect);
-
-	WWidgetManager::setClip(clipRect.X, clipRect.Y, clipRect.Width, clipRect.Height);
-}
-
-void WWidgetManager::RESET_CLIP() {
-	WWidgetManager::setClip(m_reclaimRect.X, m_reclaimRect.Y, m_reclaimRect.Width, m_reclaimRect.Height);
-}
-
-
 bool WWidgetManager::readMap(char* filePathAndName) {
 	/////////////////// LOADING GAME FONTS
 	RandomAccessFile* rafIn = new RandomAccessFile();
@@ -402,8 +385,8 @@ bool WWidgetManager::readMap(char* filePathAndName) {
 							char vAlign[255];
 							sscanf(	singleLine.c_str(), "align %s %s\n", &hAlign, &vAlign);
 
-							child->align.eHAlign = getWidgetHAlign(hAlign);
-							child->align.eVAlign = getWidgetVAlign(vAlign);
+							child->align.iHAlign = getWidgetAlignInt(hAlign);
+							child->align.iVAlign = getWidgetAlignInt(vAlign);
 						}
 					break;
 					case STATE_READ_CLIENTAREA:
@@ -434,8 +417,8 @@ bool WWidgetManager::readMap(char* filePathAndName) {
 							char vAlign[255];
 							sscanf(	singleLine.c_str(), "align %s %s\n", &hAlign, &vAlign);
 
-							clientArea->align.eHAlign = getWidgetHAlign(hAlign);
-							clientArea->align.eVAlign = getWidgetVAlign(vAlign);
+							clientArea->align.iHAlign = getWidgetAlignInt(hAlign);
+							clientArea->align.iVAlign = getWidgetAlignInt(vAlign);
 						}
 					break;
 					case STATE_READ_SIMPLE_TEXT:
@@ -462,8 +445,8 @@ bool WWidgetManager::readMap(char* filePathAndName) {
 							char vAlign[255];
 							sscanf(	singleLine.c_str(), "align %s %s\n", &hAlign, &vAlign);
 
-							simpleText->align.eHAlign = getWidgetHAlign(hAlign);
-							simpleText->align.eVAlign = getWidgetVAlign(vAlign);
+							simpleText->align.iHAlign = getTextAlignInt(hAlign);
+							simpleText->align.iVAlign = getTextAlignInt(vAlign);
 						}
 					break;
 					case STATE_READ_BASESKIN:
@@ -490,8 +473,8 @@ bool WWidgetManager::readMap(char* filePathAndName) {
 							char vAlign[255];
 							sscanf(	singleLine.c_str(), "align %s %s\n", &hAlign, &vAlign);
 
-							baseSkin->align.eHAlign = getWidgetHAlign(hAlign);
-							baseSkin->align.eVAlign = getWidgetVAlign(vAlign);
+							baseSkin->align.iHAlign = getWidgetAlignInt(hAlign);
+							baseSkin->align.iVAlign = getWidgetAlignInt(vAlign);
 						}
 						else
 						if(CCString::startsWith(singleLine.c_str(), "name")) {
@@ -526,37 +509,35 @@ bool WWidgetManager::readMap(char* filePathAndName) {
 	return true;
 }
 
-H_ALIGN WWidgetManager::getWidgetHAlign(char* sAlign) {
+int WWidgetManager::getWidgetAlignInt(char* sAlign) {
 	if(strcmp(sAlign, "Left") == 0)
-		return H_LEFT;
+		return LEFT;
 	else
-	if(strcmp(sAlign, "HCenter") == 0)
-		return H_CENTER;
+	if(strcmp(sAlign, "Top") == 0)
+		return TOP;
 	else
 	if(strcmp(sAlign, "Right") == 0)
-		return H_RIGHT;
-	else
-	if(strcmp(sAlign, "HStretch") == 0)
-		return H_STRETCH;
-
-	return H_LEFT;
-}
-
-V_ALIGN WWidgetManager::getWidgetVAlign(char* sAlign) {
-
-	if(strcmp(sAlign, "Top") == 0)
-		return V_TOP;
-	else
-	if(strcmp(sAlign, "VCenter") == 0)
-		return V_CENTER;
+		return RIGHT;
 	else
 	if(strcmp(sAlign, "Bottom") == 0)
-		return V_BOTTOM;
+		return BOTTOM;
+	else
+	if(strcmp(sAlign, "HStretch") == 0)
+		return HSTRETCH;
 	else
 	if(strcmp(sAlign, "VStretch") == 0)
-		return V_STRETCH;
+		return VSTRETCH;
+	else
+	if(strcmp(sAlign, "VCenter") == 0)
+		return VCENTER;
+	else
+	if(strcmp(sAlign, "RELATIVE_X") == 0)
+		return RELATIVE_X;
+	else
+	if(strcmp(sAlign, "RELATIVE_Y") == 0)
+		return RELATIVE_Y;
 
-	return V_TOP;
+	return LEFT;
 }
 
 int WWidgetManager::getTextAlignInt(char* sAlign) {
@@ -587,8 +568,7 @@ void WWidgetManager::renderSkin(WIDGET* widget, BASESKIN* skinPtr, RectF* wndRec
 
 	float parentW = widget->widgetSize.width;
 	float parentH = widget->widgetSize.height;
-	H_ALIGN hAlign = H_LEFT;
-	V_ALIGN vAlign = V_TOP;
+	int hAlign = 0, vAlign = 0;
 
 	skinRect.X = skinPtr->skinOffsets.x;
 	skinRect.Y = skinPtr->skinOffsets.y;
@@ -600,8 +580,8 @@ void WWidgetManager::renderSkin(WIDGET* widget, BASESKIN* skinPtr, RectF* wndRec
 	idealRect.Width = skinPtr->posOffsets.w;
 	idealRect.Height = skinPtr->posOffsets.h;
 
-	hAlign = skinPtr->align.eHAlign;
-	vAlign = skinPtr->align.eVAlign;
+	hAlign = skinPtr->align.iHAlign;
+	vAlign = skinPtr->align.iVAlign;
 
 	RectF destRect;
 	getDestinationRect(	destRect,
@@ -621,16 +601,15 @@ void WWidgetManager::renderChild(WIDGET* widget, CHILD* childPtr, RectF* wndRect
 
 	float parentW = widget->widgetSize.width;
 	float parentH = widget->widgetSize.height;
-	H_ALIGN hAlign = H_LEFT;
-	V_ALIGN vAlign = V_TOP;
+	int hAlign = 0, vAlign = 0;
 
 	idealRect.X = childPtr->posOffsets.x;
 	idealRect.Y = childPtr->posOffsets.y;
 	idealRect.Width = childPtr->posOffsets.w;
 	idealRect.Height = childPtr->posOffsets.h;
 
-	hAlign = childPtr->align.eHAlign;
-	vAlign = childPtr->align.eVAlign;
+	hAlign = childPtr->align.iHAlign;
+	vAlign = childPtr->align.iVAlign;
 
 	RectF destRect;
 	getDestinationRect(	destRect,
@@ -650,16 +629,15 @@ void WWidgetManager::renderChild(WIDGET* widget, CHILD* childPtr, RectF* wndRect
 
 	float parentW = widget->widgetSize.width;
 	float parentH = widget->widgetSize.height;
-	H_ALIGN hAlign = H_LEFT;
-	V_ALIGN vAlign = V_TOP;
+	int hAlign = 0, vAlign = 0;
 
 	idealRect.X = childPtr->posOffsets.x;
 	idealRect.Y = childPtr->posOffsets.y;
 	idealRect.Width = childPtr->posOffsets.w;
 	idealRect.Height = childPtr->posOffsets.h;
 
-	hAlign = childPtr->align.eHAlign;
-	vAlign = childPtr->align.eVAlign;
+	hAlign = childPtr->align.iHAlign;
+	vAlign = childPtr->align.iVAlign;
 
 	RectF destRect;
 	getDestinationRect(	destRect,
@@ -685,8 +663,7 @@ void WWidgetManager::renderClientArea(WIDGET* widget, int i, RectF* wndRect) {
 	RectF idealRect;
 	RectF destRect;
 
-	H_ALIGN hAlign = H_LEFT;
-	V_ALIGN vAlign = V_TOP;
+	int hAlign = 0, vAlign = 0;
 
 	if(widget->clientAreas.size() > 0 && i < widget->clientAreas.size()) {
 
@@ -695,8 +672,8 @@ void WWidgetManager::renderClientArea(WIDGET* widget, int i, RectF* wndRect) {
 			idealRect.Width = widget->clientAreas[i]->posOffsets.w;
 			idealRect.Height = widget->clientAreas[i]->posOffsets.h;
 
-			hAlign = widget->clientAreas[i]->align.eHAlign;
-			vAlign = widget->clientAreas[i]->align.eVAlign;
+			hAlign = widget->clientAreas[i]->align.iHAlign;
+			vAlign = widget->clientAreas[i]->align.iVAlign;
 
 			getDestinationRect(	destRect,
 								parentW,
@@ -722,7 +699,7 @@ void WWidgetManager::renderWidget(const char* sWidgetName, RectF* wndRect) {
 	}
 }
 
-void WWidgetManager::getDestinationRect(RectF& destRect, float parentW, float parentH, RectF* wndRect, RectF* idealRect, H_ALIGN hAlign, V_ALIGN vAlign) {
+void WWidgetManager::getDestinationRect(RectF& destRect, float parentW, float parentH, RectF* wndRect, RectF* idealRect, int hAlign, int vAlign) {
 	
 	destRect.X = wndRect->X + idealRect->X;
 	destRect.Y = wndRect->Y + idealRect->Y;
@@ -730,55 +707,39 @@ void WWidgetManager::getDestinationRect(RectF& destRect, float parentW, float pa
 	destRect.Height = wndRect->Height;
 
 	switch(hAlign) {
-		case H_LEFT:
-		{
+		case LEFT:
 			destRect.Width = idealRect->Width;
-		}
-		break;
-		case H_CENTER:
-		{
-			destRect.X = (wndRect->X + wndRect->Width) - ((parentW - idealRect->X)/2);
-			destRect.Width = idealRect->Width;
-		}
-		break;
-		case H_RIGHT:
-		{
+			break;
+		case RIGHT:
 			destRect.X = wndRect->X + wndRect->Width - (parentW - idealRect->X);
 			destRect.Width = idealRect->Width;
-		}
-		break;
-		case H_STRETCH:
-		{
-			int wW = wndRect->Width - (parentW - (idealRect->X + idealRect->Width));
-			destRect.Width = wW - idealRect->X;
-		}
-		break;
+			break;
+		case HSTRETCH:
+			{
+				int wW = wndRect->Width - (parentW - (idealRect->X + idealRect->Width));
+				destRect.Width = wW - idealRect->X;
+			}
+			break;
 	}
 
 	switch(vAlign) {
-		case V_TOP:
-		{
+		case TOP:
 			destRect.Height = idealRect->Height;
-		}
-		break;
-		case V_CENTER:
-		{
-			destRect.Y = (wndRect->Y + wndRect->Height) - ((parentH - idealRect->Y)/2);
-			destRect.Height = idealRect->Height;
-		}
-		break;
-		case V_BOTTOM:
-		{
+			break;
+		case BOTTOM:
 			destRect.Y = wndRect->Y + wndRect->Height - (parentH - idealRect->Y);
 			destRect.Height = idealRect->Height;
-		}
-		break;
-		case V_STRETCH:
-		{
-			float hH = wndRect->Height - (parentH - (idealRect->Y + idealRect->Height));
-			destRect.Height = hH - idealRect->Y;
-		}
-		break;
+			break;
+		case VSTRETCH:
+			{
+				float hH = wndRect->Height - (parentH - (idealRect->Y + idealRect->Height));
+				destRect.Height = hH - idealRect->Y;
+			}
+			break;
+		case VCENTER:
+			destRect.Y = (wndRect->Y + wndRect->Height) - ((parentH - idealRect->Y)/2);
+			destRect.Height = idealRect->Height;
+			break;
 	}
 }
 
