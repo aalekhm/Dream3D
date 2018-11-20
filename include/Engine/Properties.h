@@ -42,6 +42,7 @@ class Properties {
 
 		Properties*											getNextNamespace();
 		Properties*											getNamespace(const char* id, bool bSearchNames = false);
+		const char*											getNamespaceName();
 		const char*											getNamespaceType();
 		const char*											getID();
 		const char*											getString(const char* name) const;

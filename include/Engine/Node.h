@@ -61,6 +61,11 @@ class Node : public Transform {
 		Vector3			getActiveCameraTranslationWorld() const;
 		Vector3			getActiveCameraTranslationView() const;
 
+		Vector3			getForwardVectorWorld() const;
+		Vector3			getForwardVectorView() const;
+		Vector3			getRightVectorWorld() const;
+		Vector3			getUpVectorWorld() const;
+
 		void			render(bool bWireframe);
 	protected:
 		Scene*			m_pScene;

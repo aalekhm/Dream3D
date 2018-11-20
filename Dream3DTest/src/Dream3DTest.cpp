@@ -42,15 +42,35 @@ O -'        .'''       .'                                     "8b d8"   Veilleux
 #include "Engine/MD5Model.h"
 #include "Engine/MD5Animation.h"
 #include "Engine/Material.h"
+#include "Engine/Technique.h"
 #include "Engine/MaterialParameter.h"
 
 #ifdef USE_YAGUI
 #include "Engine/UI/WComponentFactory.h"
 #endif
 
-#define CARTOON_TGA		"data/cartoon.tga"
-#define COLOURFUL_TGA	"data/ColorFul_2048x1300.tga"
+#define CARTOON_TGA			"data/cartoon.tga"
+#define COLOURFUL_TGA		"data/ColorFul_2048x1300.tga"
 #define CORE_UI				"data/core.tga"
+
+#define POINT_LIGHT_COUNT	1
+#define SPOT_LIGHT_COUNT	1
+
+struct PointLight 
+{
+	Node*		m_pNode;
+	Vector3		m_vPosition;
+	Vector3		m_vColour;
+};
+
+struct SpotLight
+{
+	Node*		m_pNode;
+	Vector3		m_vPosition;
+	Vector3		m_vColour;
+	float		m_fInnerAngleCos;
+	float		m_fOuterAngleCos;
+};
 
 // Declare our game instance
 Dream3DTest game;
@@ -66,10 +86,13 @@ Node* magniQuadModelNode;
 Node* medivhQuadModelNode;
 Node* testShaderQuadModelNode;
 
+PointLight	g_PointLight[POINT_LIGHT_COUNT];
+SpotLight	g_SpotLight[SPOT_LIGHT_COUNT];
+
 Node* createTriangleModelNode();
 Node* triangleModelNode;
 
-Node* createTriangleStripModelNode();
+Node* createTriangleStripModelNode(const char* pMaterial);
 Node* triangleStripModelNode;
 
 Node* createLineStripModelNode();
@@ -90,6 +113,8 @@ Node* objModelNode;
 Node* createGrid(unsigned int iSize, float fStep = 1.0f);
 Node* g_pGridNode;
 
+Node* objMonkeyNode;
+
 std::vector<MD5Model*>	v_pMD5Models;
 
 SpriteBatch* createSpriteBatch();
@@ -100,6 +125,73 @@ Texture*  gTexture1;
 
 FrameBuffer*	gFrameBuffer;
 SpriteBatch*		gFBOSpriteBatch;
+
+/////////////////////////////////////////////////////////////////////////////////////
+Logger::Logger()
+: m_pLogFile(NULL)
+{
+}
+
+Logger* Logger::create(const char* pLogFileName) {
+
+	GP_ASSERT( pLogFileName || strlen(pLogFileName) > 0 );
+
+	Logger* pLogger = new Logger();
+	pLogger->m_pLogFile = new RandomAccessFile();
+	bool bCanWrite = pLogger->m_pLogFile->openForWrite(pLogFileName);
+	if (bCanWrite) {
+		return pLogger;
+	}
+
+	return NULL;
+}
+
+void Logger::log(unsigned int iIntVal) const {
+
+	m_pLogFile->writeInt(iIntVal);
+}
+
+void Logger::log(float fFloatVal) const {
+
+	char* pStr = new char[8];
+	memset(pStr, 0, sizeof(char) * 8);
+	sprintf(pStr, "%8f\n", fFloatVal);
+
+	m_pLogFile->writeBytes(pStr);
+
+	SAFE_DELETE( pStr );
+}
+
+void Logger::log(const Vector2& vVector2Val) const {
+
+	char* pStr = new char[32];
+	memset(pStr, 0, sizeof(char)* 32);
+	sprintf(pStr, "%f, %f\n", vVector2Val.x, vVector2Val.y);
+
+	m_pLogFile->writeBytes(pStr);
+
+	SAFE_DELETE(pStr);
+}
+
+void Logger::log(const Vector3& vVector3Val) const {
+
+	char* pStr = new char[32];
+	memset(pStr, 0, sizeof(char)* 32);
+	sprintf(pStr, "%f, %f, %f\n", vVector3Val.x, vVector3Val.y, vVector3Val.z);
+
+	m_pLogFile->writeBytes(pStr);
+
+	SAFE_DELETE(pStr);
+}
+
+Logger::~Logger() {
+
+	if (m_pLogFile) {
+		m_pLogFile->close();
+		m_pLogFile = NULL;
+	}
+}
+/////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef USE_YAGUI
 Node* gCanvasCameraNode;
@@ -486,12 +578,16 @@ unsigned short* _indices = NULL;
 unsigned int _indicesCount = 0;
 /////////////////////////////////////////
 
-Dream3DTest::Dream3DTest() {
+Dream3DTest::Dream3DTest() 
+: m_pScene(NULL)
+, m_pLogger(NULL)
+{
 
 }
 
 Dream3DTest::~Dream3DTest() {
 	//SAFE_DELETE( m_pScene );
+	SAFE_DELETE( m_pLogger );
 }
 
 void Dream3DTest::initialize() {
@@ -501,36 +597,59 @@ void Dream3DTest::initialize() {
 	Camera* pCamera = Camera::createPerspective(0, 0, getWidth(), getHeight(), 45.0f, 0.01f, 100.0f);
 	Node* pCameraNode = Node::create("FirstPersonShooterCamera");
 	pCameraNode->setCamera(pCamera);
-	pCameraNode->setPosition(Vector3(0.0f, 1.0f, -1.0f));
+	pCameraNode->setPosition(Vector3(0.0f, 0.5f, 1.0f));
 	m_pScene->addNode(pCameraNode);
+
+	m_pLogger = Logger::create("log.txt");
+	GP_ASSERT( m_pLogger );
 	//////////////////////////////////////////////
 
 	//////////////////////////////////////////////
 #ifndef USE_YAGUI
 	glEnable(GL_DEPTH_TEST);
 #endif
-	magniQuadModelNode =	createHearthStoneCoolShaderModelNode("data/box.material#magni");
+	magniQuadModelNode = createHearthStoneCoolShaderModelNode("data/box.material#magni");
 	{
-		magniQuadModelNode->setPosition(Vector3(0.0f, 0.0f, 3.0f));
-		m_pScene->addNode(magniQuadModelNode);
+		magniQuadModelNode->setPosition(Vector3(0.0f, 0.0f, -3.0f));
+		//m_pScene->addNode(magniQuadModelNode);
 	}
 
 	medivhQuadModelNode = createHearthStoneCoolShaderModelNode("data/box.material#medivh");
 	{
-		medivhQuadModelNode->setPosition(Vector3(0.5f, 0.0f, 3.0f));
-		m_pScene->addNode(medivhQuadModelNode);
+		medivhQuadModelNode->setPosition(Vector3(0.5f, 0.0f, -3.0f));
+		//m_pScene->addNode(medivhQuadModelNode);
 	}
 
 	testShaderQuadModelNode = createHearthStoneCoolShaderModelNode("data/box.material#testShader");
 	{
-		testShaderQuadModelNode->setPosition(Vector3(-0.5f, 0.0f, 3.0f));
-		m_pScene->addNode(testShaderQuadModelNode);
+		testShaderQuadModelNode->setPosition(Vector3(-0.5f, 0.0f, -3.0f));
+		//m_pScene->addNode(testShaderQuadModelNode);
 	}
 
 	g_pGridNode = createGrid(10, 0.25);
 	{
 		g_pGridNode->setPosition(Vector3(0.0f, 0.0f, 0.0f));
 		m_pScene->addNode(g_pGridNode);
+	}
+	
+	// Init Point Light
+	{
+		g_PointLight[0].m_pNode = createCubeModelIndexedNode(0.1f);
+		g_PointLight[0].m_pNode->setPosition(Vector3(0.0, 0.0, 0.0));
+		g_PointLight[0].m_vColour = Vector3(0.7, 0.0, 0.0);
+
+		m_pScene->addNode(g_PointLight[0].m_pNode);
+	}
+
+	// Init Spot Light
+	{
+		g_SpotLight[0].m_pNode = createCubeModelIndexedNode(0.1f);
+		g_SpotLight[0].m_pNode->setPosition(Vector3(0.0, 0.0, 0.0));
+		g_SpotLight[0].m_vColour = Vector3(0.7, 0.0, 0.0);
+		g_SpotLight[0].m_fInnerAngleCos = cos(MATH_DEG_TO_RAD(5.0f));
+		g_SpotLight[0].m_fInnerAngleCos = cos(MATH_DEG_TO_RAD(10.0f));
+
+		m_pScene->addNode(g_SpotLight[0].m_pNode);
 	}
 
 	/*
@@ -540,7 +659,7 @@ void Dream3DTest::initialize() {
 		m_pScene->addNode(triangleModelNode);
 	}
 	
-	triangleStripModelNode = createTriangleStripModelNode();
+	triangleStripModelNode = createTriangleStripModelNode("data/box.material#box");
 	{
 		triangleStripModelNode->setPosition(Vector3(-5.0f, 0.0f, 0.0f));
 		m_pScene->addNode(triangleStripModelNode);
@@ -620,6 +739,10 @@ void Dream3DTest::initialize() {
 	}
 
 	//initLights();
+	loadSceneUsingAssimp("data/OBJModels/lamp.obj",		Vector3(0.0f,	0.0f,	-30.0f),	0.09f);
+	loadSceneUsingAssimp("data/OBJModels/lamp.obj",		Vector3(0.0f,	0.0f,	30.0f),		0.09f);
+	loadSceneUsingAssimp("data/OBJModels/lamp.obj",		Vector3(30.0f,	0.0f,	0.0f),		0.09f);
+	loadSceneUsingAssimp("data/OBJModels/lamp.obj",		Vector3(-30.0f, 0.0f,	0.0f),		0.09f);
 
 #ifdef TEST_MD5_MODELS
 	initMD5Models(m_pScene);
@@ -636,6 +759,249 @@ void Dream3DTest::initialize() {
 	gFrameBuffer = FrameBuffer::create("TEMP FBO_200x200", 512, 512);
 	gFBOSpriteBatch = SpriteBatch::create(gFrameBuffer->getRenderTarget(0)->getTexture());
 	GP_ASSERT( gFBOSpriteBatch );
+}
+
+struct AssimpVertexData {
+
+	Vector3		m_vPosition;
+	Vector3		m_vNormal;
+	Vector3		m_vTangent;
+	Vector3		m_vColour;
+
+	float		m_fU, m_fV;
+};
+
+struct AssimpTextureData {
+	
+	unsigned int	m_iID;
+	unsigned int	m_iType;
+};
+
+void Dream3DTest::processScene(aiMesh* pAIMesh, const aiScene* pAIScene, Vector3& vPosition, float fScale) {
+
+	std::vector<AssimpVertexData>		vVertexData;
+	std::vector<unsigned int>	vIndices;
+	std::vector<AssimpTextureData>	vTextures;
+
+	for (unsigned i = 0; i < pAIMesh->mNumVertices; i++) {
+
+		AssimpVertexData	tmpVertexData;
+		Vector3		tmpVector3D;
+
+		// Position
+		tmpVector3D.x = pAIMesh->mVertices[i].x;
+		tmpVector3D.y = pAIMesh->mVertices[i].y;
+		tmpVector3D.z = pAIMesh->mVertices[i].z;
+		tmpVertexData.m_vPosition = tmpVector3D;
+
+		// Normals
+		tmpVector3D.x = pAIMesh->mNormals[i].x;
+		tmpVector3D.y = pAIMesh->mNormals[i].y;
+		tmpVector3D.z = pAIMesh->mNormals[i].z;
+		tmpVertexData.m_vNormal = tmpVector3D;
+
+		// Tangents
+		if (pAIMesh->mTangents) {
+
+			tmpVector3D.x = pAIMesh->mTangents[i].x;
+			tmpVector3D.y = pAIMesh->mTangents[i].y;
+			tmpVector3D.z = pAIMesh->mTangents[i].z;
+		}
+		else {
+			tmpVector3D.x = 1.0;
+			tmpVector3D.y = tmpVector3D.z = 0.0;
+		}
+		tmpVertexData.m_vTangent = tmpVector3D;
+
+		// Colours
+		if (pAIMesh->mColors[0]) {
+
+			tmpVector3D.x = pAIMesh->mColors[0][i].r;
+			tmpVector3D.y = pAIMesh->mColors[0][i].g;
+			tmpVector3D.z = pAIMesh->mColors[0][i].b;
+		}
+		else {
+			tmpVector3D.x = 1.0;
+			tmpVector3D.y = tmpVector3D.z = 0.0f;
+		}
+		tmpVertexData.m_vColour = tmpVector3D;
+
+		// Textures
+		if (pAIMesh->mTextureCoords[0]) {
+
+			tmpVector3D.x = pAIMesh->mTextureCoords[0][i].x;
+			tmpVector3D.y = pAIMesh->mTextureCoords[0][i].y;
+		}
+		else {
+			tmpVector3D.x = tmpVector3D.y = tmpVector3D.z = 0.0f;
+		}
+		tmpVertexData.m_fU = tmpVector3D.x;
+		tmpVertexData.m_fV = tmpVector3D.y;
+
+		vVertexData.push_back(tmpVertexData);
+	}
+
+	for (int i = 0; i < pAIMesh->mNumFaces; i++) {
+
+		aiFace pAIFace = pAIMesh->mFaces[i];
+		for (int j = 0; j < pAIFace.mNumIndices; j++) { // 0..2, since we triangulated !!!
+
+			vIndices.push_back(pAIFace.mIndices[j]);
+		}
+	}
+
+	////////////////////////////////////////////////////////////
+	unsigned int vertexCount = pAIMesh->mNumVertices;
+	unsigned int indexCount = vIndices.size();
+	VertexFormat::Element vertexElements[] =
+	{
+		VertexFormat::Element(VertexFormat::POSITION,	VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::NORMAL,		VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::TANGENT,	VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::COLOR,		VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::TEXCOORD0,	VertexFormat::TWO)
+	};
+	unsigned int vertexElementCount = sizeof(vertexElements) / sizeof(VertexFormat::Element);
+
+	Mesh* mesh = Mesh::createMesh(VertexFormat(vertexElements, vertexElementCount), vertexCount, false);
+	if (mesh == NULL) {
+		//GP_ERROR("Unable to create Mesh");
+		return;
+	}
+	mesh->setPrimitiveType(Mesh::TRIANGLES);
+	mesh->setVertexData((float*)vVertexData.data(), 0, vertexCount);
+
+	MeshPart* meshPart = NULL;
+	meshPart = mesh->addMeshPart(Mesh::TRIANGLES, Mesh::INDEX32, indexCount, false);
+	if (meshPart != NULL)
+		meshPart->setIndexData(vIndices.data(), 0, indexCount);
+
+	Node* pNode = Node::create("Assimo_TestObj");
+	{
+		Model* pModel = Model::create(mesh);
+		pNode->setModel(pModel);
+		pModel->setMaterial("data/box.material#box", 0);
+
+		Material* pMaterial = pModel->getMaterial(0);
+		Technique* pTechnique = pMaterial->getTechnique("boxTechnique");
+
+		char sBuf[8];
+
+		// Point Light
+		for (int i = 0; i < POINT_LIGHT_COUNT; i++)
+		{
+			itoa(i, sBuf, 10);
+			CCString cStr;
+
+			cStr = "u_pointLightPosition[";	cStr += sBuf; cStr += "]";
+			MaterialParameter* pPointLightPosition_MaterialParameter = pTechnique->getParameter(cStr.c_str());
+			pPointLightPosition_MaterialParameter->bindValue(g_PointLight[i].m_pNode, &Node::getTranslationWorld);
+
+			cStr = "u_pointLightColour["; cStr += sBuf; cStr += "]";
+			MaterialParameter* pPointLightColour_MaterialParameter = pTechnique->getParameter(cStr.c_str());
+			pPointLightColour_MaterialParameter->setValue(g_PointLight[i].m_vColour);
+		}
+
+		// Spot Light
+		for (int i = 0; i < POINT_LIGHT_COUNT; i++)
+		{
+			itoa(i, sBuf, 10);
+			CCString cStr;
+			
+			cStr = "u_spotLightPosition["; cStr += sBuf; cStr += "]";
+			MaterialParameter* pSpotLightPosition_MaterialParameter = pTechnique->getParameter(cStr.c_str());
+			pSpotLightPosition_MaterialParameter->bindValue(g_SpotLight[i].m_pNode, &Node::getTranslationWorld);
+
+			cStr = "u_spotLightDirection["; cStr += sBuf; cStr += "]";
+			MaterialParameter* pSpotLightDirection_MaterialParameter = pTechnique->getParameter(cStr.c_str());
+			pSpotLightDirection_MaterialParameter->bindValue(g_SpotLight[i].m_pNode, &Node::getForwardVectorView);
+
+			cStr = "u_spotLightColour["; cStr += sBuf; cStr += "]";
+			MaterialParameter* pSpotLightColour_MaterialParameter = pTechnique->getParameter(cStr.c_str());
+			pSpotLightColour_MaterialParameter->setValue(g_SpotLight[i].m_vColour);
+
+			cStr = "u_spotLightInnerAngleCos["; cStr += sBuf; cStr += "]";
+			MaterialParameter* pSpotLightInnerAngleCos_MaterialParameter = pTechnique->getParameter(cStr.c_str());
+			pSpotLightInnerAngleCos_MaterialParameter->setValue(g_SpotLight[i].m_fInnerAngleCos);
+
+			cStr = "u_spotLightOuterAngleCos["; cStr += sBuf; cStr += "]";
+			MaterialParameter* pSpotLightOuterAngleCos_MaterialParameter = pTechnique->getParameter(cStr.c_str());
+			pSpotLightOuterAngleCos_MaterialParameter->setValue(g_SpotLight[i].m_fOuterAngleCos);
+		}
+
+		pNode->scale(fScale);
+		pNode->setPosition(vPosition);
+		m_pScene->addNode(pNode);
+
+		objMonkeyNode = pNode;
+	}
+}
+
+void Dream3DTest::recurseScene(aiNode* pAINode, const aiScene* pAIScene, Vector3& vPosition, float fScale) {
+
+	// Process
+	for (unsigned int i = 0; i < pAINode->mNumMeshes; i++) {
+
+		aiMesh* pMesh = pAIScene->mMeshes[pAINode->mMeshes[i]];
+		processScene(pMesh, pAIScene, vPosition, fScale);
+	}
+
+	// Recursion
+	for (unsigned int i = 0; i < pAINode->mNumChildren; i++) {
+
+		recurseScene(pAINode->mChildren[i], pAIScene, vPosition, fScale);
+	}
+}
+
+void Dream3DTest::loadSceneUsingAssimp(const char* pFilename, Vector3& vPosition, float fScale)
+{
+	Assimp::Importer pAssimpImporter;
+
+	/*
+	// default pp steps
+	unsigned int ppsteps =	aiProcess_CalcTangentSpace			| // calculate tangents and bitangents if possible
+							aiProcess_JoinIdenticalVertices		| // join identical vertices/ optimize indexing
+							aiProcess_ValidateDataStructure		| // perform a full validation of the loader's output
+							aiProcess_ImproveCacheLocality		| // improve the cache locality of the output vertices
+							aiProcess_RemoveRedundantMaterials	| // remove redundant materials
+							aiProcess_FindDegenerates			| // remove degenerated polygons from the import
+							aiProcess_FindInvalidData			| // detect invalid model data, such as invalid normal vectors
+							aiProcess_GenUVCoords				| // convert spherical, cylindrical, box and planar mapping to proper UVs
+							aiProcess_TransformUVCoords			| // preprocess UV transformations (scaling, translation ...)
+							aiProcess_FindInstances				| // search for instanced meshes and remove them by references to one master
+							aiProcess_LimitBoneWeights			| // limit bone weights to 4 per vertex
+							aiProcess_OptimizeMeshes			| // join small meshes, if possible;
+							aiProcess_SplitByBoneCount			| // split meshes with too many bones. Necessary for our (limited) hardware skinning shader
+							0;
+
+	aiPropertyStore* props = aiCreatePropertyStore();
+	aiSetImportPropertyFloat(props, AI_CONFIG_PP_GSN_MAX_SMOOTHING_ANGLE, 110.f);
+	/*
+	const aiScene* pAIScene = (aiScene*)aiImportFileExWithProperties(	pFilename,
+																		////ppsteps |				 // default pp steps
+																		aiProcess_GenSmoothNormals | // generate smooth normal vectors if not existing
+																		aiProcess_SplitLargeMeshes | // split large, unrenderable meshes into submeshes
+																		aiProcess_Triangulate | // triangulate polygons with more than 3 edges
+																		//aiProcess_ConvertToLeftHanded    | // convert everything to D3D left handed space
+																		aiProcess_SortByPType | // make 'clean' meshes which consist of a single typ of primitives
+																		0,
+																		//aiProcessPreset_TargetRealtime_MaxQuality,
+																		NULL,
+																		props);
+	//*/
+	const aiScene* pAIScene = pAssimpImporter.ReadFile(	pFilename,
+														aiProcess_GenSmoothNormals |
+														aiProcess_Triangulate |
+														aiProcess_CalcTangentSpace |
+														aiProcess_FlipUVs
+													);
+
+	bool bLoadSucess = (((pAIScene->mFlags | AI_SCENE_FLAGS_INCOMPLETE) == 0) || pAIScene->mRootNode != NULL);
+	GP_ASSERT(bLoadSucess);
+	if (bLoadSucess)
+	{
+		recurseScene(pAIScene->mRootNode, pAIScene, vPosition, fScale);
+	}
 }
 
 #ifdef TEST_MD5_MODELS
@@ -906,7 +1272,7 @@ Node* createTriangleModelNode()
 	return pNode;
 }
 
-Node* createTriangleStripModelNode() {
+Node* createTriangleStripModelNode(const char* pMaterial) {
 	// Calculate the vertices of the equilateral triangle.
 	Vector3 p1(0.0f,	0.5f,	-1.0f);
 	Vector3 p2(0.0f,	0.0f,	-1.0f);
@@ -1123,56 +1489,61 @@ Node* createCubeModelIndexedNode(float size = 1.0f) {
 	float vertices[] =
 	{
 		//MeshPart 0
-		-a1, -a1,  a1,   /* 0.0,  0.0,  1.0,*/   1.0, 0.0, 0.0,	0.0, 0.0,
-		 a1, -a1,  a1,   /* 0.0,  0.0,  1.0,*/   0.0, 1.0, 0.0,	1.0, 0.0,
-		-a1,  a1,  a1,   /* 0.0,  0.0,  1.0,*/   0.0, 0.0, 1.0,	0.0, 1.0,
-		 a1,  a1,  a1,   /* 0.0,  0.0,  1.0,*/   1.0, 1.0, 0.0,	1.0, 1.0,
-		-a1,  a1,  a1,   /* 0.0,  1.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 0.0,	
-		 a1,  a1,  a1,   /* 0.0,  1.0,  0.0,*/   1.0, 0.0, 1.0,	1.0, 0.0,
-		-a1,  a1, -a1,   /* 0.0,  1.0,  0.0,*/   0.0, 1.0, 0.0,	0.0, 1.0,
-		 a1,  a1, -a1,   /* 0.0,  1.0,  0.0,*/   1.0, 0.0, 0.0,	1.0, 1.0,
-		-a1,  a1, -a1,   /* 0.0,  0.0, -1.0,*/   0.0, 0.0, 1.0,	0.0, 0.0,
-		 a1,  a1, -a1,   /* 0.0,  0.0, -1.0,*/   0.0, 1.0, 1.0,	1.0, 0.0,
-		-a1, -a1, -a1,   /* 0.0,  0.0, -1.0,*/   1.0, 1.0, 0.0,	0.0, 1.0,
-		 a1, -a1, -a1,   /* 0.0,  0.0, -1.0,*/   0.0, 1.0, 1.0,	1.0, 1.0,
-		-a1, -a1, -a1,   /* 0.0, -1.0,  0.0,*/   1.0, 0.0, 1.0,	0.0, 0.0,
-		 a1, -a1, -a1,   /* 0.0, -1.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 0.0,
-		-a1, -a1,  a1,   /* 0.0, -1.0,  0.0,*/   0.0, 1.0, 0.0,	0.0, 1.0,
-		 a1, -a1,  a1,   /* 0.0, -1.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 1.0,
-		 a1, -a1,  a1,   /* 1.0,  0.0,  0.0,*/   1.0, 0.0, 1.0,	0.0, 0.0,
-		 a1, -a1, -a1,   /* 1.0,  0.0,  0.0,*/   1.0, 0.0, 1.0,	1.0, 0.0,
-		 a1,  a1,  a1,   /* 1.0,  0.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 1.0,
-		 a1,  a1, -a1,   /* 1.0,  0.0,  0.0,*/   1.0, 1.0, 1.0,	1.0, 1.0,
-		-a1, -a1, -a1,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	0.0, 0.0,
-		-a1, -a1,  a1,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 0.0,
-		-a1,  a1, -a1,   /*-1.0,  0.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 1.0,
-		-a1,  a1,  a1,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 1.0,
+		-a1, -a1,  a1,    0.0,  0.0,  1.0,   1.0, 0.0, 0.0,	0.0, 0.0,
+		 a1, -a1,  a1,    0.0,  0.0,  1.0,   0.0, 1.0, 0.0,	1.0, 0.0,
+		-a1,  a1,  a1,    0.0,  0.0,  1.0,   0.0, 0.0, 1.0,	0.0, 1.0,
+		 a1,  a1,  a1,    0.0,  0.0,  1.0,   1.0, 1.0, 0.0,	1.0, 1.0,
 
-		//MeshPart 1
-		-a2, -a2,  a2,   /* 0.0,  0.0,  1.0,*/   1.0, 0.0, 0.0,	0.0, 0.0,
-		a2, -a2,  a2,   /* 0.0,  0.0,  1.0,*/   0.0, 1.0, 0.0,	1.0, 0.0,
-		-a2,  a2,  a2,   /* 0.0,  0.0,  1.0,*/   0.0, 0.0, 1.0,	0.0, 1.0,
-		a2,  a2,  a2,   /* 0.0,  0.0,  1.0,*/   1.0, 1.0, 0.0,	1.0, 1.0,
-		-a2,  a2,  a2,   /* 0.0,  1.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 0.0,
-		a2,  a2,  a2,   /* 0.0,  1.0,  0.0,*/   1.0, 0.0, 1.0,	1.0, 0.0,
-		-a2,  a2, -a2,   /* 0.0,  1.0,  0.0,*/   0.0, 1.0, 0.0,	0.0, 1.0,
-		a2,  a2, -a2,   /* 0.0,  1.0,  0.0,*/   1.0, 0.0, 0.0,	1.0, 1.0,
-		-a2,  a2, -a2,   /* 0.0,  0.0, -1.0,*/   0.0, 0.0, 1.0,	0.0, 0.0,
-		a2,  a2, -a2,   /* 0.0,  0.0, -1.0,*/   0.0, 1.0, 1.0,	1.0, 0.0,
-		-a2, -a2, -a2,   /* 0.0,  0.0, -1.0,*/   1.0, 1.0, 0.0,	0.0, 1.0,
-		a2, -a2, -a2,   /* 0.0,  0.0, -1.0,*/   0.0, 1.0, 1.0,	1.0, 1.0,
-		-a2, -a2, -a2,   /* 0.0, -1.0,  0.0,*/   1.0, 0.0, 1.0,	0.0, 0.0,
-		a2, -a2, -a2,   /* 0.0, -1.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 0.0,
-		-a2, -a2,  a2,   /* 0.0, -1.0,  0.0,*/   0.0, 1.0, 0.0,	0.0, 1.0,
-		a2, -a2,  a2,   /* 0.0, -1.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 1.0,
-		a2, -a2,  a2,   /* 1.0,  0.0,  0.0,*/   1.0, 0.0, 1.0,	0.0, 0.0,
-		a2, -a2, -a2,   /* 1.0,  0.0,  0.0,*/   1.0, 0.0, 1.0,	1.0, 0.0,
-		a2,  a2,  a2,   /* 1.0,  0.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 1.0,
-		a2,  a2, -a2,   /* 1.0,  0.0,  0.0,*/   1.0, 1.0, 1.0,	1.0, 1.0,
-		-a2, -a2, -a2,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	0.0, 0.0,
-		-a2, -a2,  a2,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 0.0,
-		-a2,  a2, -a2,   /*-1.0,  0.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 1.0,
-		-a2,  a2,  a2,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 1.0 
+		-a1,  a1,  a1,    0.0,  1.0,  0.0,   0.0, 1.0, 1.0,	0.0, 0.0,
+		 a1,  a1,  a1,    0.0,  1.0,  0.0,   1.0, 0.0, 1.0,	1.0, 0.0,
+		-a1,  a1, -a1,    0.0,  1.0,  0.0,   0.0, 1.0, 0.0,	0.0, 1.0,
+		 a1,  a1, -a1,    0.0,  1.0,  0.0,   1.0, 0.0, 0.0,	1.0, 1.0,
+
+		-a1,  a1, -a1,    0.0,  0.0, -1.0,   0.0, 0.0, 1.0,	0.0, 0.0,
+		 a1,  a1, -a1,    0.0,  0.0, -1.0,   0.0, 1.0, 1.0,	1.0, 0.0,
+		-a1, -a1, -a1,    0.0,  0.0, -1.0,   1.0, 1.0, 0.0,	0.0, 1.0,
+		 a1, -a1, -a1,    0.0,  0.0, -1.0,   0.0, 1.0, 1.0,	1.0, 1.0,
+
+		-a1, -a1, -a1,    0.0, -1.0,  0.0,   1.0, 0.0, 1.0,	0.0, 0.0,
+		 a1, -a1, -a1,    0.0, -1.0,  0.0,   1.0, 1.0, 0.0,	1.0, 0.0,
+		-a1, -a1,  a1,    0.0, -1.0,  0.0,   0.0, 1.0, 0.0,	0.0, 1.0,
+		 a1, -a1,  a1,    0.0, -1.0,  0.0,   1.0, 1.0, 0.0,	1.0, 1.0,
+
+		 a1, -a1,  a1,    1.0,  0.0,  0.0,   1.0, 0.0, 1.0,	0.0, 0.0,
+		 a1, -a1, -a1,    1.0,  0.0,  0.0,   1.0, 0.0, 1.0,	1.0, 0.0,
+		 a1,  a1,  a1,    1.0,  0.0,  0.0,   0.0, 1.0, 1.0,	0.0, 1.0,
+		 a1,  a1, -a1,    1.0,  0.0,  0.0,   1.0, 1.0, 1.0,	1.0, 1.0,
+
+		-a1, -a1, -a1,   -1.0,  0.0,  0.0,   1.0, 1.0, 0.0,	0.0, 0.0,
+		-a1, -a1,  a1,   -1.0,  0.0,  0.0,   1.0, 1.0, 0.0,	1.0, 0.0,
+		-a1,  a1, -a1,   -1.0,  0.0,  0.0,   0.0, 1.0, 1.0,	0.0, 1.0,
+		-a1,  a1,  a1,   -1.0,  0.0,  0.0,   1.0, 1.0, 0.0,	1.0, 1.0,
+											 							
+		//MeshPart 1						 							
+		-a2, -a2,  a2,		0.0,  0.0,  1.0,   1.0, 0.0, 0.0,	0.0, 0.0,
+		a2, -a2,  a2,		0.0,  0.0,  1.0,   0.0, 1.0, 0.0,	1.0, 0.0,
+		-a2,  a2,  a2,		0.0,  0.0,  1.0,   0.0, 0.0, 1.0,	0.0, 1.0,
+		a2,  a2,  a2,		0.0,  0.0,  1.0,   1.0, 1.0, 0.0,	1.0, 1.0,
+		-a2,  a2,  a2,		0.0,  1.0,  0.0,   0.0, 1.0, 1.0,	0.0, 0.0,
+		a2,  a2,  a2,		0.0,  1.0,  0.0,   1.0, 0.0, 1.0,	1.0, 0.0,
+		-a2,  a2, -a2,		0.0,  1.0,  0.0,   0.0, 1.0, 0.0,	0.0, 1.0,
+		a2,  a2, -a2,		0.0,  1.0,  0.0,   1.0, 0.0, 0.0,	1.0, 1.0,
+		-a2,  a2, -a2,		0.0,  0.0, -1.0,   0.0, 0.0, 1.0,	0.0, 0.0,
+		a2,  a2, -a2,		0.0,  0.0, -1.0,   0.0, 1.0, 1.0,	1.0, 0.0,
+		-a2, -a2, -a2,		0.0,  0.0, -1.0,   1.0, 1.0, 0.0,	0.0, 1.0,
+		a2, -a2, -a2,		0.0,  0.0, -1.0,   0.0, 1.0, 1.0,	1.0, 1.0,
+		-a2, -a2, -a2,		0.0, -1.0,  0.0,   1.0, 0.0, 1.0,	0.0, 0.0,
+		a2, -a2, -a2,		0.0, -1.0,  0.0,   1.0, 1.0, 0.0,	1.0, 0.0,
+		-a2, -a2,  a2,		0.0, -1.0,  0.0,   0.0, 1.0, 0.0,	0.0, 1.0,
+		a2, -a2,  a2,		0.0, -1.0,  0.0,   1.0, 1.0, 0.0,	1.0, 1.0,
+		a2, -a2,  a2,		1.0,  0.0,  0.0,   1.0, 0.0, 1.0,	0.0, 0.0,
+		a2, -a2, -a2,		1.0,  0.0,  0.0,   1.0, 0.0, 1.0,	1.0, 0.0,
+		a2,  a2,  a2,		1.0,  0.0,  0.0,   0.0, 1.0, 1.0,	0.0, 1.0,
+		a2,  a2, -a2,		1.0,  0.0,  0.0,   1.0, 1.0, 1.0,	1.0, 1.0,
+		-a2, -a2, -a2,		-1.0,  0.0,  0.0,   1.0, 1.0, 0.0,	0.0, 0.0,
+		-a2, -a2,  a2,		-1.0,  0.0,  0.0,   1.0, 1.0, 0.0,	1.0, 0.0,
+		-a2,  a2, -a2,		-1.0,  0.0,  0.0,   0.0, 1.0, 1.0,	0.0, 1.0,
+		-a2,  a2,  a2,		-1.0,  0.0,  0.0,   1.0, 1.0, 0.0,	1.0, 1.0 
 	};
 	
 	short indicesPart0[] = 
@@ -1192,7 +1563,7 @@ Node* createCubeModelIndexedNode(float size = 1.0f) {
 	VertexFormat::Element vertexElements[] = 
 	{
 		VertexFormat::Element(VertexFormat::POSITION, VertexFormat::THREE),
-		//VertexFormat::Element(VertexFormat::NORMAL, VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::NORMAL, VertexFormat::THREE),
 		VertexFormat::Element(VertexFormat::COLOR, VertexFormat::THREE),
 		VertexFormat::Element(VertexFormat::TEXCOORD0, VertexFormat::TWO)
 	};
@@ -1206,21 +1577,21 @@ Node* createCubeModelIndexedNode(float size = 1.0f) {
 	mesh->setPrimitiveType(Mesh::TRIANGLES);
 	mesh->setVertexData(vertices, 0, vertexCount);
 
-	MeshPart* meshPart = NULL;
+	MeshPart* meshPart = NULL; 
 	meshPart = mesh->addMeshPart(Mesh::TRIANGLES, Mesh::INDEX16, indexCount, false);
 	if( meshPart != NULL)
 		meshPart->setIndexData(indicesPart0, 0, indexCount);
 
-	meshPart = mesh->addMeshPart(Mesh::TRIANGLES, Mesh::INDEX16, indexCount, false);
-	if( meshPart != NULL)
-		meshPart->setIndexData(indicesPart1, 0, indexCount);
+	//meshPart = mesh->addMeshPart(Mesh::TRIANGLES, Mesh::INDEX16, indexCount, false);
+	//if( meshPart != NULL)
+	//	meshPart->setIndexData(indicesPart1, 0, indexCount);
 
 	Node* pNode = Node::create("CubeIndexedModel");
 	{
 		Model* pModel = Model::create(mesh);
 		pNode->setModel(pModel);
 		pModel->setMaterial("data/box.material#box", 0);
-		pModel->setMaterial("data/box.material#box1", 1);
+		//pModel->setMaterial("data/box.material#box1", 1);
 	}
 
 	return pNode;
@@ -1332,12 +1703,37 @@ SpriteBatch* createSpriteBatch() {
 }
 
 static float rAngle = 0.0f;
-const float ROTATION_PER_SECOND = 0.25*0.36f;//360deg/sec = 360/1000;
+const float ROTATION_PER_SECOND = 2;//360deg/sec = 360/1000;;
+bool bIncreasing = true;
+
+void moveLight()
+{
+	Node* pNode = g_PointLight[0].m_pNode;
+	if (pNode != NULL)
+	{
+		Vector3 vPos = pNode->getPosition();
+		{
+			int iSign = 1;
+			if (bIncreasing)
+			{
+				iSign = 1;
+				bIncreasing = !(vPos.x > 3.0);
+			}
+			else {
+				iSign = -1;
+				bIncreasing = (vPos.x < -3.0);
+			}
+
+			g_PointLight[0].m_pNode->translateLeft(iSign * 0.01f);
+		}
+	}
+}
 
 void Dream3DTest::render3D(float deltaTimeMs) {
 	////////////////////////////////////////////////////////////////
-	//cubeModelNode->translateForward(0.0001f * deltaTimeMs);
-	//quadModelNode->rotateY(0.001f * rAngle++);
+	moveLight();
+	////////////////////////////////////////////////////////////////
+
 
 	Model* pModel = NULL;
 	{
@@ -1396,9 +1792,6 @@ void Dream3DTest::render2D(float deltaTimeMs) {
 		pSpriteBatch->draw(Vector3(300, 64, 0), src, Vector2(100, 100), Vector4(1, 1, 1, 1), Vector2(0.5f, 0.5f), MATH_DEG_TO_RAD(rAngle));
 		pSpriteBatch->draw(Vector3(400, 64, 0), src, Vector2(128, 128), Vector4(1, 1, 1, 1), Vector2(0.5f, 0.5f), MATH_DEG_TO_RAD(135));
 	pSpriteBatch->stop();
-
-	rAngle += deltaTimeMs*ROTATION_PER_SECOND;
-	if(rAngle >= 360.0f) rAngle = 0.0f;
 }
 
 void Dream3DTest::update(float deltaTimeMs) {
@@ -1415,6 +1808,10 @@ void Dream3DTest::update(float deltaTimeMs) {
 		pMD5Model->update( deltaTimeMs );
 	}
 #endif
+
+	
+	m_pLogger->log(m_pScene->getActiveCamera()->getNode()->getPosition());
+
 }
 
 
@@ -1431,6 +1828,9 @@ void Dream3DTest::render(float deltaTimeMs) {
 	//gFrameBuffer->bindDefault();
 
 	//render2D(deltaTimeMs);
+
+	//rAngle += deltaTimeMs*ROTATION_PER_SECOND;
+	if (rAngle >= 360.0f) rAngle = 0.0f;
 }
 
 void Dream3DTest::keyPressedEx(unsigned int iVirtualKeycode, unsigned short ch) {

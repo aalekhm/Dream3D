@@ -6,8 +6,12 @@ precision mediump float;
 #endif
 #endif
 
-#include "blackAndWhiteFilter.h"
-#include "edgeDetectionIWithSobelFilter.h"
+#include "../Filters/blackAndWhiteFilter.h"
+#include "../Filters/edgeDetectionIWithSobelFilter.h"
+#include "../Filters/gaussianBlurFilter.h"
+#include "../Filters/swirlFilter.h"
+#include "../Filters/heatMapFilter.h"
+#include "../Filters/frostedGlassFilter.h"
 
 ///////////////////////////////////////////////////////////
 // Uniforms
@@ -79,9 +83,13 @@ void renderMagniMy()
 	
 	magniImg += fBlinkEffect * (plasma * redMask * greenMask) * greenPlasmaTint;
 	
-	magniImg = findEgde(u_sampler0, v_texCoord);
+	//gl_FragColor = findEgde(u_sampler0, v_texCoord);
 	//gl_FragColor = getBlackAndWhite(magniImg);
-	gl_FragColor = magniImg;
+	//gl_FragColor = applyGaussianBlur(u_sampler0, v_texCoord);
+	//gl_FragColor = swirl(u_sampler0, v_texCoord, 200, 8.0, true);
+	
+	//gl_FragColor = getHeatMap(u_sampler0, v_texCoord);
+	gl_FragColor = getFrostedPixel(u_sampler0, v_texCoord);
 } 
 
 void main()

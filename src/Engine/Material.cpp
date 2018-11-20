@@ -59,11 +59,21 @@ Material* Material::create(const char* url) {
 
 	Material* pMaterial = NULL;
 	Properties* pMaterialNamespace = NULL;
-	pMaterialNamespace = pProperties->getNamespace(sNamespace.c_str());
-	if( pMaterialNamespace != NULL) {
-		
-		pMaterial = create( pMaterialNamespace );
+
+	if (strcmp(sNamespace.c_str(), "") != 0)
+	{
+		pMaterialNamespace = pProperties->getNamespace(sNamespace.c_str());
+		if (pMaterialNamespace != NULL) {
+
+			pMaterial = create(pMaterialNamespace);
+		}
 	}
+	else // If no material namespace is specified in the url (i.e "res/sample.material"), then load the first material we encounter. 
+	{ 
+		pMaterial = create(pProperties->getNextNamespace());
+	}
+
+	GP_ASSERT( pMaterial );
 
 	SAFE_DELETE( pProperties );
 	SAFE_DELETE( pMatReader );

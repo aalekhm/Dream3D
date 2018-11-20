@@ -54,7 +54,14 @@ struct Matrix4
 		Matrix4&				setTranslate(const Vector3& v);
 		Matrix4&				setTranslate(float x, float y, float z);
 		Matrix4&				translate(const Vector3& v);
+
 		void					getTranslation(Vector3* translation) const;
+		void					getUpVector(Vector3* dst) const;
+		void					getDownVector(Vector3* dst) const;
+		void					getLeftVector(Vector3* dst) const;
+		void					getRightVector(Vector3* dst) const;
+		void					getForwardVector(Vector3* dst) const;
+		void					getBackVector(Vector3* dst) const;
 		
 		Matrix4&				rotate(float angle, const Vector3& axis);			// rotate angle(degree) along the given axix
 		Matrix4&				rotate(float angle, float x, float y, float z);
@@ -77,6 +84,7 @@ struct Matrix4
 		bool					invert(Matrix4* dst) const;
 		
 		void					transformPoint(Vector3* point) const;
+		void					transformVector(Vector3* vector) const;
 		void					transformVector(float x, float y, float z, float w, Vector3* dst) const;
 		void					transformVector(const Vector4& vector, Vector4* dst) const;
 		void					transformVector(float x, float y, float z, float w, Vector4* dst) const;

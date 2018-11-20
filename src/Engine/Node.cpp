@@ -257,15 +257,22 @@ const Matrix4& Node::getInverseTransposeWorldViewMatrix() const {
 Vector3 Node::getTranslationWorld() const {
 
 	Vector3 translation;
-	getWorldMatrix().getTranslation(&translation);
+
+	if (m_pCamera)
+		translation = m_pCamera->getNode()->getPosition();
+	else
+		getWorldMatrix().getTranslation(&translation);
+
 	return translation;
 }
 
 Vector3 Node::getTranslationView() const {
 
 	Vector3 translation;
+	
 	getWorldMatrix().getTranslation(&translation);
 	getViewMatrix().transformPoint(&translation);
+	
 	return translation;
 }
 
@@ -304,6 +311,40 @@ Vector3 Node::getActiveCameraTranslationView() const {
 		}
 	}
 	return Vector3::zero();
+}
+
+Vector3 Node::getForwardVectorWorld() const {
+	
+	Vector3 vector;
+	getWorldMatrix().getForwardVector(&vector);
+
+	return vector;
+}
+
+Vector3 Node::getForwardVectorView() const {
+
+	Vector3 vector;
+
+	getWorldMatrix().getForwardVector(&vector);
+	getViewMatrix().transformVector(&vector);
+
+	return vector;
+}
+
+Vector3 Node::getRightVectorWorld() const {
+
+	Vector3 vector;
+	getWorldMatrix().getRightVector(&vector);
+
+	return vector;
+}
+
+Vector3 Node::getUpVectorWorld() const {
+
+	Vector3 vector;
+	getWorldMatrix().getUpVector(&vector);
+
+	return vector;
 }
 
 Scene* Node::getScene() const {

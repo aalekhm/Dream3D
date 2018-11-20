@@ -145,6 +145,11 @@ Properties* Properties::getNextNamespace() {
 	return NULL;
 }
 
+const char*	Properties::getNamespaceName() {
+
+	return m_sNamespace.c_str();
+}
+
 Properties* Properties::getNamespace(const char* id, bool bSearchNames /*= false*/) {
 	
 	if(id == NULL)

@@ -1,4 +1,5 @@
 #include "Common/Matrices.h"
+#include "Engine/Base.h"
 
 ///////////////////////////////////////////////////////////////////////////
 // functions for Matrix4
@@ -437,6 +438,61 @@ void Matrix4::getTranslation(Vector3* translation) const
 	translation->y = m[7];
 	translation->z = m[11];
 }
+
+void Matrix4::getUpVector(Vector3* dst) const
+{
+	GP_ASSERT( dst );
+
+	dst->x = m[4];
+	dst->y = m[5];
+	dst->z = m[6];
+}
+
+void Matrix4::getDownVector(Vector3* dst) const
+{
+	GP_ASSERT(dst);
+
+	dst->x = -m[4];
+	dst->y = -m[5];
+	dst->z = -m[6];
+}
+
+void Matrix4::getLeftVector(Vector3* dst) const
+{
+	GP_ASSERT(dst);
+
+	dst->x = -m[0];
+	dst->y = -m[1];
+	dst->z = -m[2];
+}
+
+void Matrix4::getRightVector(Vector3* dst) const
+{
+	GP_ASSERT(dst);
+
+	dst->x = m[0];
+	dst->y = m[1];
+	dst->z = m[2];
+}
+
+void Matrix4::getForwardVector(Vector3* dst) const
+{
+	GP_ASSERT(dst);
+
+	dst->x = -m[8];
+	dst->y = -m[9];
+	dst->z = -m[10];
+}
+
+void Matrix4::getBackVector(Vector3* dst) const
+{
+	GP_ASSERT(dst);
+
+	dst->x = m[8];
+	dst->y = m[9];
+	dst->z = m[10];
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // uniform scale
 ///////////////////////////////////////////////////////////////////////////////
@@ -707,6 +763,12 @@ void Matrix4::transformPoint(Vector3* point) const {
 void Matrix4::transformVector(const Vector4& vector, Vector4* dst) const {
 
 	transformVector(vector.x, vector.y, vector.z, 0.0f, dst);
+}
+
+void Matrix4::transformVector(Vector3* vector) const {
+
+	GP_ASSERT(vector);
+	transformVector(vector->x, vector->y, vector->z, 0.0f, vector);
 }
 
 void Matrix4::transformVector(float x, float y, float z, float w, Vector4* dst) const {
