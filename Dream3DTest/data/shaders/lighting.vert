@@ -30,6 +30,10 @@
 	uniform vec3 	u_spotLightPosition[SPOT_LIGHT_COUNT];
 #endif
 
+#if !defined(BUMPED) && (DIRECTIONAL_LIGHT_COUNT > 0)
+	uniform vec3	u_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
+#endif
+
 	///////////////////////////////////////////////////////////
 	// VARYINGS
 	///////////////////////////////////////////////////////////
@@ -48,6 +52,10 @@
 #endif
 #if defined(BUMPED)
 	varying mat3 	mat3_tbnMatrix;
+#endif
+
+#if defined(BUMPED) && (DIRECTIONAL_LIGHT_COUNT > 0)
+	varying vec3	v_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
 #endif
 	///////////////////////////////////////////////////////////
 	
@@ -71,21 +79,7 @@ void applyLight()
 	mat3 inverseTransposeWorldMatrix = mat3(u_inverseTransposeWorldMatrix[0].xyz, u_inverseTransposeWorldMatrix[1].xyz, u_inverseTransposeWorldMatrix[2].xyz);
 	v_normal = normalize(getNormal() * inverseTransposeWorldMatrix);
 	////////////////////////////////////
-	
-	///////////// BUMPED /////////////
-	#if defined(BUMPED)
-		vec3 v_tangent = normalize(getTangent() * inverseTransposeWorldMatrix);
 		
-		// Improving the visual quality by re-orthoganalising it
-		// by Gram-Schmitd process
-		v_tangent = normalize(v_tangent - dot(v_tangent, v_normal) * v_normal);
-		
-		vec3 v_bitangent = cross(v_tangent, v_normal);
-		
-		mat3_tbnMatrix = mat3(v_tangent, v_bitangent, v_normal);
-	#endif
-	//////////////////////////////////
-	
 	///////////// POINT LIGHT DIRECTIONS & COLOUR /////////////
 	#if (POINT_LIGHT_COUNT > 0)
 		for(int i = 0; i < POINT_LIGHT_COUNT; i++)
@@ -104,10 +98,32 @@ void applyLight()
 	#endif
 	//////////////////////////////////////////////////////////
 	
+	///////////// DIRECTIONAL LIGHT DIRECTIONS ///////////////
+	#if (DIRECTIONAL_LIGHT_COUNT > 0) && defined(BUMPED)
+		for(int i = 0; i < DIRECTIONAL_LIGHT_COUNT; i++)
+		{
+			v_directionalLightDirection[i] = mat3_tbnMatrix * u_directionalLightDirection[i];
+		}
+	#endif
+	//////////////////////////////////////////////////////////
+	
+	///////////// BUMPED /////////////
+	#if defined(BUMPED)
+		vec3 v_tangent = normalize(getTangent() * inverseTransposeWorldMatrix);
+		
+		// Improving the visual quality by re-orthoganalising it
+		// by Gram-Schmitd process
+		v_tangent = normalize(v_tangent - dot(v_tangent, v_normal) * v_normal);
+		
+		vec3 v_bitangent = cross(v_tangent, v_normal);
+		
+		mat3_tbnMatrix = mat3(v_tangent, v_bitangent, v_normal);
+	#endif
+	//////////////////////////////////
+
 	///////////// CAMERA DIRECTION /////////////
 	#if defined(SPECULAR)
 	{
-		vec3 vPosition = vec4(getVertexPosition() * u_worldMatrix).xyz;
 		v_cameraDirection = (u_cameraPosition - vPosition);
 	}
 	#endif

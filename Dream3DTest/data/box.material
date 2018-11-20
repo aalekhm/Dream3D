@@ -787,14 +787,14 @@ namespace boxMaterial
 				// shaders
 				vertexShader = "data/shaders/textured.vert"
 				fragmentShader = "data/shaders/textured.frag"
-				defines = "SPECULAR; POINT_LIGHT_COUNT 1"
+				defines = "SPECULAR; POINT_LIGHT_COUNT 1; SPOT_LIGHT_COUNT 1; DIRECTIONAL_LIGHT_COUNT 1"
 				
 				// uniforms
 				u_worldMatrix = WORLD_MATRIX
 				u_worldViewProjectionMatrix = WORLD_VIEW_PROJECTION_MATRIX
 				u_inverseTransposeWorldMatrix = INVERSE_TRANSPOSE_WORLD_MATRIX
 				u_cameraPosition = CAMERA_WORLD_POSITION
-								
+				
 				u_ambientColor = "0.2, 0.2, 0.2"
 				u_specularExponent = 4
 				

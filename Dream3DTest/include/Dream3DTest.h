@@ -13,8 +13,9 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
-#define POINT_LIGHT_COUNT	1
-#define SPOT_LIGHT_COUNT	1
+#define POINT_LIGHT_COUNT			1
+#define SPOT_LIGHT_COUNT			1
+#define DIRECTIONAL_LIGHT_COUNT		1
 
 
 class Logger {
@@ -62,6 +63,8 @@ class Dream3DTest : EngineManager
 
 		Logger*					m_pLogger;
 		Light*					m_pPointLight[POINT_LIGHT_COUNT];
+		Light*					m_pSpotLight[SPOT_LIGHT_COUNT];
+		Light*					m_pDirectionalLight[DIRECTIONAL_LIGHT_COUNT];
 
 	private:
 		void					moveLight();

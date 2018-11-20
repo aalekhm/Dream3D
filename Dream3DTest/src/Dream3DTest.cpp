@@ -78,8 +78,6 @@ Node* magniQuadModelNode;
 Node* medivhQuadModelNode;
 Node* testShaderQuadModelNode;
 
-SpotLight	g_SpotLight[SPOT_LIGHT_COUNT];
-
 Node* createTriangleModelNode();
 Node* triangleModelNode;
 
@@ -638,13 +636,31 @@ void Dream3DTest::initialize() {
 
 	// Init Spot Light
 	{
-		g_SpotLight[0].m_pNode = createCubeModelIndexedNode(0.1f);
-		g_SpotLight[0].m_pNode->setPosition(Vector3(0.0, 0.0, 0.0));
-		g_SpotLight[0].m_vColour = Vector3(0.7, 0.0, 0.0);
-		g_SpotLight[0].m_fInnerAngleCos = cos(MATH_DEG_TO_RAD(5.0f));
-		g_SpotLight[0].m_fInnerAngleCos = cos(MATH_DEG_TO_RAD(10.0f));
+		for (int i = 0; i < SPOT_LIGHT_COUNT; i++)
+		{
+			m_pSpotLight[i] = Light::createSpotLight(Vector3(0.7f, 0.0f, 0.0f), 2.0f, MATH_DEG_TO_RAD(5.0f), MATH_DEG_TO_RAD(10.0f));
 
-		m_pScene->addNode(g_SpotLight[0].m_pNode);
+			Node* pLightNode = createCubeModelIndexedNode(0.03f);
+			m_pSpotLight[i]->setNode(pLightNode);
+			m_pScene->addNode(pLightNode);
+		}
+
+		m_pSpotLight[0]->getNode()->setPosition(Vector3(0.0, 0.0, 3.0));
+	}
+
+	// Init Directional Light
+	{
+		for (int i = 0; i < DIRECTIONAL_LIGHT_COUNT; i++)
+		{
+			m_pDirectionalLight[i] = Light::createDirectionalLight(Vector3(0.0f, 0.0f, 0.4f));
+
+			Node* pLightNode = createCubeModelIndexedNode(0.03f);
+			m_pDirectionalLight[i]->setNode(pLightNode);
+			m_pScene->addNode(pLightNode);
+		}
+
+		m_pDirectionalLight[0]->getNode()->rotateX(-45.0);
+		m_pDirectionalLight[0]->getNode()->setPosition(Vector3(0.0, 0.0, 4.0));
 	}
 
 	/*
@@ -920,23 +936,44 @@ void Dream3DTest::processScene(aiMesh* pAIMesh, const aiScene* pAIScene, Vector3
 			
 			cStr = "u_spotLightPosition["; cStr += sBuf; cStr += "]";
 			MaterialParameter* pSpotLightPosition_MaterialParameter = pTechnique->getParameter(cStr.c_str());
-			pSpotLightPosition_MaterialParameter->bindValue(g_SpotLight[i].m_pNode, &Node::getTranslationWorld);
+			pSpotLightPosition_MaterialParameter->bindValue(m_pSpotLight[i]->getNode(), &Node::getTranslationWorld);
 
 			cStr = "u_spotLightDirection["; cStr += sBuf; cStr += "]";
 			MaterialParameter* pSpotLightDirection_MaterialParameter = pTechnique->getParameter(cStr.c_str());
-			pSpotLightDirection_MaterialParameter->bindValue(g_SpotLight[i].m_pNode, &Node::getForwardVectorView);
+			pSpotLightDirection_MaterialParameter->bindValue(m_pSpotLight[i]->getNode(), &Node::getForwardVectorWorld);
 
 			cStr = "u_spotLightColour["; cStr += sBuf; cStr += "]";
 			MaterialParameter* pSpotLightColour_MaterialParameter = pTechnique->getParameter(cStr.c_str());
-			pSpotLightColour_MaterialParameter->setValue(g_SpotLight[i].m_vColour);
+			pSpotLightColour_MaterialParameter->setValue(m_pSpotLight[i]->getLightColour());
+
+			cStr = "u_spotLightRangeInverse["; cStr += sBuf; cStr += "]";
+			MaterialParameter* pSpotLightRangeInverse_MaterialParameter = pTechnique->getParameter(cStr.c_str());
+			pSpotLightRangeInverse_MaterialParameter->setValue(m_pSpotLight[i]->getRangeInverse());
 
 			cStr = "u_spotLightInnerAngleCos["; cStr += sBuf; cStr += "]";
 			MaterialParameter* pSpotLightInnerAngleCos_MaterialParameter = pTechnique->getParameter(cStr.c_str());
-			pSpotLightInnerAngleCos_MaterialParameter->setValue(g_SpotLight[i].m_fInnerAngleCos);
+			pSpotLightInnerAngleCos_MaterialParameter->setValue(m_pSpotLight[i]->getInnerAngleCosine());
 
 			cStr = "u_spotLightOuterAngleCos["; cStr += sBuf; cStr += "]";
 			MaterialParameter* pSpotLightOuterAngleCos_MaterialParameter = pTechnique->getParameter(cStr.c_str());
-			pSpotLightOuterAngleCos_MaterialParameter->setValue(g_SpotLight[i].m_fOuterAngleCos);
+			pSpotLightOuterAngleCos_MaterialParameter->setValue(m_pSpotLight[i]->getOuterAngleCosine());
+		}
+
+		// Directional Light
+		{
+			for (int i = 0; i < DIRECTIONAL_LIGHT_COUNT; i++)
+			{
+				itoa(i, sBuf, 10);
+				CCString cStr;
+
+				cStr = "u_directionalLightDirection["; cStr += sBuf; cStr += "]";
+				MaterialParameter* pdirectionalLightDirection_MaterialParameter = pTechnique->getParameter(cStr.c_str());
+				pdirectionalLightDirection_MaterialParameter->bindValue(m_pDirectionalLight[i]->getNode(), &Node::getForwardVectorWorld);
+
+				cStr = "u_directionalLightColour["; cStr += sBuf; cStr += "]";
+				MaterialParameter* pdirectionalLightColour_MaterialParameter = pTechnique->getParameter(cStr.c_str());
+				pdirectionalLightColour_MaterialParameter->setValue(m_pDirectionalLight[i]->getLightColour());
+			}
 		}
 
 		pNode->scale(fScale);

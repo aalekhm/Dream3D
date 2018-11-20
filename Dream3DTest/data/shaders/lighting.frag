@@ -15,9 +15,18 @@
 
 #if (SPOT_LIGHT_COUNT > 0)
 	uniform vec3 		u_spotLightDirection[SPOT_LIGHT_COUNT];
+	uniform float 		u_spotLightRangeInverse[SPOT_LIGHT_COUNT];
 	uniform vec3 		u_spotLightColour[SPOT_LIGHT_COUNT];
 	uniform float 		u_spotLightInnerAngleCos[SPOT_LIGHT_COUNT];
 	uniform float 		u_spotLightOuterAngleCos[SPOT_LIGHT_COUNT];
+#endif
+
+#if (DIRECTIONAL_LIGHT_COUNT > 0)
+	uniform vec3		u_directionalLightColour[DIRECTIONAL_LIGHT_COUNT];
+	
+#if !defined(BUMPED)
+	uniform vec3		u_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
+#endif
 #endif
 
 	///////////////////////////////////////////////////////////
@@ -35,6 +44,10 @@
 	varying vec3 		v_spotLightColour[SPOT_LIGHT_COUNT];
 #endif
 
+#if (DIRECTIONAL_LIGHT_COUNT > 0) && defined(BUMPED)
+	varying vec3		v_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
+#endif
+
 #if defined(SPECULAR)
 	varying vec3		v_cameraDirection;
 #endif
@@ -47,6 +60,12 @@ vec3 computeLighting(vec3 vNormal, vec3 vLightDirection, vec3 vlightColour, floa
 {
 	vec3 vComputedColour = vec3(0.0f, 0.0f, 0.0f);
 	
+	// Ambient component
+	{
+		vec3 vAmbientColor = _baseColor.rgb * u_ambientColor;
+		vComputedColour = vAmbientColor;
+	}
+
 	// Diffuse component
 	{
 		float fDiffuseContribution = max( dot(vNormal, vLightDirection), 0.0 );
@@ -74,6 +93,13 @@ vec3 computeLighting(vec3 vNormal, vec3 vLightDirection, vec3 vlightColour, floa
 		//vec3 vertexToEye = normalize(v_cameraDirection);
 		//vec3 fSpecularAngle = normalize(vNormal * fDiffuseContribution * 2.0 - vLightDirection);  
 		//vec3 vSpecularColor = vec3(pow(clamp(dot(fSpecularAngle, vertexToEye), 0.0, 1.0), u_specularExponent)); 
+	
+		// OR - cppgug
+		//vec3 surf2light = normalize(vLightDirection);
+		//vec3 surf2camera = normalize(v_cameraDirection);
+		//vec3 reflection = -reflect(surf2camera, vNormal);
+		//float specularContribution = pow(max(0.0,dot(reflection, surf2light)), 4.0);
+		//vec3 vSpecularColor = specularContribution;
 
 		//OR - internet	
 		vec3 incidenceVector = -vLightDirection; 					// a unit vector
@@ -82,13 +108,6 @@ vec3 computeLighting(vec3 vNormal, vec3 vLightDirection, vec3 vlightColour, floa
 		float cosAngle = max(0.0, dot(surfaceToCamera, reflectionVector));
 		float fSpecularContribution = pow(cosAngle, u_specularExponent);
 		vec3 vSpecularColor = fSpecularContribution;
-	
-		// OR - cppgug
-		//vec3 surf2light = normalize(vLightDirection);
-		//vec3 surf2camera = normalize(v_cameraDirection);
-		//vec3 reflection = -reflect(surf2camera, vNormal);
-		//float specularContribution = pow(max(0.0,dot(reflection, surf2light)), 4.0);
-		//vec3 vSpecularColor = specularContribution;
 
 		vComputedColour += vSpecularColor * fAttenuation;
 	}
@@ -107,13 +126,7 @@ vec3 getLitPixel()
 		vNormal = normalize(mat3_tbnMatrix * (255.0/128.0 * texture2D(u_normalmapTexture, v_texCoord.xy).xyz - 1));
 	#endif
 	////////////////////////////////////
-	
-	// Ambient component
-	{
-		vec3 vAmbientColor = _baseColor.rgb * u_ambientColor;
-		vFinalLitRGB = vAmbientColor;
-	}
-	
+		
 	// Point light contribution
 	#if (POINT_LIGHT_COUNT > 0)
 		for(int i = 0; i < POINT_LIGHT_COUNT; i++)
@@ -133,22 +146,39 @@ vec3 getLitPixel()
 	#if (SPOT_LIGHT_COUNT > 0)
 		for(int i = 0; i < SPOT_LIGHT_COUNT; i++)
 		{
+			// Compute range attenuation
 			vec3 vVertexToSpotLightDirection = normalize(v_vertexToSpotLightDirection[i]);
-			vec3 vSpotLightDirection = normalize(u_spotLightDirection[i] * 2.0);
-
-			// Apply distance 'Attenuation' component
-			float fDistance = length(vVertexToSpotLightDirection);
-			//float fAttenuation = 1.0 / (1.0 + 0.1*fDistance + .01*fDistance*fDistance);
-			float fAttenuation = clamp(1.0 - fDistance/3.0f, 0.0, 1.0f);
-			fAttenuation *= fAttenuation;
-
+			
+			vec3 ldir = v_vertexToSpotLightDirection[i] * u_spotLightRangeInverse[i];
+			float fAttenuation = clamp(1.0 - dot(ldir, ldir), 0.0, 1.0);
+						
+			#if defined(BUMPED)
+				vec3 vSpotLightDirection = normalize(v_spotLightDirection[i] * 2.0);
+			#else
+				vec3 vSpotLightDirection = normalize(u_spotLightDirection[i] * 2.0);
+			#endif
+	
 			// "-lightDirection" is used because light direction points in opposite direction to spot direction.
 			float spotCurrentAngleCos = dot(vSpotLightDirection, -vVertexToSpotLightDirection);
-
-			// Apply spot 'Attenuation'
+	
+			// Apply spot attenuation
 			fAttenuation *= smoothstep(u_spotLightOuterAngleCos[i], u_spotLightInnerAngleCos[i], spotCurrentAngleCos);
-
 			vFinalLitRGB += computeLighting(vNormal, vVertexToSpotLightDirection, u_spotLightColour[i], fAttenuation);
+		}
+	#endif
+	
+	// Directional light contribution
+	#if (DIRECTIONAL_LIGHT_COUNT > 0)
+		for(int i = 0; i < DIRECTIONAL_LIGHT_COUNT; i++)
+		{
+			vec3 vVertexToDirectionalLightDirection;
+			#if defined(BUMPED)
+				vVertexToDirectionalLightDirection = normalize(v_directionalLightDirection[i] * 2.0);
+			#else
+				vVertexToDirectionalLightDirection = normalize(u_directionalLightDirection[i] * 2.0);
+			#endif
+			
+			vFinalLitRGB += computeLighting(vNormal, -vVertexToDirectionalLightDirection, u_directionalLightColour[i], 1.0);
 		}
 	#endif
 
