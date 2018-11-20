@@ -1,4 +1,4 @@
-
+#ifdef USE_YAGUI
 #include "Engine/UI/WCanvas.h"
 #include "Engine/UI/WComponentFactory.h"
 #include "Engine/UI/WWidgetManager.h"
@@ -678,3 +678,4 @@ LRESULT WCanvas::OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 		break;
 	}
 }
+#endif

@@ -1,4 +1,4 @@
-
+#ifdef USE_YAGUI
 #ifndef WINSPECTORTAB_H
 #define WINSPECTORTAB_H
 
@@ -53,4 +53,5 @@ struct WInspectorTab : public WContainer {
 		const char* getTitle() { return m_title.c_str(); }
 };
 
+#endif
 #endif

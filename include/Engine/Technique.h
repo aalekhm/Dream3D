@@ -6,7 +6,7 @@
 
 class Material;
 
-class Technique : RenderState {
+class Technique : public RenderState {
 
 	friend class Material;
 	friend class Pass;

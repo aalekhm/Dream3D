@@ -1,4 +1,4 @@
-
+#ifdef USE_YAGUI
 #include "Engine/UI/WContainer.h"
 #include "Engine/UI/WWidgetManager.h"
 
@@ -465,3 +465,4 @@ int WContainer::getIndex(const WComponent* pComp) {
 
 	return iRet;
 }
+#endif

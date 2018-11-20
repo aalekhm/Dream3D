@@ -1,4 +1,4 @@
-
+#ifdef USE_YAGUI
 #ifndef WSLIDER_H
 #define WSLIDER_H
 
@@ -38,4 +38,5 @@ struct WSlider : public WContainer {
 		int				m_maxY;
 };
 
+#endif
 #endif

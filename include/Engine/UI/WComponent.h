@@ -1,4 +1,4 @@
-
+#ifdef USE_YAGUI
 #ifndef WCOMPONENT_H
 #define WCOMPONENT_H
 
@@ -152,4 +152,5 @@ struct WComponent {
 
 };
 
+#endif
 #endif

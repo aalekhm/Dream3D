@@ -88,6 +88,7 @@ class Texture {
 				void			setFilterMode(Filter minificationFilter, Filter magnificationFilter);
 				Texture*		getTexture() const;
 				void			bind();
+				void			unbind();
 			private:
 				Sampler(Texture* texture);
 

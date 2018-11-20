@@ -1,3 +1,4 @@
+#include "Engine/Base.h"
 #include "Engine/Properties.h"
 #include "Engine/MaterialReader.h"
 #include <string>
@@ -201,6 +202,44 @@ bool Properties::exists(const char* name) const {
 	return false;
 }
 
+static bool isStringNumeric(const char* str) {
+	
+	GP_ASSERT( str );
+
+	char ch = '\0';
+
+	// The first character may be '-'
+	if(*str == '-') {
+		str++;
+	}
+
+	// The first character after the sign must be a digit
+	if(!isdigit(*str)) {
+		return false;
+	}
+
+	str++;
+	
+	// All remaining characters must be digits, with a single decimal (.) permitted
+	unsigned int decimalPos = 0;
+	while(*str) {
+
+		if(!isdigit(*str)) {
+			if(*str == '.' && decimalPos == 0) {
+				// Max of 1 decimal allowed
+				decimalPos++;
+			}
+			else {
+				return false;
+			}
+		}
+
+		str++;
+	}
+
+	return true;
+}
+	
 void Properties::printProperties(Properties* properties) {
 
 	// Print the name and ID of the current namespace.

@@ -15,7 +15,7 @@ MeshObjLoader::MeshObjLoader()
 	m_vFaces.clear();
 }
 
-void MeshObjLoader::loadObject(const char* sFileName) {
+bool MeshObjLoader::loadObject(const char* sFileName) {
 	GP_ASSERT( sFileName );
 
 	m_pFile = new RandomAccessFile();
@@ -23,16 +23,18 @@ void MeshObjLoader::loadObject(const char* sFileName) {
 
 	if(bCanOpen) {
 		// Now that we have a valid file and it's open, let's read in the info!
-		readObjFile();
+		return readObjFile();
 
 		// Now that we have the file read in, let's compute the vertex normals for lighting
 		//computeNormals();
 	}
-	
+	else
+		return false;
+
 	SAFE_DELETE( m_pFile );
 }
 
-void MeshObjLoader::readObjFile() {
+bool MeshObjLoader::readObjFile() {
 	CCString singleLine;
 
 	while(!m_pFile->isEOF()) {
@@ -156,6 +158,8 @@ void MeshObjLoader::readObjFile() {
 
 	// Now that we are done reading in the file, we have need to save the last object read.
 	fillInObjectInfo();
+
+	return true;
 }
 
 void MeshObjLoader::fillInObjectInfo() {

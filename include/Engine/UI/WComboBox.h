@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #ifndef WCOMBOBOX_H
 #define WCOMBOBOX_H
 
@@ -77,4 +78,5 @@ struct WComboBox : public WContainer {
 		unsigned int	TB_HEIGHT;
 };
 
+#endif
 #endif

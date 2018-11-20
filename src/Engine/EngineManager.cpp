@@ -9,9 +9,11 @@ EngineManager::EngineManager()
 	:	m_pTimer(NULL),
 		m_pKeyboardManager(NULL),
 		m_pMouseManager(NULL),
+#ifdef USE_YAGUI
 		m_pWidgetManager(NULL),
-		m_pHWnd(NULL),
 		m_pYAGUICameraNode(NULL),
+#endif
+		m_pHWnd(NULL),		
 
 		m_iViewportW(0),
 		m_iViewportH(0),
@@ -39,14 +41,15 @@ void EngineManager::startup(HWND pHWnd) {
 
 	m_pKeyboardManager = new KeyboardManager();
 	m_pMouseManager = new MouseManager();
+#ifdef USE_YAGUI
 	m_pWidgetManager = WWidgetManager::getInstance();
-	m_pTimer = new Timer();
 
 	Camera* pCameraYAGUI = Camera::createPerspective(0, 0, getWidth(), getHeight(), 45.0f, -1.0f, 0.0f);
 	pCameraYAGUI->setType(Camera::ORTHOGRAPHIC);
 	m_pYAGUICameraNode = Node::create("YAGUI_2DCamera");
 	m_pYAGUICameraNode->setCamera(pCameraYAGUI);
-
+#endif
+	m_pTimer = new Timer();
 	initTimer();
 
 	m_iState = RUNNING;
@@ -90,12 +93,16 @@ bool EngineManager::isKeyPressed(int iKeyID) {
 
 void EngineManager::keyPressed(unsigned int iVirtualKeycode, unsigned short ch) {
 	m_pKeyboardManager->keyPressed(iVirtualKeycode, ch);
+#ifdef USE_YAGUI
 	m_pWidgetManager->keyPressed(iVirtualKeycode, ch);
+#endif
 }
 
 void EngineManager::keyReleased(unsigned int iVirtualKeycode, unsigned short ch) {
 	m_pKeyboardManager->keyReleased(iVirtualKeycode, ch);
+#ifdef USE_YAGUI
 	m_pWidgetManager->keyReleased(iVirtualKeycode, ch);
+#endif
 }
 
 void EngineManager::frame() {
@@ -110,8 +117,9 @@ void EngineManager::frame() {
 		update((float)m_pTimer->getDeltaTimeMs());
 		render((float)m_pTimer->getDeltaTimeMs());
 
+#ifdef USE_YAGUI
 		m_pWidgetManager->update((float)m_pTimer->getDeltaTimeMs());
-
+#endif
 		updateFPS();
 
 		m_pTimer->endFrame();
@@ -120,28 +128,38 @@ void EngineManager::frame() {
 
 void EngineManager::onMouseDown(int mCode, int x, int y) {
 	m_pMouseManager->onMouseDown(mCode, x, y);
+#ifdef USE_YAGUI
 	m_pWidgetManager->onMouseDown(mCode, x, y);
+#endif
 }
 
 void EngineManager::onMouseMove(int mCode, int x, int y) {
 	if(mCode == 0) {
 		m_pMouseManager->onMouseHover(mCode, x, y);
+#ifdef USE_YAGUI
 		m_pWidgetManager->onMouseHover(mCode, x, y);
+#endif
 	}
 	else {
 		m_pMouseManager->onMouseMove(mCode, x, y);
+#ifdef USE_YAGUI
 		m_pWidgetManager->onMouseMove(mCode, x, y);
+#endif
 	}
 }
 
 void EngineManager::onMouseWheel(WPARAM wParam, LPARAM lParam) {
 	//m_pMouseManager->onMouseWheel(wParam, lParam);
+#ifdef USE_YAGUI
 	m_pWidgetManager->onMouseWheel(wParam, lParam);
+#endif
 }
 
 void EngineManager::onMouseUp(int mCode, int x, int y) {
 	m_pMouseManager->onMouseUp(mCode, x, y);
+#ifdef USE_YAGUI
 	m_pWidgetManager->onMouseUp(mCode, x, y);
+#endif
 }
 
 void EngineManager::setLMouseStatus(bool bPressed, int mouseX, int mouseY) {
@@ -200,6 +218,7 @@ unsigned int EngineManager::getFPS() {
 	return m_iFrameRate;
 }
 
+#ifdef USE_YAGUI
 void EngineManager::addUIListener(YAGUICallback callbackProc) {
 
 	if(callbackProc != NULL) {
@@ -213,6 +232,7 @@ Camera* EngineManager::getUICamera() {
 		return m_pYAGUICameraNode->getCamera();
 	}
 }
+#endif
 
 EngineManager::~EngineManager() {
 

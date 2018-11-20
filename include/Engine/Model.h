@@ -8,6 +8,7 @@ class MeshPart;
 class VertexAttributeBinding;
 class Texture;
 class Node;
+class Material;
 
 class Model {
 
@@ -26,6 +27,10 @@ class Model {
 		void			unbindTexture();
 
 		void			setNode(Node* node);
+		Material*	setMaterial(const char* sMaterialPath, int iPartIndex = -1);
+		void			setMaterial(Material* pMaterial, int iPartIndex = -1);
+		Material*	getMaterial(int iPartIndex = -1);
+		void			setMaterialNodeBinding(Material* pMaterial);
 	private:
 		Model(Mesh* pMesh);
 		
@@ -35,6 +40,9 @@ class Model {
 		Texture*				m_pTexture;
 
 		Node*					m_pNode;
+		unsigned int			m_iPartCount;
+		Material*				m_pMaterial;
+		Material**				m_pPartMaterials;
 };
 
 #endif

@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #include "Engine/UI/WTextBox.h"
 #include "Engine/UI/WComponentFactory.h"
 #include "Engine/UI/WWidgetManager.h"
@@ -1705,3 +1706,4 @@ WTextBox::~WTextBox() {
 
 	delete[] dbStr;
 }
+#endif

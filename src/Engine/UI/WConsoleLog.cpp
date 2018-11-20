@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #include "Engine/UI/WConsoleLog.h"
 #include "Engine/UI/WComponentFactory.h"
 #include "Engine/UI/WWidgetManager.h"
@@ -1733,3 +1734,4 @@ WConsoleLog::~WConsoleLog() {
 
 	delete[] dbStr;
 }
+#endif

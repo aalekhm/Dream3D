@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #ifndef WSCROLLBAR_H
 #define WSCROLLBAR_H
 
@@ -68,4 +69,5 @@ struct WScrollbar : public WContainer {
 		bool				m_bDrawBG;		
 };
 
+#endif
 #endif

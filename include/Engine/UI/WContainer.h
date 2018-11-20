@@ -1,4 +1,4 @@
-
+#ifdef USE_YAGUI
 #ifndef WCONTAINER_H
 #define WCONTAINER_H
 
@@ -70,4 +70,5 @@ struct WContainer : public WComponent {
 		REAL									m_iClientRectH;
 };
 
+#endif
 #endif

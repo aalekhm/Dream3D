@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #ifndef WWIDGETMANAGER_H
 #define WWIDGETMANAGER_H
 
@@ -132,4 +133,5 @@ struct WWidgetManager {
 		static HCURSOR							m_hCurSizeNWSE;
 };
 
+#endif
 #endif

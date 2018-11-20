@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #include "Engine/UI/WStatic.h"
 #include "Engine/UI/WContainer.h"
 #include "Engine/UI/WWidgetManager.h"
@@ -134,3 +135,4 @@ LRESULT WStatic::OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 WStatic::~WStatic() {
 	delete[] m_pText;
 }
+#endif

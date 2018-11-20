@@ -4,9 +4,11 @@ static GLuint __maxVertexAttributes = 0;
 static std::vector<VertexAttributeBinding*>	__vertexAttributeBindingCache;
 
 VertexAttributeBinding::VertexAttributeBinding()
-	:	m_hVAO(0),
-		m_pAttributes(NULL),
+	:	m_pAttributes(NULL),
 		m_pMesh(NULL)
+#ifdef USE_VAO
+		, m_hVAO(0)
+#endif
 {
 
 }
@@ -24,10 +26,12 @@ VertexAttributeBinding::~VertexAttributeBinding() {
 	SAFE_DELETE(m_pMesh);//SAFE_RELEASE(m_pMesh);
 	SAFE_DELETE_ARRAY(m_pAttributes);
 
+#ifdef USE_VAO
 	if(m_hVAO) {
 		GL_ASSERT( glDeleteVertexArrays(1, &m_hVAO) );
 		m_hVAO = 0;
 	}
+#endif
 }
 
 VertexAttributeBinding*	VertexAttributeBinding::create(Mesh* mesh/*, Effect* effect*/) {
@@ -178,9 +182,11 @@ VertexAttributeBinding*	VertexAttributeBinding::create(Mesh* mesh, const VertexF
 		GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, 0) );
 	}
 
+#ifdef USE_VAO
 	if(b->m_hVAO) {
 		GL_ASSERT( glBindVertexArray(0) );
 	}
+#endif
 
 	return b;
 }

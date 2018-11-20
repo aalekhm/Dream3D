@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #ifndef WBUTTON_H
 #define WBUTTON_H
 
@@ -55,4 +56,5 @@ struct WButton : public WComponent {
 		static unsigned int BUTTON_TEXT_HEIGHT;
 };
 
+#endif
 #endif

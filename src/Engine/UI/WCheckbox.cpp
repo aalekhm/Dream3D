@@ -1,4 +1,4 @@
-
+#ifdef USE_YAGUI
 #include "Engine/UI/WCheckbox.h"
 #include "Engine/UI/WContainer.h"
 #include "Engine/UI/WWidgetManager.h"
@@ -290,3 +290,4 @@ WCheckbox::~WCheckbox() {
 	delete[] m_pCBUnCheckedStateNamePushed;
 	delete[] m_pCBUnCheckedStateNameDisabled;
 }
+#endif

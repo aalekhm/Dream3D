@@ -177,10 +177,10 @@ class MeshObjLoader {
 		MeshObjLoader();
 		virtual ~MeshObjLoader();
 
-		void	loadObject(const char* sFileName);
+		bool	loadObject(const char* sFileName);
 		Model*	createModel();
 	private:
-		void	readObjFile();
+		bool	readObjFile();
 		void	fillInObjectInfo();
 		void	computeNormals();
 

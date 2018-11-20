@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #include "Engine/UI/WTextField.h"
 #include "Engine/UI/WWidgetManager.h"
 #include <algorithm>
@@ -913,3 +914,4 @@ WTextField::~WTextField() {
 	m_Lines.~vector();
 	SAFE_DELETE(m_clipData);
 }
+#endif

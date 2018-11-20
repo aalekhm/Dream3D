@@ -330,6 +330,15 @@ std::ostream& operator<<(std::ostream& os, const Vector3& vec) {
 	os << "(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
 	return os;
 }
+
+Vector3 Lerp( const Vector3& v0, const Vector3& v1, float t) {
+
+	Vector3 v2;
+	v2 = v0 + t * (v1 - v0);
+
+	return v2;
+}
+
 // END OF VECTOR3 /////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////

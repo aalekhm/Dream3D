@@ -146,16 +146,16 @@ Texture* Texture::create(const char* path, bool generateMipmaps) {
 	// Search texture cache first.
 	for(size_t i = 0; i < __textureCache.size(); i++) {
 		Texture* t = __textureCache[i];
-		if(t->m_sPath == path) {
+		if(strcmp(t->m_sPath.c_str(), path) == 0) {
 			// If 'generateMipmaps' is true, call Texture::generateMipamps() to force the 
 			// texture to generate its mipmap chain if it hasn't already done so.
 			if (generateMipmaps) {
 				t->generateMipmaps();
 			}
-		}
 
-		// Found a match.
-		return t;
+			// Found a match.
+			return t;
+		}
 	}
 
 	Texture* texture = NULL;
@@ -169,10 +169,12 @@ Texture* Texture::create(const char* path, bool generateMipmaps) {
 						//||
 						(tolower(ext[1]) == 't' && tolower(ext[2]) == 'g' && tolower(ext[3]) == 'a')
 				) {
-					Image* image = Image::createImage(path);
-					if (image)
-						texture = create(image, generateMipmaps);
-					SAFE_DELETE(image);//SAFE_RELEASE(image);
+					//Image* image = Image::createImage(path);
+					//if (image)
+					//	texture = create(image, generateMipmaps);
+					//SAFE_DELETE(image);//SAFE_RELEASE(image);
+
+					texture = createTGA(path, generateMipmaps);
 				}
 				else if (tolower(ext[1]) == 'p' && tolower(ext[2]) == 'v' && tolower(ext[3]) == 'r') {
 					// PowerVR Compressed Texture RGBA.
@@ -376,9 +378,16 @@ void Texture::Sampler::bind() {
 
 	GP_ASSERT( m_pTexture );
 
-	GL_ASSERT( glBindTexture(GL_TEXTURE_2D, m_pTexture->m_hTexture) );
+	m_pTexture->bind();
 	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (GLenum)m_WrapS) );
 	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (GLenum)m_WrapT) );
 	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (GLenum)m_minFilter) );
 	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (GLenum)m_magFilter) );
+}
+
+void Texture::Sampler::unbind() {
+
+	GP_ASSERT( m_pTexture );
+
+	m_pTexture->unbind();
 }

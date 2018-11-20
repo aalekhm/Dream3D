@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #ifndef WTABBEDPANE_H
 #define WTABBEDPANE_H
 
@@ -60,4 +61,5 @@ struct WTabbedPane : public WContainer {
 		unsigned int	TAB_HEIGHT;
 };
 
+#endif
 #endif

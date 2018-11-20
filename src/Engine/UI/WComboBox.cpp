@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #include "Engine/UI/WComboBox.h"
 #include "Engine/UI/WComponentFactory.h"
 #include "Engine/UI/WWidgetManager.h"
@@ -727,3 +728,5 @@ WComboBox::~WComboBox() {
 //#define CB__MSGMAX                   0x015B
 //#endif
 //#endif  /* !NOWINMESSAGES */
+
+#endif

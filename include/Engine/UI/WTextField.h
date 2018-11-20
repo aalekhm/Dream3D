@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #ifndef WTEXTFIELD_H
 #define WTEXTFIELD_H
 
@@ -89,4 +90,5 @@ struct WTextField : public WContainer {
 		RectF			m_reclaimRect;
 };
 
+#endif
 #endif

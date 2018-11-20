@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #include "Engine/UI/WListBox.h"
 #include "Engine/UI/WComponentFactory.h"
 #include "Engine/UI/WWidgetManager.h"
@@ -856,3 +857,4 @@ WListBox::~WListBox() {
 		size = m_Data.size();
 	}
 }
+#endif

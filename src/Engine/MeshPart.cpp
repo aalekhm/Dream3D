@@ -116,3 +116,17 @@ void MeshPart::setIndexData(void* indexData, unsigned int indexStart, unsigned i
 		GL_ASSERT( glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indexStart *  indexSize, indexCount * indexSize, indexData) );
 	}
 }
+
+GLvoid* MeshPart::getMapBuffer() {
+
+	GL_ASSERT( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_hIBO) );
+	GLvoid* pIBOMapBuffer = NULL;
+	pIBOMapBuffer = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
+
+	return pIBOMapBuffer;
+}
+
+void MeshPart::unmapBuffer() {
+
+	GL_ASSERT( glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER ) );
+}

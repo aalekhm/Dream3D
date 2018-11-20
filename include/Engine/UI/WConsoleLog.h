@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #ifndef WCONSOLELOG_H
 #define WCONSOLELOG_H
 
@@ -123,4 +124,5 @@ struct WConsoleLog : public WContainer {
 		int				m_iMaxVScrollbarHeight;
 };
 
+#endif
 #endif

@@ -13,15 +13,18 @@ class MeshPart {
 	public:
 		~MeshPart();
 
-		unsigned int			getMeshIndex() const;
+		unsigned int				getMeshIndex() const;
 		Mesh::PrimitiveType		getPrimitiveType() const;
-		unsigned int			getIndexCount() const;
+		unsigned int				getIndexCount() const;
 		Mesh::IndexFormat		getIndexFormat() const;
-		IBOHandle				getIndexBuffer() const;
-		bool					isDynamic() const;
-		void					setIndexData(void* indexData, unsigned int indexStart, unsigned int indexCount);
+		IBOHandle					getIndexBuffer() const;
+		bool							isDynamic() const;
+		void							setIndexData(void* indexData, unsigned int indexStart, unsigned int indexCount);
 
 		static MeshPart*		create(Mesh* mesh, unsigned int meshIndex, Mesh::PrimitiveType primitiveType, Mesh::IndexFormat indexFormat, unsigned int indexCount, bool isDynamic = false);
+
+		GLvoid*						getMapBuffer();
+		void							unmapBuffer();
 	private:
 		MeshPart();
 		

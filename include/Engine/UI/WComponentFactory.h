@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #ifndef WCOMPONENTFACTORY_H
 #define WCOMPONENTFACTORY_H
 
@@ -182,4 +183,5 @@ int GetGlyphV(int c) {
 	return WWidgetManager::getInstance()->getGlyphV(c);
 }
 
+#endif
 #endif

@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #ifndef WTEXTBOX_H
 #define WTEXTBOX_H
 
@@ -120,4 +121,5 @@ struct WTextBox : public WContainer {
 		int				m_iMaxVScrollbarHeight;
 };
 
+#endif
 #endif

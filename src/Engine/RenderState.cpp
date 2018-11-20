@@ -3,6 +3,7 @@
 #include "Engine/Node.h"
 #include "Engine/Pass.h"
 #include "Engine/Technique.h"
+#include "Engine/MaterialParameter.h"
 
 // Render state override bits
 #define RS_BLEND		1
@@ -123,6 +124,29 @@ RenderState* RenderState::getTopmost(RenderState* below) {
 
 	return NULL;
 }
+
+MaterialParameter* RenderState::getparameter(const char* sName) const {
+	
+	GP_ASSERT( sName );
+
+	// Search for an existing parameter with this name.
+	MaterialParameter* pMaterialParameter;
+	for(size_t i = 0; i < m_vParameters.size(); i++) {
+		pMaterialParameter = m_vParameters[i];
+		
+		GP_ASSERT( pMaterialParameter );
+		if(strcmp(pMaterialParameter->getName(), sName) == 0) {
+			return pMaterialParameter;
+		}
+	}
+
+	// Create a new parameter and store it in our list.
+	pMaterialParameter = new MaterialParameter(sName);
+	m_vParameters.push_back(pMaterialParameter);
+	
+	return pMaterialParameter;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 //RenderState
 ///////////////////////////////////////////////////////////////////////////

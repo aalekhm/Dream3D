@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #ifndef WSTATIC_H
 #define WSTATIC_H
 
@@ -41,4 +42,5 @@ struct WStatic : public WComponent {
 		void			activate();
 };
 
+#endif
 #endif

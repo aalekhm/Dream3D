@@ -2,8 +2,9 @@
 #define _MaterialReader_h_
 
 #include "Common/GrammerUtils.h"
-#include "Engine/Properties.h"
 #include "Common/CCString.h"
+
+class Properties;
 
 class MaterialReader {
 	public:
@@ -41,6 +42,5 @@ class MaterialReader {
 
 		CCString m_sPropertyName;
 		CCString m_sPropertyValue;
-
 };
 #endif

@@ -58,6 +58,20 @@ bool Mesh::isDynamic() const {
 	return m_bDynamic;
 }
 
+GLvoid* Mesh::getMapBuffer() {
+
+	GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, m_hVBO) );
+	GLvoid* pVBOMapBuffer = NULL;
+	pVBOMapBuffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+
+	return pVBOMapBuffer;
+}
+
+void Mesh::unmapBuffer() {
+
+	GL_ASSERT( glUnmapBuffer( GL_ARRAY_BUFFER ) );
+}
+
 Mesh::PrimitiveType Mesh::getPrimitiveType() const {
 	return m_PrimitiveType;
 }

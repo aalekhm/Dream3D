@@ -4,31 +4,38 @@
 #include "Common/CCString.h"
 #include "Engine/RenderState.h"
 #include "Engine/VertexAttributeBinding.h"
+#include "Engine/Texture.h"
 
-class Pass {
+class Technique;
+class Material;
+class RenderState;
+
+class Pass : public RenderState {
 	
 	public:
-		friend class Technique;
-		friend class Material;
-		friend class RenderState;
-
 		~Pass();
 
-		const char*				getId() const;
-		void					setVertexAttributeBinding(VertexAttributeBinding* pBinding);
+		static Pass* create(const char* id, Technique* pTechnique/*, const char* vshPath, const char* fshPath, const char* defines*/);
+
+		const char*					getId();
+		void								setVertexAttributeBinding(VertexAttributeBinding* pBinding);
 		VertexAttributeBinding*	getVertexAttributeBinding();
-		void					bind();
-		void					unbind();
+
+		void								setSampler(Texture::Sampler* pSampler);
+		Texture::Sampler*			getSampler();
+
+		void								bind();
+		void								unbind();
 	private:
 		Pass(const char* id, Technique* pTechnique/*, Effect* pEffect*/);
 		Pass(const Pass& copy);
 
-		static Pass* create(const char* id, Technique* pTechnique/*, const char* vshPath, const char* fshPath, const char* defines*/);
+		CCString							m_strID;
+		Technique*							m_pTechnique;
+		//Effect*							m_pEffect;
+		VertexAttributeBinding*		m_pVertexAttributeBinding;
+		Texture::Sampler*				m_pSampler;
 
-		CCString				m_strID;
-		Technique*				m_pTechnique;
-		//Effect*				m_pEffect;
-		VertexAttributeBinding*	m_pVertexAttributeBinding;
 };
 
 #endif

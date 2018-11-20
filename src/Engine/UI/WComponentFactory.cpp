@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #include "Engine/UI/WComponentFactory.h"
 
 WComponentFactory::WComponentFactory() {
@@ -10,3 +11,4 @@ void WComponentFactory::Register(const std::string& lpClassName, CreateFn pfnCre
 	if( itr == m_WComponentMap.end() )
 		m_WComponentMap[lpClassName] = pfnCreate;
 }
+#endif

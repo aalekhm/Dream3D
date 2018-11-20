@@ -1,4 +1,4 @@
-
+#ifdef USE_YAGUI
 #ifndef WWINDOW_H
 #define WWINDOW_H
 
@@ -69,4 +69,5 @@ struct WWindow : public WContainer {
 		int				m_iResizingX;
 };
 
+#endif
 #endif

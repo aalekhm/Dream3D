@@ -102,6 +102,7 @@ struct Vector3
 	friend Vector3 operator*(const float a, const Vector3 vec);
 	friend std::ostream& operator<<(std::ostream& os, const Vector3& vec);
 };
+Vector3 Lerp( const Vector3& v0, const Vector3& v1, float t);
 
 ///////////////////////////////////////////////////////////////////////////////
 // 4D vector

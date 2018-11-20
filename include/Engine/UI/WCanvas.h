@@ -1,4 +1,4 @@
-
+#ifdef USE_YAGUI
 #ifndef WCANVAS_H
 #define WCANVAS_H
 
@@ -74,4 +74,5 @@ struct WCanvas : public WContainer {
 		int				m_iResizingX;
 };
 
+#endif
 #endif

@@ -38,8 +38,12 @@ O -'        .'''       .'                                     "8b d8"   Veilleux
 #include "Engine/MeshObjLoader.h"
 
 #include "Engine/Properties.h"
+#include "Engine/MD5Model.h"
+#include "Engine/MD5Animation.h"
 
+#ifdef USE_YAGUI
 #include "Engine/UI/WComponentFactory.h"
+#endif
 
 #define CARTOON_TGA		"data/cartoon.tga"
 #define COLOURFUL_TGA	"data/ColorFul_2048x1300.tga"
@@ -74,6 +78,9 @@ Node* quadModelNode;
 Node* createObjNode();
 Node* objModelNode;
 
+Node* md5ModelNode;
+MD5Model* m_pMD5Model;
+
 SpriteBatch* createSpriteBatch();
 SpriteBatch* spriteBatch;
 
@@ -82,6 +89,7 @@ Texture*  gTexture1;
 
 Node* gCanvasCameraNode;
 
+#ifdef USE_YAGUI
 L_RESULT CALLBACK UICallback(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	switch(msg) {
@@ -124,13 +132,13 @@ L_RESULT CALLBACK UICallback(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 						//////////////////////////// 3D SCENE
 						Camera* pCamera = gCanvasCameraNode->getCamera();
 						pCamera->setCameraValues(boundsRect.X, boundsRect.Y, boundsRect.Width, boundsRect.Height, 45.0f, 0.01f, 10.0f);
+						//pCamera->setCameraValues(viewportRect.X, viewportRect.Y, viewportRect.Width, viewportRect.Height,  45.0f, 0.01f, 10.0f);
 						pCamera->setType(Camera::PERSPECTIVE);
 						{
 							glClear(GL_DEPTH_BUFFER_BIT);
 							glClearColor(0.1f, 0.1f, 0.1f, 1);
 							glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
-							
-							
+														
 							pCamera->getNode()->getViewMatrix().getTranspose();
 							drawTriangle(Vector3(0, 0.5f, -1.5f), Vector3(-0.5f, 0, -1.5f), Vector3(0.5f, 0, -1.5f));
 						}
@@ -438,6 +446,7 @@ L_RESULT CALLBACK UICallback(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 
 void addDummyWindows(H_WND hParent);
+#endif
 
 /////////////////////////////////////////
 struct MeshBatchVertex
@@ -481,8 +490,9 @@ void Dream3DTest::initialize() {
 	//////////////////////////////////////////////
 
 	//////////////////////////////////////////////
-	//glEnable(GL_DEPTH_TEST);
-
+#ifndef USE_YAGUI
+	glEnable(GL_DEPTH_TEST);
+#endif
 	triangleModelNode = createTriangleModelNode();
 	m_pScene->addNode(triangleModelNode);
 
@@ -516,7 +526,7 @@ void Dream3DTest::initialize() {
 	gTexture1 = Texture::create(CORE_UI, false);
 
 	{
-		Properties* properties = Properties::create("data/test.mat");
+		Properties* properties = Properties::create("data/box.material");//test.mat");
 		if(properties != NULL)
 			properties->print(0);
 
@@ -527,38 +537,132 @@ void Dream3DTest::initialize() {
 
 		Properties::printProperties(properties);
 
-		//Properties* pNS1 = properties->getNamespace("physics", true);
-		//const char* spacename = pNS1->getNamespace();
-		//const char* id = pNS1->getID();
-		//printf("%s {\n", spacename);
+		Properties* pNS1 = NULL;
+		pNS1 = properties->getNamespace("physics", true);
+		if(pNS1 != NULL) {
+			const char* spacename = pNS1->getNamespace();
+			const char* id = pNS1->getID();
+			printf("%s {\n", spacename);
 
-		// Print all properties in this namespace.
-		//const char* name = pNS1->getNextProperty();
-		//const char* value = NULL;
-		//while(name != NULL) {
+			//Print all properties in this namespace.
+			const char* name = pNS1->getNextProperty();
+			const char* value = NULL;
+			while(name != NULL) {
 
-		//	value = pNS1->getString(name);
-		//	printf("\t %s ==== %s\n", name, value);
+				value = pNS1->getString(name);
+				printf("\t %s ==== %s\n", name, value);
 
-		//	name = pNS1->getNextProperty();
-		//}
-		//printf("}");
+				name = pNS1->getNextProperty();
+			}
+			printf("}");
+		}
 	}
 
 	//initLights();
+
+	//MeshMD5Loader::loadObject("data/hellknight.md5mesh");
+
+	m_pMD5Model = new MD5Model();
+	
+	//md5ModelNode = m_pMD5Model->loadModel("data/MD5Models/boblamp/bob_lamp_update/bob_lamp_update.md5mesh");
+	//	m_pMD5Model->loadAnim("data/MD5Models/boblamp/bob_lamp_update/bob_lamp_update.md5anim");
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/bob_body.material", 0);
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/bob_head.material", 1);
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/bob_helmet.material", 2);
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/lantern.material", 3);
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/lantern_top.material", 4);
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/boblamp/bob_lamp_update/bob_body.material", 5);
+
+
+	md5ModelNode = m_pMD5Model->loadModel("data/MD5Models/hellknight/hellknight1.md5mesh");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/attack2.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/attack3.md5anim");
+		////m_pMD5Model->loadAnim("data/MD5Models/hellknight/chest.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/headpain.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/idle2.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/idle22.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/ik_pose.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/initial.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/leftslash.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/pain1.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/pain_luparm.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/pain_ruparm.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/range_attack2.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/roar1.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/stand.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/turret_attack.md5anim");
+		m_pMD5Model->loadAnim("data/MD5Models/hellknight/walk7.md5anim");
+		//m_pMD5Model->loadAnim("data/MD5Models/hellknight/walk7_left.md5anim");
+	md5ModelNode->getModel()->setMaterial("data/MD5Models/hellknight/hellknight.material", 0);
+	md5ModelNode->getModel()->setMaterial("data/MD5Models/hellknight/gob2.material", 1);
+	md5ModelNode->getModel()->setMaterial("data/MD5Models/hellknight/gob.material", 2);
+	md5ModelNode->getModel()->setMaterial("data/MD5Models/hellknight/tongue.material", 3);
+		
+	//md5ModelNode = m_pMD5Model->loadModel("data/MD5Models/Player_BasicMovement/body.md5mesh");
+	//m_pMD5Model->loadAnim("data/MD5Models/Player_BasicMovement/step.md5anim");
+	//md5ModelNode->getModel()->setMaterial("data/MD5Models/Player_BasicMovement/player.material", 0);
+	
+	//md5ModelNode = m_pMD5Model->loadModel("data/MD5Models/zfat/zfat.md5mesh");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/attack2.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/attack3.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/attack_leftslap.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/barrel_Idle.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/barrel_Throw.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/bellypain.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/death1_pose.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/facepain.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/idle1.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/initial.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/leftarmpain.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/pipeattack1.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/pipeidle.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/pipesight.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/pipewalk4.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/rightarmpain.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/sight3.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/walk1.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/walk2.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/walk3.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/zfat/walk4.md5anim");
+	//md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/zfat.material", 0);
+	//md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/monkeywrench.material", 1);
+	//md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/skeleton01.material", 3);
+
+	//md5ModelNode = m_pMD5Model->loadModel("data/MD5Models/lostsoul/lostsoul.md5mesh");
+	//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/attack1.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/attack2.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/charge.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/initial.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/pain1.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/pain2.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/sight.md5anim");
+	//	m_pMD5Model->loadAnim("data/MD5Models/lostsoul/walk1.md5anim");
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/zfat.material", 0);
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/zfat.material", 1);
+	//	md5ModelNode->getModel()->setMaterial("data/MD5Models/zfat/zfat.material", 2);
+
+	if(md5ModelNode != NULL) {
+		md5ModelNode->scale(0.01f);
+		md5ModelNode->setPosition(Vector3(100.0f, 0.0f, -10.0f));
+		md5ModelNode->rotateX(-90.0f);
+		m_pScene->addNode(md5ModelNode);
+	}
+	
 	//////////////////////////////////////////////
 
+#ifdef USE_YAGUI
 	//////////////////// YAGUI Related initializations !!!
 	addUIListener(UICallback);
 	addDummyWindows(GetWindowQ(0));
 	////////////////////////////////////////////
+#endif
 }
 
 void initLights() {
 	glEnable(GL_LIGHTING);
 
 	// set up light colors (ambient, diffuse, specular)
-	GLfloat lightKa[] = {1.0f, 1.0f, 1.0f, 1.0f};      // ambient light
+	GLfloat lightKa[] = {1.0f, 0.0f, 0.0f, 1.0f};      // ambient light
 	GLfloat lightKd[] = {.9f, .9f, .9f, 1.0f};      // diffuse light
 	GLfloat lightKs[] = {1, 1, 1, 1};               // specular light
 	glLightfv(GL_LIGHT0, GL_AMBIENT, lightKa);
@@ -649,7 +753,7 @@ Node* createTriangleModelNode()
 	mesh->setVertexData(vertices, 0, vertexCount);
 
 	Model* pModel = Model::create(mesh);
-	pModel->setTexture(COLOURFUL_TGA);
+	pModel->setMaterial("data/box.material");
 
 	Node* pNode = Node::create("TriangleModel");
 	pNode->setModel(pModel);
@@ -717,7 +821,7 @@ Node* createTriangleStripModelNode() {
 	mesh->setVertexData(vertices, 0, vertexCount);
 
 	Model* pModel = Model::create(mesh);
-	pModel->setTexture(CARTOON_TGA);
+	pModel->setMaterial("data/box.material");
 
 	Node* pNode = Node::create("TriangleStripModel");
 	pNode->setModel(pModel);
@@ -750,6 +854,7 @@ Node* createLineStripModelNode() {
 	mesh->setVertexData(vertices, 0, vertexCount);
 
 	Model* pModel = Model::create(mesh);
+	pModel->setMaterial("data/box.material");
 
 	Node* pNode = Node::create("LineStripModel");
 	pNode->setModel(pModel);
@@ -784,6 +889,7 @@ Node* createLineModelNode() {
 	mesh->setVertexData(vertices, 0, vertexCount);
 
 	Model* pModel = Model::create(mesh);
+	pModel->setMaterial("data/box.material");
 
 	Node* pNode = Node::create("LineModel");
 	pNode->setModel(pModel);
@@ -792,52 +898,87 @@ Node* createLineModelNode() {
 }
 
 Node* createCubeModelIndexedNode(float size = 1.0f) {
-	float a = size * 0.5f;
+	float a1 = size * 0.5f;
+	float a2 = size * 1.0f;
 	float vertices[] =
 	{
-		-a, -a,  a,   /* 0.0,  0.0,  1.0,*/   1.0, 0.0, 0.0,	0.0, 0.0,
-		 a, -a,  a,   /* 0.0,  0.0,  1.0,*/   0.0, 1.0, 0.0,	1.0, 0.0,
-		-a,  a,  a,   /* 0.0,  0.0,  1.0,*/   0.0, 0.0, 1.0,	0.0, 1.0,
-		 a,  a,  a,   /* 0.0,  0.0,  1.0,*/   1.0, 1.0, 0.0,	1.0, 1.0,
-		-a,  a,  a,   /* 0.0,  1.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 0.0,
-		 a,  a,  a,   /* 0.0,  1.0,  0.0,*/   1.0, 0.0, 1.0,	1.0, 0.0,
-		-a,  a, -a,   /* 0.0,  1.0,  0.0,*/   0.0, 1.0, 0.0,	0.0, 1.0,
-		 a,  a, -a,   /* 0.0,  1.0,  0.0,*/   1.0, 0.0, 0.0,	1.0, 1.0,
-		-a,  a, -a,   /* 0.0,  0.0, -1.0,*/   0.0, 0.0, 1.0,	0.0, 0.0,
-		 a,  a, -a,   /* 0.0,  0.0, -1.0,*/   0.0, 1.0, 1.0,	1.0, 0.0,
-		-a, -a, -a,   /* 0.0,  0.0, -1.0,*/   1.0, 1.0, 0.0,	0.0, 1.0,
-		 a, -a, -a,   /* 0.0,  0.0, -1.0,*/   0.0, 1.0, 1.0,	1.0, 1.0,
-		-a, -a, -a,   /* 0.0, -1.0,  0.0,*/   1.0, 0.0, 1.0,	0.0, 0.0,
-		 a, -a, -a,   /* 0.0, -1.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 0.0,
-		-a, -a,  a,   /* 0.0, -1.0,  0.0,*/   0.0, 1.0, 0.0,	0.0, 1.0,
-		 a, -a,  a,   /* 0.0, -1.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 1.0,
-		 a, -a,  a,   /* 1.0,  0.0,  0.0,*/   1.0, 0.0, 1.0,	0.0, 0.0,
-		 a, -a, -a,   /* 1.0,  0.0,  0.0,*/   1.0, 0.0, 1.0,	1.0, 0.0,
-		 a,  a,  a,   /* 1.0,  0.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 1.0,
-		 a,  a, -a,   /* 1.0,  0.0,  0.0,*/   1.0, 1.0, 1.0,	1.0, 1.0,
-		-a, -a, -a,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	0.0, 0.0,
-		-a, -a,  a,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 0.0,
-		-a,  a, -a,   /*-1.0,  0.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 1.0,
-		-a,  a,  a,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 1.0 
+		//MeshPart 0
+		-a1, -a1,  a1,   /* 0.0,  0.0,  1.0,*/   1.0, 0.0, 0.0,	0.0, 0.0,
+		 a1, -a1,  a1,   /* 0.0,  0.0,  1.0,*/   0.0, 1.0, 0.0,	1.0, 0.0,
+		-a1,  a1,  a1,   /* 0.0,  0.0,  1.0,*/   0.0, 0.0, 1.0,	0.0, 1.0,
+		 a1,  a1,  a1,   /* 0.0,  0.0,  1.0,*/   1.0, 1.0, 0.0,	1.0, 1.0,
+		-a1,  a1,  a1,   /* 0.0,  1.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 0.0,	
+		 a1,  a1,  a1,   /* 0.0,  1.0,  0.0,*/   1.0, 0.0, 1.0,	1.0, 0.0,
+		-a1,  a1, -a1,   /* 0.0,  1.0,  0.0,*/   0.0, 1.0, 0.0,	0.0, 1.0,
+		 a1,  a1, -a1,   /* 0.0,  1.0,  0.0,*/   1.0, 0.0, 0.0,	1.0, 1.0,
+		-a1,  a1, -a1,   /* 0.0,  0.0, -1.0,*/   0.0, 0.0, 1.0,	0.0, 0.0,
+		 a1,  a1, -a1,   /* 0.0,  0.0, -1.0,*/   0.0, 1.0, 1.0,	1.0, 0.0,
+		-a1, -a1, -a1,   /* 0.0,  0.0, -1.0,*/   1.0, 1.0, 0.0,	0.0, 1.0,
+		 a1, -a1, -a1,   /* 0.0,  0.0, -1.0,*/   0.0, 1.0, 1.0,	1.0, 1.0,
+		-a1, -a1, -a1,   /* 0.0, -1.0,  0.0,*/   1.0, 0.0, 1.0,	0.0, 0.0,
+		 a1, -a1, -a1,   /* 0.0, -1.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 0.0,
+		-a1, -a1,  a1,   /* 0.0, -1.0,  0.0,*/   0.0, 1.0, 0.0,	0.0, 1.0,
+		 a1, -a1,  a1,   /* 0.0, -1.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 1.0,
+		 a1, -a1,  a1,   /* 1.0,  0.0,  0.0,*/   1.0, 0.0, 1.0,	0.0, 0.0,
+		 a1, -a1, -a1,   /* 1.0,  0.0,  0.0,*/   1.0, 0.0, 1.0,	1.0, 0.0,
+		 a1,  a1,  a1,   /* 1.0,  0.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 1.0,
+		 a1,  a1, -a1,   /* 1.0,  0.0,  0.0,*/   1.0, 1.0, 1.0,	1.0, 1.0,
+		-a1, -a1, -a1,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	0.0, 0.0,
+		-a1, -a1,  a1,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 0.0,
+		-a1,  a1, -a1,   /*-1.0,  0.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 1.0,
+		-a1,  a1,  a1,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 1.0,
+
+		//MeshPart 1
+		-a2, -a2,  a2,   /* 0.0,  0.0,  1.0,*/   1.0, 0.0, 0.0,	0.0, 0.0,
+		a2, -a2,  a2,   /* 0.0,  0.0,  1.0,*/   0.0, 1.0, 0.0,	1.0, 0.0,
+		-a2,  a2,  a2,   /* 0.0,  0.0,  1.0,*/   0.0, 0.0, 1.0,	0.0, 1.0,
+		a2,  a2,  a2,   /* 0.0,  0.0,  1.0,*/   1.0, 1.0, 0.0,	1.0, 1.0,
+		-a2,  a2,  a2,   /* 0.0,  1.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 0.0,
+		a2,  a2,  a2,   /* 0.0,  1.0,  0.0,*/   1.0, 0.0, 1.0,	1.0, 0.0,
+		-a2,  a2, -a2,   /* 0.0,  1.0,  0.0,*/   0.0, 1.0, 0.0,	0.0, 1.0,
+		a2,  a2, -a2,   /* 0.0,  1.0,  0.0,*/   1.0, 0.0, 0.0,	1.0, 1.0,
+		-a2,  a2, -a2,   /* 0.0,  0.0, -1.0,*/   0.0, 0.0, 1.0,	0.0, 0.0,
+		a2,  a2, -a2,   /* 0.0,  0.0, -1.0,*/   0.0, 1.0, 1.0,	1.0, 0.0,
+		-a2, -a2, -a2,   /* 0.0,  0.0, -1.0,*/   1.0, 1.0, 0.0,	0.0, 1.0,
+		a2, -a2, -a2,   /* 0.0,  0.0, -1.0,*/   0.0, 1.0, 1.0,	1.0, 1.0,
+		-a2, -a2, -a2,   /* 0.0, -1.0,  0.0,*/   1.0, 0.0, 1.0,	0.0, 0.0,
+		a2, -a2, -a2,   /* 0.0, -1.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 0.0,
+		-a2, -a2,  a2,   /* 0.0, -1.0,  0.0,*/   0.0, 1.0, 0.0,	0.0, 1.0,
+		a2, -a2,  a2,   /* 0.0, -1.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 1.0,
+		a2, -a2,  a2,   /* 1.0,  0.0,  0.0,*/   1.0, 0.0, 1.0,	0.0, 0.0,
+		a2, -a2, -a2,   /* 1.0,  0.0,  0.0,*/   1.0, 0.0, 1.0,	1.0, 0.0,
+		a2,  a2,  a2,   /* 1.0,  0.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 1.0,
+		a2,  a2, -a2,   /* 1.0,  0.0,  0.0,*/   1.0, 1.0, 1.0,	1.0, 1.0,
+		-a2, -a2, -a2,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	0.0, 0.0,
+		-a2, -a2,  a2,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 0.0,
+		-a2,  a2, -a2,   /*-1.0,  0.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 1.0,
+		-a2,  a2,  a2,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 1.0 
 	};
 	
-	short indices[] = 
+	short indicesPart0[] = 
 	{
+		//MeshPart 0
 		0, 1, 2, 2, 1, 3, 4, 5, 6, 6, 5, 7, 8, 9, 10, 10, 9, 11, 12, 13, 14, 14, 13, 15, 16, 17, 18, 18, 17, 19, 20, 21, 22, 22, 21, 23
 	};
+
+	short indicesPart1[] = 
+	{
+		//MeshPart 1
+		24+0, 24+1, 24+2, 24+2, 24+1, 24+3, 24+4, 24+5, 24+6, 24+6, 24+5, 24+7, 24+8, 24+9, 24+10, 24+10, 24+9, 24+11, 24+12, 24+13, 24+14, 24+14, 24+13, 24+15, 24+16, 24+17, 24+18, 24+18, 24+17, 24+19, 24+20, 24+21, 24+22, 24+22, 24+21, 24+23
+	};
 	
-	unsigned int vertexCount = 24;
-	unsigned int indexCount = sizeof(indices) / sizeof(short);
-	VertexFormat::Element elements[] = 
+	unsigned int vertexCount = 48;
+	unsigned int indexCount = sizeof(indicesPart0) / sizeof(short);
+	VertexFormat::Element vertexElements[] = 
 	{
 		VertexFormat::Element(VertexFormat::POSITION, VertexFormat::THREE),
 		//VertexFormat::Element(VertexFormat::NORMAL, VertexFormat::THREE),
 		VertexFormat::Element(VertexFormat::COLOR, VertexFormat::THREE),
 		VertexFormat::Element(VertexFormat::TEXCOORD0, VertexFormat::TWO)
 	};
-	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
+	unsigned int vertexElementCount = sizeof(vertexElements) / sizeof(VertexFormat::Element);
 
-	Mesh* mesh = Mesh::createMesh(VertexFormat(elements, elementCount), vertexCount, false);
+	Mesh* mesh = Mesh::createMesh(VertexFormat(vertexElements, vertexElementCount), vertexCount, false);
 	if(mesh == NULL) {
 		//GP_ERROR("Unable to create Mesh");
 		return NULL;
@@ -845,11 +986,18 @@ Node* createCubeModelIndexedNode(float size = 1.0f) {
 	mesh->setPrimitiveType(Mesh::TRIANGLES);
 	mesh->setVertexData(vertices, 0, vertexCount);
 
-	MeshPart* meshPart = mesh->addMeshPart(Mesh::TRIANGLES, Mesh::INDEX16, indexCount, false);
-	meshPart->setIndexData(indices, 0, indexCount);
+	MeshPart* meshPart = NULL;
+	meshPart = mesh->addMeshPart(Mesh::TRIANGLES, Mesh::INDEX16, indexCount, false);
+	if( meshPart != NULL)
+		meshPart->setIndexData(indicesPart0, 0, indexCount);
+
+	meshPart = mesh->addMeshPart(Mesh::TRIANGLES, Mesh::INDEX16, indexCount, false);
+	if( meshPart != NULL)
+		meshPart->setIndexData(indicesPart1, 0, indexCount);
 
 	Model* pModel = Model::create(mesh);
-	pModel->setTexture(CARTOON_TGA);
+	pModel->setMaterial("data/box.material", 0);	
+	pModel->setMaterial("data/box1.material", 1);
 
 	Node* pNode = Node::create("CubeIndexedModel");
 	pNode->setModel(pModel);
@@ -892,7 +1040,7 @@ Node* createQuadIndexedNode() {
 	meshPart->setIndexData(indices, 0, indexCount);
 
 	Model* pModel = Model::create(mesh);
-	pModel->setTexture(CARTOON_TGA);
+	pModel->setMaterial("data/box.material");
 
 	Node* pNode = Node::create("QuadIndexedModel");
 	pNode->setModel(pModel);
@@ -902,14 +1050,15 @@ Node* createQuadIndexedNode() {
 
 Node* createObjNode() {
 
+	Node* pNode = NULL;
 	MeshObjLoader* objLoader = new MeshObjLoader();
-	objLoader->loadObject("data/foot.obj");
+	if(objLoader->loadObject("data/OBJModels/foot.obj")) {
+		Model* objModel = objLoader->createModel();
+		objModel->setMaterial("data/box.material");
 
-	Model* objModel = objLoader->createModel();
-	objModel->setTexture(CARTOON_TGA);
-
-	Node* pNode = Node::create("ObjModel");
-	pNode->setModel(objModel);
+		pNode = Node::create("ObjModel");
+		pNode->setModel(objModel);
+	}
 
 	return pNode;
 }
@@ -970,7 +1119,6 @@ void Dream3DTest::render3D(float deltaTimeMs) {
 	drawTriangle(Vector3(0, 0.5f, -1.5f), Vector3(-0.5f, 0, -1.5f), Vector3(0.5f, 0, -1.5f));
 
 	glColor3f(1.0f, 1.0f, 1.0f);
-
 	gTexture0->bind();
 	glBegin(GL_QUADS);
 		glTexCoord2d(0.0f, 0.0f);
@@ -990,13 +1138,15 @@ void Dream3DTest::render3D(float deltaTimeMs) {
 	cubeModelNode->translateForward(0.0001f * deltaTimeMs);
 	quadModelNode->rotateY(0.001f * rAngle);
 	m_pScene->render();
-
+	
+	/*
 	glLoadMatrixf(pCamera->getNode()->getViewMatrix().getTranspose());
 	// Draw all of the triangles as one mesh batch.
 	meshBatch->start();
 	meshBatch->add(&_meshBatchVertices[0], (unsigned int)_meshBatchVertices.size(), _indices, _indicesCount);
 	meshBatch->stop();
 	meshBatch->render();
+	*/
 	////////////////////////////////////////////////////////////////
 }
 
@@ -1031,7 +1181,11 @@ void Dream3DTest::update(float deltaTimeMs) {
 	if(isKeyPressed(VK_ESCAPE))
 		exit();
 
-	//m_pScene->getActiveCamera()->update(deltaTimeMs);
+#ifndef USE_YAGUI
+	m_pScene->getActiveCamera()->update(deltaTimeMs);
+#endif
+
+	m_pMD5Model->update( deltaTimeMs );
 }
 
 void Dream3DTest::render(float deltaTimeMs) {
@@ -1042,6 +1196,7 @@ void Dream3DTest::render(float deltaTimeMs) {
 	render2D(deltaTimeMs);
 }
 
+#ifdef USE_YAGUI
 void addDummyWindows(H_WND hParent) {
 	unsigned int iYPos = 0;
 	unsigned int iXPos = 20;
@@ -2412,3 +2567,4 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 		}
 	}
 }
+#endif

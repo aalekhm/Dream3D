@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #ifndef WCHECKBOX_H
 #define WCHECKBOX_H
 
@@ -59,4 +60,5 @@ struct WCheckbox : public WComponent {
 		static unsigned int CHECKBOX_TEXT_HEIGHT;
 };
 
+#endif
 #endif

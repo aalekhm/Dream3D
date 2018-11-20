@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #include "Engine/UI/WFrame.h"
 #include "Engine/UI/WComponentFactory.h"
 #include "Engine/UI/WWidgetManager.h"
@@ -652,3 +653,4 @@ LRESULT WFrame::OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 		break;
 	}
 }
+#endif

@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #include "Engine/UI/WInspectorTab.h"
 #include "Engine/UI/WComponentFactory.h"
 #include "Engine/UI/WWidgetManager.h"
@@ -327,3 +328,4 @@ void WInspectorTab::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 void WInspectorTab::setState(int iState) {
 	m_iState = iState;
 }
+#endif

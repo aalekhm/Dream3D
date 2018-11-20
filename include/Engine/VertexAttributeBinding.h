@@ -30,7 +30,9 @@ class VertexAttributeBinding {
 		static VertexAttributeBinding*	create(Mesh* mesh, const VertexFormat& vertexFormat, void* vertexPointer/*, Effect* effect*/);
 		void setVertexAttributeBinding(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid* pointer);
 
+#ifdef USE_VAO
 		VAOHandle			m_hVAO;
+#endif
 		VertexAttribute*	m_pAttributes;
 		Mesh*				m_pMesh;
 };

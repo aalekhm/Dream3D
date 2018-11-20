@@ -1,4 +1,4 @@
-
+#ifdef USE_YAGUI
 #ifndef WTREE_H
 #define WTREE_H
 
@@ -317,4 +317,5 @@ struct TREEITEM {
 		unsigned int	LEAF_SPACING_Y;
 };
 
+#endif
 #endif

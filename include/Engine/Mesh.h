@@ -31,7 +31,9 @@ class Mesh {
 		unsigned int			getVertexCount() const;
 		unsigned int			getVertexSize() const;
 		VBOHandle				getVertexBuffer() const;
-		bool					isDynamic() const;
+		bool						isDynamic() const;
+		GLvoid*					getMapBuffer();
+		void						unmapBuffer();
 
 		PrimitiveType			getPrimitiveType() const;
 		void					setPrimitiveType(Mesh::PrimitiveType type);

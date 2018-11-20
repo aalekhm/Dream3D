@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #ifndef WLISTBOX_H
 #define WLISTBOX_H
 
@@ -107,4 +108,5 @@ struct WListBox : public WContainer {
 		unsigned int	LINE_HEIGHT;
 };
 
+#endif
 #endif

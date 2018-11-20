@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #include "Engine/UI/WInspector.h"
 #include "Engine/UI/WWidgetManager.h"
 #include "Engine/UI/WComponentFactory.h"
@@ -587,3 +588,4 @@ void WInspector::addTab() {
 	m_iInspTabCount = m_vInspectorTabs.size();
 }
 
+#endif

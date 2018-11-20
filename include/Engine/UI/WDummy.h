@@ -1,4 +1,4 @@
-
+#ifdef USE_YAGUI
 #ifndef WDUMMY_H
 #define WDUMMY_H
 
@@ -69,4 +69,5 @@ struct WDummy : public WContainer {
 		int				m_iResizingX;
 };
 
+#endif
 #endif

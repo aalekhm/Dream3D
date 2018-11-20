@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #include "Engine/UI/WTable.h"
 #include "Engine/UI/WComponentFactory.h"
 
@@ -610,3 +611,4 @@ void WTable::onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch) {
 		break;
 	}
 }
+#endif

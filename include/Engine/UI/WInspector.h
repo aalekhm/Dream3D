@@ -1,4 +1,4 @@
-
+#ifdef USE_YAGUI
 #ifndef WINSPECTOR_H
 #define WINSPECTOR_H
 
@@ -71,4 +71,5 @@ struct WInspector : public WContainer {
 		int				m_iMaxInspectorTabWidth;
 };
 
+#endif
 #endif

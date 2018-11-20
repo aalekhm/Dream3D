@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #include "Engine/UI/WScrollbar.h"
 #include "Engine/UI/WComponentFactory.h"
 #include "Engine/UI/WWidgetManager.h"
@@ -495,3 +496,4 @@ void WScrollbar::setLength(float pixelsPercentage) {
 
 WScrollbar::~WScrollbar() {
 }
+#endif

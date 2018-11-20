@@ -1,4 +1,6 @@
 
+#ifdef USE_YAGUI
+
 #include "Engine/EngineManager.h"
 #include "Engine/UI/WWidgetManager.h"
 #include "Engine/UI/WComponentFactory.h"
@@ -1090,3 +1092,5 @@ void WWidgetManager::setCursor(int MOUSE_IDC) {
 WWidgetManager::~WWidgetManager() {
 
 }
+
+#endif

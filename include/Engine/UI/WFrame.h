@@ -1,4 +1,4 @@
-
+#ifdef USE_YAGUI
 #ifndef WFrame_H
 #define WFrame_H
 
@@ -71,4 +71,5 @@ struct WFrame : public WContainer {
 		int				m_iResizingX;
 };
 
+#endif
 #endif

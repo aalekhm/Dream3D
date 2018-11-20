@@ -5,7 +5,9 @@
 #include "Engine/MouseManager.h"
 #include "Engine/Timer.h"
 #include "Engine/Base.h"
+#ifdef USE_YAGUI
 #include "Engine/UI/WWidgetManager.h"
+#endif
 
 class EngineManager {
 
@@ -60,16 +62,20 @@ class EngineManager {
 		virtual void			update(float elapsedTime) = 0;
 		virtual void			render(float elapsedTime) = 0;
 
+#ifdef USE_YAGUI
 		void					addUIListener(YAGUICallback callbackProc);
 		Camera*			getUICamera();
+#endif
 	private:
 		static EngineManager*	m_pEngineManager;
 		Timer*							m_pTimer;
 		KeyboardManager*			m_pKeyboardManager;
 		MouseManager*				m_pMouseManager;
+#ifdef USE_YAGUI
 		WWidgetManager*			m_pWidgetManager;
-		HWND							m_pHWnd;
 		Node*							m_pYAGUICameraNode;
+#endif
+		HWND							m_pHWnd;
 
 		int								m_iViewportW;
 		int								m_iViewportH;

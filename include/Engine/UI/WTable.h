@@ -1,3 +1,4 @@
+#ifdef USE_YAGUI
 #ifndef WTABLE_H
 #define WTABLE_H
 
@@ -190,4 +191,5 @@ struct WTable : public WContainer {
 		unsigned int	TABLE_ROW_HEADER_HEIGHT;
 };
 
+#endif
 #endif

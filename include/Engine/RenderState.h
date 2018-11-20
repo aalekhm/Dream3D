@@ -6,6 +6,7 @@
 class RenderState {
 
 	friend class Material;
+	friend class MaterialParameter;
 	friend class Technique;
 	friend class Pass;
 	friend class Node;
@@ -55,7 +56,7 @@ class RenderState {
 				StateBlock(const StateBlock& copy);
 				~StateBlock();
 
-				void				bindNoRestore();
+				void					bindNoRestore();
 				static void			restore(long stateOverrideBits);
 				static void			enableDepthWrite();
 
@@ -73,28 +74,28 @@ class RenderState {
 				static StateBlock*	m_pDefaultState;
 		};
 
-		void		setStateBlock(StateBlock* state);
-		StateBlock*	getStateBlock() const;
-
+		void							setStateBlock(StateBlock* state);
+		StateBlock*				getStateBlock() const;
+		void							setNodeBinding(Node* node);
 	protected:
 		RenderState();
 		~RenderState();
 
-		static void		initialize();
-		static void		finalize();
+		static void						initialize();
+		static void						finalize();
 		
-		void			setNodeBinding(Node* node);
-		
-		void			bind(Pass* pass);
-		RenderState*	getTopmost(RenderState* below);
-		
+		void								bind(Pass* pass);
+		RenderState*					getTopmost(RenderState* below);
+		MaterialParameter*		getparameter(const char* sName) const;
 	private:
 		RenderState(const RenderState& copy);
 		RenderState& operator=(const RenderState&);
 
-		Node*					m_pNodeBinding;
+		Node*							m_pNodeBinding;
 		mutable	StateBlock*		m_pStateBlock;
-		RenderState*			m_pParent;
+		RenderState*					m_pParent;
+
+		mutable std::vector<MaterialParameter*> m_vParameters;
 };
 
 

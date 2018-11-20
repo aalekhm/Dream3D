@@ -1,4 +1,4 @@
-
+#ifdef USE_YAGUI
 #include "Engine/UI/WButton.h"
 #include "Engine/UI/WContainer.h"
 #include "Engine/UI/WWidgetManager.h"
@@ -285,3 +285,4 @@ WButton::~WButton() {
 	delete[] m_pButtonStateNamePushed;
 	delete[] m_pButtonStateNameDisabled;
 }
+#endif

@@ -1,14 +1,15 @@
 #include "Engine/MaterialReader.h"
+#include "Engine/Properties.h"
 #include "Common/GrammerUtils.h"
 
 MaterialReader::MaterialReader()
 :	m_pRootNamespace(NULL),
-m_pCurNamespace(NULL),
-m_sNamespace(""),
-m_sID(""),
-m_sParentID(""),
-m_sPropertyName(""),
-m_sPropertyValue("")
+	m_pCurNamespace(NULL),
+	m_sNamespace(""),
+	m_sID(""),
+	m_sParentID(""),
+	m_sPropertyName(""),
+	m_sPropertyValue("")
 {
 	GrammerUtils::init();
 }
