@@ -1,18 +1,6 @@
 #include "Engine/Camera.h"
 #include "Engine/EngineManager.h"
 
-#define ROTATE_SPEED 0.05f
-#define WALK_SPEED 0.001f
-
-// Camera dirty bits
-#define CAMERA_DIRTY_VIEW 1
-#define CAMERA_DIRTY_PROJ 2
-#define CAMERA_DIRTY_VIEW_PROJ 4
-#define CAMERA_DIRTY_INV_VIEW 8
-#define CAMERA_DIRTY_INV_VIEW_PROJ 16
-#define CAMERA_DIRTY_BOUNDS 32
-#define CAMERA_DIRTY_ALL (CAMERA_DIRTY_VIEW | CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_BOUNDS)
-
 Camera::Camera(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane)
 	:	m_iCameraType(PERSPECTIVE),
 		m_iViewX(x),
@@ -129,10 +117,8 @@ Matrix4& Camera::getViewProjectionMatrix() {
 }
 
 Matrix4& Camera::getViewMatrix() {
-	if (m_iDirty & CAMERA_DIRTY_VIEW)
-	{
-		if (m_pNode)
-		{
+	if (m_iDirty & CAMERA_DIRTY_VIEW) {
+		if (m_pNode) {
 			// The view matrix is the inverse of our transform matrix.
 			m_MatrixView = m_pNode->getWorldMatrix();//.invert(&m_MatrixView);
 		}

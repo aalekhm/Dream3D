@@ -46,14 +46,16 @@ class Transform {
 		void	setAxisY(const Vector3& vUp);
 		void	setAxisZ(const Vector3& vForward);
 		void	setPosition(const Vector3& vPosition);
+		const Vector3& getPosition() const;
 
 		void		setDirty(unsigned int bits);
-		Matrix4&	getMatrix();
+		Matrix4&	getTransformedModelMatrix();
+		Matrix4&	getTransformedViewMatrix();
 	private:
-		Matrix4		m_Matrix;
-		Vector3		m_vScale;
-		Vector3		m_vTranslation;
-		Vector3		m_vRotation;
+		Matrix4			m_Matrix;
+		Vector3			m_vScale;
+		Vector3			m_vTranslation;
+		Vector3			m_vRotation;
 
 		unsigned int	m_iDirty;
 };

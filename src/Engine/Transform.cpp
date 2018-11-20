@@ -2,7 +2,11 @@
 
 Transform::Transform() 
 	:	m_vScale(Vector3::one()),
-		m_iDirty(0)
+		m_iDirty(0),
+
+		m_Matrix(),
+		m_vTranslation(),
+		m_vRotation()
 {
 
 }
@@ -61,7 +65,7 @@ void Transform::translate(const Vector3& v) {
 void Transform::translateForward(float amount) {
 
 	// Force the current transform matrix to be updated.
-	getMatrix();
+	//getMatrix();
 
 	Vector3 viewVector = m_Matrix.getColumn(2);
 	viewVector.normalize();
@@ -72,7 +76,7 @@ void Transform::translateForward(float amount) {
 void Transform::translateLeft(float amount) {
 
 	// Force the current transform matrix to be updated.
-	getMatrix();
+	//getMatrix();
 
 	Vector3 rightVector = m_Matrix.getColumn(0);
 	rightVector.normalize();
@@ -83,7 +87,7 @@ void Transform::translateLeft(float amount) {
 void Transform::translateUp(float amount) {
 
 	// Force the current transform matrix to be updated.
-	getMatrix();
+	//getMatrix();
 
 	Vector3 upVector = m_Matrix.getColumn(1);
 	upVector.normalize();
@@ -135,10 +139,10 @@ float Transform::getRotateZ() {
 	return m_vRotation.z;
 }
 
-Matrix4& Transform::getMatrix() {
+Matrix4& Transform::getTransformedViewMatrix() {
 	if(m_iDirty) {
-		m_Matrix = Matrix4::identity();
-		//m_Matrix.translate(-m_vTranslation);
+		m_Matrix.setIdentity();
+		//m_Matrix.setTranslate(-m_vTranslation);
 		//m_Matrix.rotate(-m_vRotation);
 		//m_Matrix.scale(m_vScale);
 
@@ -147,7 +151,7 @@ Matrix4& Transform::getMatrix() {
 		bool bHasRotation = !m_vRotation.isZero();
 
 		if(bHasTranslation || (m_iDirty & DIRTY_TRANSLATION) == DIRTY_TRANSLATION) {
-			m_Matrix.translate(-m_vTranslation);
+			m_Matrix.setTranslate(-m_vTranslation);
 
 			if(bHasRotation || (m_iDirty & DIRTY_ROTATION) == DIRTY_ROTATION) {
 				m_Matrix.rotate(-m_vRotation);
@@ -159,6 +163,47 @@ Matrix4& Transform::getMatrix() {
 		}
 		else
 		if(bHasRotation || (m_iDirty & DIRTY_ROTATION) == DIRTY_ROTATION) {
+			m_Matrix.rotate(-m_vRotation);
+
+			if(bHasScaling || (m_iDirty & DIRTY_SCALE) == DIRTY_SCALE) {
+				m_Matrix.scale(m_vScale);
+			}
+		}
+		else
+		if(bHasScaling || (m_iDirty & DIRTY_SCALE) == DIRTY_SCALE) {
+			m_Matrix.scale(m_vScale);
+		}
+
+				m_iDirty &= ~DIRTY_TRANSLATION & ~DIRTY_ROTATION & ~DIRTY_SCALE;
+	}
+
+	return m_Matrix;
+}
+
+Matrix4& Transform::getTransformedModelMatrix() {
+	if(m_iDirty) {
+		m_Matrix.setIdentity();
+		//m_Matrix.rotate(-m_vRotation);
+		//m_Matrix.setTranslate(-m_vTranslation);
+		//m_Matrix.scale(m_vScale);
+
+		bool bHasTranslation = !m_vTranslation.isZero();
+		bool bHasScaling = !m_vScale.isOne();
+		bool bHasRotation = !m_vRotation.isZero();
+
+		if(bHasRotation || (m_iDirty & DIRTY_ROTATION) == DIRTY_ROTATION) {
+			m_Matrix.rotate(-m_vRotation);
+
+			if(bHasTranslation || (m_iDirty & DIRTY_TRANSLATION) == DIRTY_TRANSLATION) {
+				m_Matrix.setTranslate(-m_vTranslation);
+			}
+
+			if(bHasScaling || (m_iDirty & DIRTY_SCALE) == DIRTY_SCALE) {
+				m_Matrix.scale(m_vScale);
+			}
+		}
+		else
+		if(bHasTranslation || (m_iDirty & DIRTY_TRANSLATION) == DIRTY_TRANSLATION) {
 			m_Matrix.rotate(-m_vRotation);
 
 			if(bHasScaling || (m_iDirty & DIRTY_SCALE) == DIRTY_SCALE) {
@@ -193,8 +238,14 @@ void Transform::setAxisZ(const Vector3& vForward) {
 }
 
 void Transform::setPosition(const Vector3& vPosition) {
-	m_Matrix.setRow(3, vPosition);
+	m_vTranslation = vPosition;
 }
+
+const Vector3& Transform::getPosition() const {
+	return m_vTranslation;
+}
+
+
 
 Transform::~Transform() {
 

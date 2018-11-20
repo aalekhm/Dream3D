@@ -51,6 +51,7 @@ struct Matrix4
 
 		// transform matrix
 		Matrix4&    translate(float x, float y, float z);   // translation by (x,y,z)
+		Matrix4&	setTranslate(const Vector3& v);
 		Matrix4&	setTranslate(float x, float y, float z);
 		Matrix4&    translate(const Vector3& v);            //
 		

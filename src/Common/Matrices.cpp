@@ -6,7 +6,7 @@
 Matrix4::Matrix4()
 {
 	// initially identity matrix
-	identity();
+	setIdentity();
 }
 
 Matrix4::Matrix4(const float src[16])
@@ -406,8 +406,7 @@ float Matrix4::getCofactor(float m0, float m1, float m2,
 ///////////////////////////////////////////////////////////////////////////////
 Matrix4& Matrix4::translate(const Vector3& v)
 {
-    //return translate(v.x, v.y, v.z);
-	return setTranslate(v.x, v.y, v.z);
+    return translate(v.x, v.y, v.z);
 }
 
 Matrix4& Matrix4::translate(float x, float y, float z)
@@ -419,11 +418,15 @@ Matrix4& Matrix4::translate(float x, float y, float z)
 	return *this;
 }
 
+Matrix4& Matrix4::setTranslate(const Vector3& v) {
+	return setTranslate(v.x, v.y, v.z);
+}
+
 Matrix4& Matrix4::setTranslate(float x, float y, float z)
 {
-    m[3] = m[15]*x;
-    m[7] = m[15]*y;
-    m[11]= m[15]*z;
+    m[3] = x;
+    m[7] = y;
+    m[11]= z;
 
 	return *this;
 }

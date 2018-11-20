@@ -11,7 +11,9 @@ Node::Node(const char* id)
 		m_pLastChild(NULL),
 		m_iChildCount(NULL),
 		m_pNextSibling(NULL),
-		m_pPrevSibling(NULL)
+		m_pPrevSibling(NULL),
+
+		m_MatrixWorld()
 {
 	if(id) {
 		m_sID = id;
@@ -126,6 +128,7 @@ void Node::removeAllChildren() {
 }
 
 Matrix4& Node::getViewMatrix() const {
+	//Get Scene Camera here...
 
 	if(m_pCamera) {
 		return m_pCamera->getViewMatrix();
@@ -151,11 +154,13 @@ Matrix4& Node::getWorldMatrix() {
 	// transform to obtain our final resolved world transform.
 	Node* parent = getParent();
 	if (parent) {
-		Matrix4::multiply(parent->getWorldMatrix(), getMatrix(), &m_MatrixWorld);
+		Matrix4::multiply(	parent->getWorldMatrix(), 
+							(m_pCamera)?getTransformedViewMatrix():getTransformedModelMatrix(), 
+							&m_MatrixWorld);
 	}
 	else
 	{
-		m_MatrixWorld = getMatrix();
+		m_MatrixWorld = (m_pCamera)?getTransformedViewMatrix():getTransformedModelMatrix();
 	}
 
 	return m_MatrixWorld;
@@ -204,6 +209,12 @@ void Node::setCamera(Camera* pCamera) {
 		if(m_pCamera) {
 			m_pCamera->setNode(this);
 		}
+	}
+}
+
+void Node::render(bool bWireframe) {
+	if(m_pModel) {
+		m_pModel->draw(bWireframe);
 	}
 }
 

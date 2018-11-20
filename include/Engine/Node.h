@@ -41,6 +41,8 @@ class Node : public Transform {
 		Matrix4&		getProjectionMatrix() const;
 		Matrix4&		getWorldMatrix();
 		Matrix4&		getWorldViewMatrix();
+
+		void			render(bool bWireframe);
 	private:
 		virtual ~Node();
 

@@ -7,6 +7,18 @@
 #include "Engine/Transform.h"
 #include "Engine/Node.h"
 
+#define ROTATE_SPEED 0.05f
+#define WALK_SPEED 0.001f
+
+// Camera dirty bits
+#define CAMERA_DIRTY_VIEW 1
+#define CAMERA_DIRTY_PROJ 2
+#define CAMERA_DIRTY_VIEW_PROJ 4
+#define CAMERA_DIRTY_INV_VIEW 8
+#define CAMERA_DIRTY_INV_VIEW_PROJ 16
+#define CAMERA_DIRTY_BOUNDS 32
+#define CAMERA_DIRTY_ALL (CAMERA_DIRTY_VIEW | CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_BOUNDS)
+
 class Camera {
 	public:
 		enum Type {

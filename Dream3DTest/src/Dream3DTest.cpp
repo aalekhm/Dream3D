@@ -26,20 +26,20 @@ void drawTriangle(const Vector3& p1, const Vector3& p2, const Vector3& p3);
 void drawGrid(int iSize, float fStep);
 void drawLine(const Vector3& p1, const Vector3& p2);
 
-Model* createTriangleModel();
-Model* triangleModel;
+Node* createTriangleModelNode();
+Node* triangleModelNode;
 
-Model* createTriangleStripModel();
-Model* triangleStripModel;
+Node* createTriangleStripModelNode();
+Node* triangleStripModelNode;
 
-Model* createLineStripModel();
-Model* lineStripModel;
+Node* createLineStripModelNode();
+Node* lineStripModelNode;
 
-Model* createLineModel();
-Model* lineModel;
+Node* createLineModelNode();
+Node* lineModelNode;
 
-Model* createCubeModelIndexed(float size);
-Model* cubeModel;
+Node* createCubeModelIndexedNode(float size);
+Node* cubeModelNode;
 
 SpriteBatch* createSpriteBatch();
 SpriteBatch* spriteBatch;
@@ -117,14 +117,16 @@ void Dream3DTest::initialize() {
 
 	glEnable(GL_DEPTH_TEST);
 
-	triangleModel = createTriangleModel();
-	triangleStripModel = createTriangleStripModel();
+	triangleModelNode = createTriangleModelNode();
+	triangleStripModelNode = createTriangleStripModelNode();
 	
-	lineStripModel = createLineStripModel();
+	lineStripModelNode = createLineStripModelNode();
 
-	lineModel = createLineModel();
+	lineModelNode = createLineModelNode();
 
-	cubeModel = createCubeModelIndexed(0.25f);
+	cubeModelNode = createCubeModelIndexedNode(0.25f);
+	cubeModelNode->rotateY(45.0f);
+	cubeModelNode->setPosition(Vector3(2.0f, 0.0f, 0.0f));
 
 	meshBatch = createMeshBatch();
 	spriteBatch = createSpriteBatch();
@@ -177,7 +179,7 @@ void drawLine(const Vector3& p1, const Vector3& p2) {
 	glEnd();
 }
 
-Model* createTriangleModel()
+Node* createTriangleModelNode()
 {
 	// Calculate the vertices of the triangle.
 	Vector3 p1(-0.5f,	0.5f,	-1.0f);
@@ -212,10 +214,13 @@ Model* createTriangleModel()
 	Model* pModel = Model::create(mesh);
 	pModel->setTexture("data/ColorFul_2048x1300.tga");
 
-	return pModel;
+	Node* pNode = Node::create("TriangleModel");
+	pNode->setModel(pModel);
+
+	return pNode;
 }
 
-Model* createTriangleStripModel() {
+Node* createTriangleStripModelNode() {
 	// Calculate the vertices of the equilateral triangle.
 	Vector3 p1(0.0f,	0.5f,	-1.0f);
 	Vector3 p2(0.0f,	0.0f,	-1.0f);
@@ -277,10 +282,13 @@ Model* createTriangleStripModel() {
 	Model* pModel = Model::create(mesh);
 	pModel->setTexture("data/cartoon.tga");
 
-	return pModel;
+	Node* pNode = Node::create("TriangleStripModel");
+	pNode->setModel(pModel);
+
+	return pNode;
 }
 
-Model* createLineStripModel() {
+Node* createLineStripModelNode() {
 	float vertices[] =
 	{
 		0.0f,	0.25f,	-1.0f,		1.0f, 0.0f, 0.0f,
@@ -305,10 +313,15 @@ Model* createLineStripModel() {
 	mesh->setVertexData(vertices, 0, vertexCount);
 
 	Model* pModel = Model::create(mesh);
-	return pModel;
+
+	Node* pNode = Node::create("LineStripModel");
+	pNode->setModel(pModel);
+
+	return pNode;
+
 }
 
-Model* createLineModel() {
+Node* createLineModelNode() {
 
 	float vertices[] = 
 	{
@@ -335,10 +348,13 @@ Model* createLineModel() {
 
 	Model* pModel = Model::create(mesh);
 
-	return pModel;
+	Node* pNode = Node::create("LineModel");
+	pNode->setModel(pModel);
+
+	return pNode;
 }
 
-Model* createCubeModelIndexed(float size = 1.0f) {
+Node* createCubeModelIndexedNode(float size = 1.0f) {
 	float a = size * 0.5f;
 	float vertices[] =
 	{
@@ -398,7 +414,10 @@ Model* createCubeModelIndexed(float size = 1.0f) {
 	Model* pModel = Model::create(mesh);
 	pModel->setTexture("data/cartoon.tga");
 
-	return pModel;
+	Node* pNode = Node::create("CubeIndexedModel");
+	pNode->setModel(pModel);
+
+	return pNode;
 }
 
 MeshBatch* createMeshBatch() {
@@ -453,7 +472,7 @@ void Dream3DTest::render(float deltaTimeMs) {
 	m_pCameraNode->getCamera()->setType(Camera::PERSPECTIVE);
 
 	//No Transformations to the World(grid) & triangle hence load the 'view matrix'.
-	glLoadMatrixf(m_pCameraNode->getWorldMatrix().getTranspose());
+	glLoadMatrixf(m_pCameraNode->getViewMatrix().getTranspose());
 	drawGrid(10, 0.5);
 	drawTriangle(Vector3(0, 0.5f, -1.5f), Vector3(-0.5f, 0, -1.5f), Vector3(0.5f, 0, -1.5f));
 	
@@ -477,21 +496,25 @@ void Dream3DTest::render(float deltaTimeMs) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 	////////////////////////////////////////////////////////////////
-	triangleModel->draw(!true);
+	//triangleModelNode->getModel()->draw(!true);
 
-	triangleStripModel->draw(!true);
+	//triangleStripModelNode->getModel()->draw(!true);
 
-	lineStripModel->draw();
+	//lineStripModelNode->getModel()->draw();
 
-	lineModel->draw();
-
-	cubeModel->draw(!true);
+	//lineModelNode->getModel()->draw();
+	
+	cubeModelNode->translateForward(0.0001f * deltaTimeMs);
+	Matrix4 worldView = Matrix4::identity();
+	worldView = m_pCameraNode->getViewMatrix() * cubeModelNode->getWorldMatrix();
+	glLoadMatrixf(worldView.getTranspose());
+	cubeModelNode->render(!true);
 	
 	// Draw all of the triangles as one mesh batch.
-	meshBatch->start();
-	meshBatch->add(&_meshBatchVertices[0], (unsigned int)_meshBatchVertices.size());
-	meshBatch->stop();
-	meshBatch->draw();
+	//meshBatch->start();
+	//meshBatch->add(&_meshBatchVertices[0], (unsigned int)_meshBatchVertices.size());
+	//meshBatch->stop();
+	//meshBatch->draw();
 	////////////////////////////////////////////////////////////////
 
 	m_pCameraNode->getCamera()->setType(Camera::ORTHOGRAPHIC);
