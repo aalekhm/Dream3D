@@ -4,7 +4,6 @@ Mesh::Mesh(const VertexFormat& vertexFormat)
 	:	m_VertexFormat(vertexFormat),
 		m_iVertexCount(0),
 		m_hVBO(0),
-		m_hVAO(0),
 		m_PrimitiveType(TRIANGLES)
 {
 
@@ -15,11 +14,6 @@ Mesh::~Mesh() {
 	if(m_hVBO) {
 		GL_ASSERT( glDeleteBuffers(1, &m_hVBO) );
 		m_hVBO = 0;
-	}
-
-	if(m_hVAO) {
-		GL_ASSERT( glDeleteVertexArrays(1, &m_hVAO) );
-		m_hVAO = 0;
 	}
 }
 
@@ -54,10 +48,6 @@ VBOHandle Mesh::getVertexBuffer() const {
 	return m_hVBO;
 }
 
-VAOHandle Mesh::getVertexArrayBuffer() const {
-	return m_hVAO;
-}
-
 bool Mesh::isDynamic() const {
 	return m_bDynamic;
 }
@@ -82,20 +72,4 @@ void Mesh::setVertexData(const float* vertexData, unsigned int vertexStart, unsi
 
 		GL_ASSERT( glBufferSubData(GL_ARRAY_BUFFER, vertexStart * m_VertexFormat.getVertexSize(), vertexCount * m_VertexFormat.getVertexSize(), vertexData) );
 	}
-
-	GLuint vao;
-	GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, 0) );
-	GL_ASSERT( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
-
-	GL_ASSERT( glGenVertexArrays(1, &vao) );
-	GL_ASSERT( glBindVertexArray(vao) );
-	GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, getVertexBuffer()) );
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (GLsizei)m_VertexFormat.getVertexSize(), (GLvoid*)0);
-		glEnableVertexAttribArray(0);
-
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, (GLsizei)m_VertexFormat.getVertexSize(), (GLvoid*)(3*sizeof(float)));
-		glEnableVertexAttribArray(3);
-	GL_ASSERT( glBindVertexArray(0) );
-	m_hVAO = vao;
 }

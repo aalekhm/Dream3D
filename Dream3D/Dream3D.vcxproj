@@ -82,6 +82,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\Engine\VertexAttributeBinding.cpp" />
     <ClCompile Include="..\src\WinMain.cpp" />
     <ClCompile Include="..\src\Engine\Camera.cpp" />
     <ClCompile Include="..\src\Engine\EngineManager.cpp" />
@@ -107,6 +108,7 @@
     <ClInclude Include="..\include\Engine\Texture.h" />
     <ClInclude Include="..\include\Engine\TGA.h" />
     <ClInclude Include="..\include\Engine\Timer.h" />
+    <ClInclude Include="..\include\Engine\VertexAttributeBinding.h" />
     <ClInclude Include="..\include\Engine\VertexFormat.h" />
     <ClInclude Include="..\include\Common\Matrices.h" />
     <ClInclude Include="..\include\Common\Vectors.h" />

@@ -1,5 +1,6 @@
 #include "Dream3DTest.h"
 #include "Engine/Mesh.h"
+#include "Engine/VertexAttributeBinding.h"
 
 #define ROTATE_SPEED 0.05f
 #define WALK_SPEED 0.001f
@@ -9,8 +10,12 @@ Dream3DTest game;
 
 Mesh* createTriangleMesh1();
 Mesh* triangleMesh1;
+VertexAttributeBinding* b1;
+
 Mesh* createTriangleMesh2();
 Mesh* triangleMesh2;
+VertexAttributeBinding* b2;
+
 Dream3DTest::Dream3DTest() {
 
 }
@@ -82,9 +87,9 @@ void Dream3DTest::drawLine(const Vector3& p1, const Vector3& p2) {
 Mesh* createTriangleMesh1()
 {
 	// Calculate the vertices of the equilateral triangle.
-	Vector3 p1(0,		0.5f,	-1.0f);
-	Vector3 p2(-0.5f,	0,		-1.0f);
-	Vector3 p3(0.5f,	0,		-1.0f);
+	Vector3 p1(-0.5f,	0.5f,	-1.0f);
+	Vector3 p2(-1.0f,	0,		-1.0f);
+	Vector3 p3(-0.5f,	0,		-1.0f);
 
 	// Create 3 vertices. Each vertex has position (x, y, z) and color (red, green, blue)
 	float vertices[] =
@@ -109,24 +114,35 @@ Mesh* createTriangleMesh1()
 	}
 	mesh->setPrimitiveType(Mesh::TRIANGLES);
 	mesh->setVertexData(vertices, 0, vertexCount);
+
+	b1 = VertexAttributeBinding::create(mesh);
+
 	return mesh;
 }
 
 Mesh* createTriangleMesh2()
 {
 	// Calculate the vertices of the equilateral triangle.
-	Vector3 p1(0,		0.5f,	-1.0f);
-	Vector3 p2(-0.5f,	0,		-1.0f);
-	Vector3 p3(0.5f,	0,		-1.0f);
+	Vector3 p1(0.0f,	0.5f,	-1.0f);
+	Vector3 p2(0.0f,	0.0f,	-1.0f);
+	Vector3 p3(0.5f,	0.5f,	-1.0f);
+	
+	Vector3 p4(0.5f,	0.0f,	-1.0f);
+	Vector3 p5(1.0f,	0.5f,	-1.0f);
+	Vector3 p6(1.0f,	0.0f,	-1.0f);
 
 	// Create 3 vertices. Each vertex has position (x, y, z) and color (red, green, blue)
 	float vertices[] =
 	{
-		p1.x, p1.y, 0.0f,     0.0f, 0.0f, 1.0f,
+		p1.x, p1.y, -0.5f,     0.0f, 0.0f, 1.0f,
 		p2.x, p2.y, 0.0f,     0.0f, 1.0f, 0.0f,
 		p3.x, p3.y, 0.0f,     1.0f, 0.0f, 0.0f,
+		
+		p4.x, p4.y, -0.5f,     0.0f, 0.0f, 0.5f,
+		p5.x, p5.y, -0.5f,     0.0f, 0.5f, 0.0f,
+		p6.x, p6.y, 0.0f,     0.5f, 0.0f, 0.0f,
 	};
-	unsigned int vertexCount = 3;
+	unsigned int vertexCount = 6;
 	VertexFormat::Element elements[] =
 	{
 		VertexFormat::Element(VertexFormat::POSITION, 3),
@@ -140,8 +156,11 @@ Mesh* createTriangleMesh2()
 		printf("Failed to create mesh.");
 		return NULL;
 	}
-	mesh->setPrimitiveType(Mesh::TRIANGLES);
+	mesh->setPrimitiveType(Mesh::TRIANGLE_STRIP);
 	mesh->setVertexData(vertices, 0, vertexCount);
+
+	b2 = VertexAttributeBinding::create(mesh);
+
 	return mesh;
 }
 
@@ -155,22 +174,14 @@ void Dream3DTest::render(float deltaTimeMs) {
 	drawTriangle(Vector3(0, 0.5f, -1.0f), Vector3(-0.5f, 0, -1.0f), Vector3(0.5f, 0, -1.0f));
 
 	////////////////////////////////////////////////////////////////
-	// Software mode - No VAO's
-	GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, triangleMesh1->getVertexBuffer()) );
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (GLsizei)triangleMesh1->getVertexSize(), (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, (GLsizei)triangleMesh1->getVertexSize(), (GLvoid*)(3*sizeof(float)));
-	glEnableVertexAttribArray(3);
+	b1->bind();
 	glDrawArrays(triangleMesh1->getPrimitiveType(), 0, triangleMesh1->getVertexCount());
-	GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, 0) );
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(3);
+	b1->unbind();
 	
 	////////////////////////////////////////////////////////////////
-	// Hardware mode - With VAO's
-	glBindVertexArray(triangleMesh2->getVertexArrayBuffer());
+	b2->bind();
 	glDrawArrays(triangleMesh2->getPrimitiveType(), 0, triangleMesh2->getVertexCount());
-	glBindVertexArray(0);
+	b2->unbind();	
 }
 
 

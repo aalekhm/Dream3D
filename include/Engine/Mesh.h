@@ -21,7 +21,6 @@ class Mesh {
 		unsigned int			getVertexCount() const;
 		unsigned int			getVertexSize() const;
 		VBOHandle				getVertexBuffer() const;
-		VAOHandle				getVertexArrayBuffer() const;
 		bool					isDynamic() const;
 
 		PrimitiveType			getPrimitiveType() const;
@@ -35,7 +34,6 @@ class Mesh {
 		const VertexFormat	m_VertexFormat;
 		unsigned int		m_iVertexCount;
 		VBOHandle			m_hVBO;
-		VAOHandle			m_hVAO;
 		PrimitiveType		m_PrimitiveType;
 		bool				m_bDynamic;
 };

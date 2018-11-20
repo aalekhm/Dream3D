@@ -1,6 +1,8 @@
 #ifndef BASE_H
 #define BASE_H
 
+#define USE_VAO
+
 //C/C++
 #include <algorithm>
 #include <cassert>
@@ -16,8 +18,24 @@
 #define NULL     0
 #endif
 
-typedef GLuint VBOHandle;
-typedef GLuint VAOHandle;
+typedef GLuint VertexAttribute;				// Vertex Attribute
+typedef GLuint VBOHandle;					// Vertex Buffer Handle
+typedef GLuint VAOHandle;					// Vertex Array Handle
+
+#define gl_Vertex 			0
+#define gl_TexCoord 		1
+#define gl_Normal 			2
+#define gl_Color 			3
+#define gl_SecondaryColor 	4
+#define gl_FogCoord 		5
+#define gl_MultiTexCoord0 	8
+#define gl_MultiTexCoord1 	9
+#define gl_MultiTexCoord2 	10
+#define gl_MultiTexCoord3 	11
+#define gl_MultiTexCoord4 	12
+#define gl_MultiTexCoord5 	13
+#define gl_MultiTexCoord6 	14
+#define gl_MultiTexCoord7 	15
 
 /** Global variable to hold GL errors
  * @script{ignore} */
