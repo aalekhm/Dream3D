@@ -124,7 +124,7 @@ void WSlider::onMouseWheelEx(WPARAM wParam, LPARAM lParam) {
 
 }
 
-void WSlider::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+void WSlider::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	switch(msg) {
 		case MOUSE_DOWN:

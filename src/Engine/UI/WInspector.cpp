@@ -381,7 +381,7 @@ bool WInspector::isPtInside(int x, int y) {
 	return true;
 }
 
-void WInspector::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+void WInspector::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	switch(msg) {
 		case MOUSE_DOWN:

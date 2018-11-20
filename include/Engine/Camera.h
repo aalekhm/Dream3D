@@ -22,6 +22,7 @@
 class Camera {
 	public:
 		enum Type {
+			NONE = 0,
 			PERSPECTIVE = 1,
 			ORTHOGRAPHIC = 2
 		};
@@ -32,14 +33,17 @@ class Camera {
 		void			update(float deltaTimeMs);
 
 		void			setType(Camera::Type camType);
+		void			forceType(Camera::Type camType);
 
 		static Camera*	createPerspective(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane);
 		void			setPerspective(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane);
+		void			setPerspectiveWindow(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane);
 		void			setFrustum(float fovY, float aspectRatio, float front, float back);
 		void			setPerspectiveFrustum(float l, float r, float b, float t, float n, float f);
 
 		static Camera*	createOrthographic(int x, int y, int w, int h, float fNearPlane, float fFarPlane);
 		void			setOrthographic(int x, int y, int w, int h, float fNearPlane, float fFarPlane);
+		void			setOrthographicWindow(int x, int y, int w, int h, float fNearPlane, float fFarPlane);
 		void			setOrthogonalFrustum(float l, float r, float b, float t, float n, float f);
 
 		Matrix4&		getProjectionMatrix();
@@ -72,6 +76,7 @@ class Camera {
 
 		Matrix4			m_MatrixView;
 		Matrix4			m_MatrixProjection;
+		Matrix4			m_MatrixProjectionT;
 		Matrix4			m_MatrixViewProjection;
 
 		Node*			m_pNode;

@@ -46,7 +46,7 @@ struct WScrollbar : public WContainer {
 
 		virtual void	onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch);
 		virtual void	onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch);
-		virtual void	onMessage(UINT msg, WPARAM wParam, LPARAM lParam);
+		virtual void	onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 		
 		void			onUpdate();
 		void			onRender();

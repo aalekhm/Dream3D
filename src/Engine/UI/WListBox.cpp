@@ -11,7 +11,22 @@ using namespace std;
 #define TB_CURSOR_TOP		2
 #define TB_CURSOR_BOTTOM	12
 
-WListBox::WListBox() {
+WListBox::WListBox() 
+	: 	m_IsVScrolling(false),
+		m_IsHScrolling(false),
+		m_bStretchProportionalToParent(false),
+		m_CaretPosX(0),
+		m_CaretPosY(0),
+		m_mainX(0),
+		m_minX(0),
+		m_maxX(0),
+		m_mainY(0),
+		m_minY(0),
+		m_maxY(0),
+		m_iMaxWidthPixels(0),
+		m_iMaxHScrollbarWidth(0),
+		m_iMaxVScrollbarHeight(0)
+{
 
 }
 
@@ -94,6 +109,8 @@ void WListBox::onCreateEx(LPVOID lpVoid) {
 								(LPVOID)1);
 	m_sbVertical = (WScrollbar*)hWnd;
 	m_sbVertical->hasBG(true);
+	m_sbVertical->setPostRender(true);
+	m_iMaxVScrollbarHeight = destRect.Height;
 	m_maxX = getRight() - m_sbVertical->getWidth() - TB_RIGHT_GUTTER;
 	///////////////////////////////////////////////////
 	///////////////////////////////////////////////////
@@ -124,6 +141,33 @@ void WListBox::onCreateEx(LPVOID lpVoid) {
 	m_sbHorizontal = (WScrollbar*)hWnd;
 	m_sbHorizontal->hasBG(true);
 	m_sbHorizontal->setVisible(false);
+	m_sbHorizontal->setPostRender(true);
+	m_iMaxHScrollbarWidth = destRect.Width;
+
+	bool bHasClientArea = (m_ListBoxWidget->clientAreas.size() > 0);
+	if(bHasClientArea) {
+		CLIENT_AREA* clientArea = m_ListBoxWidget->getClientAreaAt(0);
+		RectF destClientRect;
+		idealRect.X = clientArea->posOffsets.x;
+		idealRect.Y = clientArea->posOffsets.y;
+		idealRect.Width = clientArea->posOffsets.w; 
+		idealRect.Height = clientArea->posOffsets.h;
+		WWidgetManager::getDestinationRect(	destClientRect,
+																m_ListBoxWidget->widgetSize.width,
+																m_ListBoxWidget->widgetSize.height,
+																&wndRect,
+																&idealRect,
+																clientArea->align.iHAlign,
+																clientArea->align.iVAlign
+																);
+		m_ClientRect.X = destClientRect.X - getLeft();
+		m_ClientRect.Y = destClientRect.Y - getTop();
+		m_ClientRect.Width = destClientRect.Width;
+		m_ClientRect.Height = destClientRect.Height;
+
+		m_iClientRectW = m_ClientRect.Width;
+		m_iClientRectH = m_ClientRect.Height;
+	}
 	///////////////////////////////////////////////////
 
 	setProportionalToParent(true);//STRETCH_TO_PARENTS_WIDTH);
@@ -139,7 +183,8 @@ void WListBox::calculateMaxLineWidth() {
 		std::vector<LISTBOX_ITEM*>::iterator pos = std::max_element(m_Data.begin(), m_Data.end(), maxLineLength());
 		LISTBOX_ITEM* maxItem = m_Data[pos - m_Data.begin()];
 
-		m_MaxLineWidth = maxItem->itemLabel.size();
+		const char* str = maxItem->itemLabel.c_str();
+		m_iMaxWidthPixels = TB_LEFT_GUTTER + WWidgetManager::getStringWidthTillPos(str, strlen(str)) + TB_RIGHT_GUTTER;
 	}
 }
 
@@ -224,7 +269,7 @@ void WListBox::updateStretch() {
 	calculateMaxLineWidth();
 
 	if(!m_bStretchProportionalToParent) {
-		int newWidth = TB_LEFT_GUTTER + m_MaxLineWidth*WWidgetManager::CHARACTER_WIDTH + TB_RIGHT_GUTTER + m_sbVertical->getWidth();
+		int newWidth = TB_LEFT_GUTTER + m_iMaxWidthPixels + TB_RIGHT_GUTTER + m_sbVertical->getWidth();
 		setWidth(newWidth);
 		
 		//////////////////////
@@ -278,8 +323,8 @@ void WListBox::setVScrollbarLength() {
 
 void WListBox::setHScrollbarLength() {
 
-	float _part = CHARS_PER_PAGE*WWidgetManager::CHARACTER_WIDTH;
-	float _total = m_MaxLineWidth*WWidgetManager::CHARACTER_WIDTH;
+	float _part = m_ClientRect.Width;
+	float _total = m_iMaxWidthPixels;
 	float _percentage = (_part / _total) * 100;
 
 	if(_percentage <= 100)
@@ -420,11 +465,6 @@ void WListBox::getCaretPos(int x, int y) {
 
 void WListBox::onUpdate() {
 
-	m_minX = getLeft() + TB_LEFT_GUTTER;
-	m_minY = getTop() + TB_TOP_GUTTER;
-	m_maxX = getRight() - m_sbVertical->getWidth();
-	m_maxY = getBottom() - m_sbHorizontal->getHeight();
-
 	updateScrollBarVisibility();
 
 	if(!m_IsVScrolling) {
@@ -446,22 +486,31 @@ void WListBox::onUpdate() {
 }
 
 void WListBox::updateScrollBarVisibility() {
+	m_minX = getLeft() + TB_LEFT_GUTTER;
+	m_minY = getTop() + TB_TOP_GUTTER;
+	m_maxY = getBottom() - m_sbHorizontal->getHeight();
+
 	LINES_PER_PAGE = (m_maxY-m_minY)/LINE_HEIGHT;
 
 	///////// VERTICAL
 	bool bVertSBVisibility = (m_Data.size() > LINES_PER_PAGE);
 	m_sbVertical->setVisible(bVertSBVisibility);
-	if(bVertSBVisibility)	m_maxX = getRight() - m_sbVertical->getWidth() - TB_RIGHT_GUTTER;
-	else					m_maxX = getRight() - TB_LEFT_GUTTER;
-
-	CHARS_PER_PAGE = (m_maxX-m_minX)/WWidgetManager::CHARACTER_WIDTH;
+	if(!bVertSBVisibility) {
+		m_ClientRect.Width = m_iClientRectW + m_sbVertical->getWidth();
+		m_sbHorizontal->setWidth(m_iMaxHScrollbarWidth + m_sbVertical->getWidth());
+	}
+	else {
+		m_ClientRect.Width = m_iClientRectW;
+		m_sbHorizontal->setWidth(m_iMaxHScrollbarWidth);
+	}
+	if(!bVertSBVisibility)	m_maxX = getRight() - TB_RIGHT_GUTTER;
+	else							m_maxX = getRight() - m_sbVertical->getWidth() - TB_RIGHT_GUTTER;
 	///////////////////////////////////////////////////
 
 	///////// HORIZONTAL
-	//Visibility handled in setProportionalToParent();
+	bool bHoriSBVisibility = (m_iMaxWidthPixels > m_ClientRect.Width);
+	m_sbHorizontal->setVisible(bHoriSBVisibility);
 	///////////////////////////////////////////////////
-
-	
 }
 
 void WListBox::updateVBarPosition() {
@@ -474,7 +523,7 @@ void WListBox::updateVBarPosition() {
 
 void WListBox::updateHBarPosition() {
 	float _part = abs(m_mainX);
-	float _total = m_MaxLineWidth*WWidgetManager::CHARACTER_WIDTH;
+	float _total = m_iMaxWidthPixels;
 	float _percentage = (_part / _total) * 100;
 
 	m_sbHorizontal->setCursorPositionInPercent(_percentage);
@@ -487,7 +536,7 @@ void WListBox::onRender() {
 
 		CHILD* child = m_ListBoxWidget->getChild("TextArea");
 		renderer->renderChild(m_ListBoxWidget, child, &thisWndRect);
-		//renderer->renderClientArea(m_ListBoxWidget, 0, &thisWndRect);
+		//renderer->renderClientArea(m_ListBoxWidget, 0, &m_ClientRect);
 
 		thisWndRect.X = m_minX; thisWndRect.Y = m_minY; thisWndRect.Width = m_maxX - m_minX; thisWndRect.Height = m_maxY - m_minY;
 		drawStringFont(m_minX + m_mainX, m_minY + m_mainY, 0);
@@ -533,7 +582,7 @@ void WListBox::onMouseDownEx(int x, int y, int iButton) {
 	setCaretDrawPosition();
 	
 	if(m_pParent) {
-		m_pParent->onMessage(MOUSE_DOWN, getComponentID(), 0);
+		m_pParent->onMessage((H_WND)this, MOUSE_DOWN, getComponentID(), 0);
 	}
 
 //printf("Ex onMouseDown\n");
@@ -550,8 +599,7 @@ void WListBox::onMouseUpEx(int x, int y, int iButton) {
 			return;
 	}
 
-	if(m_pParent)
-		m_pParent->onMessage(MOUSE_UP, getComponentID(), 0);
+	if(m_pParent)		m_pParent->onMessage((H_WND)this, MOUSE_UP, getComponentID(), 0);
 }
 
 void WListBox::onMouseMoveEx(int mCode, int x, int y, int prevX, int prevY) {
@@ -658,24 +706,6 @@ void WListBox::onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch) {
 void WListBox::updateMains() {
 //printf("In updateMains\n");
 	//////////////////////////////////////////////////////////////
-	/*
-	int xVal = m_minX+m_CaretPosX+m_mainX;
-	if(m_CaretPosX == 0) {
-		m_mainX = 0;
-	}
-	else
-	if(xVal > m_maxX) {
-		m_mainX = -(m_CaretPosX-(m_maxX-m_minX) + 1);
-	}
-
-	if(xVal < m_minX) {
-		//m_mainX = -m_CaretPosX;
-		m_mainX += CHARS_PER_PAGE*WWidgetManager::CHARACTER_HEIGHT;
-	}
-	if(m_mainX > 0)
-		m_mainX = 0;
-	*/
-	//////////////////////////////////////////////////////////////
 ///*
 	int yPosTop = m_minY+(m_CaretPosY - TB_CURSOR_TOP)+m_mainY;
 	if(yPosTop < m_minY) {
@@ -691,13 +721,6 @@ void WListBox::updateMains() {
 	}
 //*/
 	//////////////////////////////////////////////////////////////
-
-	//updateVBarPosition();
-	//setVScrollbarLength();
-	
-	//updateHBarPosition();
-	//setHScrollbarLength();
-
 //printf("Ex updateMains\n");
 }
 
@@ -719,7 +742,7 @@ void WListBox::onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch) {
 
 }
 
-void WListBox::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+void WListBox::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch(msg) {
 		case MOUSE_DOWN:
 		{
@@ -751,8 +774,8 @@ void WListBox::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 						case BTN_SCROLLBAR_RIGHT:
 						{
 							m_mainX -= WWidgetManager::CHARACTER_WIDTH;
-							if(abs(m_mainX) > (m_MaxLineWidth*WWidgetManager::CHARACTER_WIDTH - CHARS_PER_PAGE*WWidgetManager::CHARACTER_WIDTH))
-								m_mainX = -(m_MaxLineWidth*WWidgetManager::CHARACTER_WIDTH - CHARS_PER_PAGE*WWidgetManager::CHARACTER_WIDTH);
+							if(abs(m_mainX) > (m_iMaxWidthPixels - m_ClientRect.Width))
+								m_mainX = -(m_iMaxWidthPixels - m_ClientRect.Width);
 						}
 						break;
 					}
@@ -800,10 +823,10 @@ void WListBox::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 				break;
 				case ID_HORIZONTAL_SCROLLBAR:
 				{
-					float scrollMaterialWidth = m_MaxLineWidth*WWidgetManager::CHARACTER_WIDTH - CHARS_PER_PAGE*WWidgetManager::CHARACTER_WIDTH;
+					float scrollMaterialWidth = m_iMaxWidthPixels - m_ClientRect.Width;
 					int mainXValue = (cursorPosInPercentage*scrollMaterialWidth)/100;
 
-					m_mainX = -(mainXValue/LINE_HEIGHT)*LINE_HEIGHT;
+					m_mainX = -mainXValue;
 
 					m_IsHScrolling = true;
 				}
@@ -820,17 +843,6 @@ void WListBox::setReadOnly(bool bRd) {
 
 bool WListBox::getReadOnly() {
 	return (mState == READONLY);
-}
-
-void WListBox::setTBLineNoSpace() {
-	char* sLen = new char[255];
-	memset(sLen, 0, 255);
-	sprintf(sLen, "%d", m_Data.size());
-	TB_LINE_NO_SPACE = (strlen(sLen)+1) * WWidgetManager::CHARACTER_WIDTH + TB_LEFT_GUTTER;
-
-	m_minX = getLeft() + ((HAS_LINE_NO)?TB_LINE_NO_SPACE:0) + TB_LEFT_GUTTER;
-
-	delete[] sLen;
 }
 
 void WListBox::clearList() {

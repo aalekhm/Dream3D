@@ -233,7 +233,7 @@ void WComboBox::onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch) {
 		m_cbListBox->onKeyBUp(iVirtualKeycode, ch);
 }
 
-void WComboBox::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+void WComboBox::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch(msg) {
 		case MOUSE_DOWN:
 		{
@@ -410,7 +410,7 @@ void WComboBox::addDefaultTestItems() {
 		addItem(ss);
 	}
 
-	sprintf(ss, "c:\_projects\myyagui_20_7_combobox_memorymanaged. warning C4715: 'WListBox::getSize' : not all control paths return a value");
+	sprintf(ss, "c:\_projects\myyagui_20_7_combobox_memorymanaged. warning C4715: 'WListBox::getSize' : not all control paths return a value.");
 	addItem(ss);
 	sprintf(ss, "Finished generating code");
 	addItem(ss);

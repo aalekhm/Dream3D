@@ -107,9 +107,11 @@ void WButton::onRender() {
 	WWidgetManager::renderWidget(buttonStateName, &renderRect);
 
 	if(strcmp(m_pTitle, "") != 0) {
+		WWidgetManager::setColor(0xff000000);//ABGR
 		WWidgetManager::drawStringFont(m_pTitle, getLeft() + (getWidth()>>1), getTop() + BUTTON_TOP_GUTTER, 1);
 		if(m_State == PUSHED)//Make it look BOLD
 			WWidgetManager::drawStringFont(m_pTitle, getLeft() + (getWidth()>>1) + 1, getTop() + BUTTON_TOP_GUTTER, 1);
+		WWidgetManager::resetColor();
 	}
 }
 
@@ -118,17 +120,17 @@ void WButton::onMouseDown(int x, int y, int iButton) {
 		m_State = PUSHED;
 
 	if(m_pParent) {
-		m_pParent->onMessage(MOUSE_DOWN, getComponentID(), 0);
+		m_pParent->onMessage((H_WND)this, MOUSE_DOWN, getComponentID(), 0);
 	}
 
 	if((iButton & MK_LBUTTON) > 0)
-		WWidgetManager::onEvent(this, WM_BTN_LBUTTONDOWN, getComponentID(), 0);
+		WWidgetManager::onEvent((H_WND)this , WM_BTN_LBUTTONDOWN, getComponentID(), 0);
 	else
 	if((iButton & MK_MBUTTON) > 0)
-		WWidgetManager::onEvent(this, WM_BTN_MBUTTONDOWN, getComponentID(), 0);
+		WWidgetManager::onEvent((H_WND)this, WM_BTN_MBUTTONDOWN, getComponentID(), 0);
 	else
 	if((iButton & MK_RBUTTON) > 0)
-		WWidgetManager::onEvent(this, WM_BTN_RBUTTONDOWN, getComponentID(), 0);
+		WWidgetManager::onEvent((H_WND)this, WM_BTN_RBUTTONDOWN, getComponentID(), 0);
 }
 
 void WButton::onMouseUp(int x, int y, int iButton) {
@@ -136,17 +138,17 @@ void WButton::onMouseUp(int x, int y, int iButton) {
 		m_State = NORMAL;
 		
 	if(m_pParent) {
-		m_pParent->onMessage(MOUSE_UP, getComponentID(), 0);
+		m_pParent->onMessage((H_WND)this, MOUSE_UP, getComponentID(), 0);
 	}
 
 	if((iButton & MK_LBUTTON) > 0)
-		WWidgetManager::onEvent(this, WM_BTN_LBUTTONUP, getComponentID(), 0);
+		WWidgetManager::onEvent((H_WND)this, WM_BTN_LBUTTONUP, getComponentID(), 0);
 	else
 	if((iButton & MK_MBUTTON) > 0)
-		WWidgetManager::onEvent(this, WM_BTN_MBUTTONUP, getComponentID(), 0);
+		WWidgetManager::onEvent((H_WND)this, WM_BTN_MBUTTONUP, getComponentID(), 0);
 	else
 	if((iButton & MK_RBUTTON) > 0)
-		WWidgetManager::onEvent(this, WM_BTN_RBUTTONUP, getComponentID(), 0);
+		WWidgetManager::onEvent((H_WND)this, WM_BTN_RBUTTONUP, getComponentID(), 0);
 }
 
 void WButton::onMouseEnter(int mCode, int x, int y, int prevX, int prevY) {
@@ -161,7 +163,7 @@ void WButton::onMouseHover(int mCode, int x, int y, int prevX, int prevY) {
 		int dwDiffX = (-(prevX-x) & 0xffff);
 		int dwDiffY = (-(prevY-y) & 0xffff);
 		DWORD dwDiff = (dwDiffX <<16) | dwDiffY;
-		m_pParent->onMessage(MOUSE_HOVER, (mCode<<16)|(getComponentID()), (LPARAM)&dwDiff);
+		m_pParent->onMessage((H_WND)this, MOUSE_HOVER, (mCode<<16)|(getComponentID()), (LPARAM)&dwDiff);
 	}
 }
 
@@ -174,7 +176,7 @@ void WButton::onMouseMove(int mCode, int x, int y, int prevX, int prevY) {
 		int dwDiffX = (-(prevX-x) & 0xffff);
 		int dwDiffY = (-(prevY-y) & 0xffff);
 		DWORD dwDiff = (dwDiffX <<16) | dwDiffY;
-		m_pParent->onMessage(MOUSE_MOVE, (mCode<<16)|(getComponentID()), (LPARAM)&dwDiff);
+		m_pParent->onMessage((H_WND)this, MOUSE_MOVE, (mCode<<16)|(getComponentID()), (LPARAM)&dwDiff);
 	}
 }
 
@@ -190,7 +192,7 @@ void WButton::onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch) {
 
 }
 
-void WButton::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+void WButton::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 }
 

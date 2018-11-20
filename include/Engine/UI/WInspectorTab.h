@@ -40,7 +40,7 @@ struct WInspectorTab : public WContainer {
 		virtual void onMouseMoveEx(int mCode, int x, int y, int prevx, int prevy);
 		virtual void onMouseUpEx(int x, int y, int iButton);
 		virtual void onMouseWheelEx(WPARAM wParam, LPARAM lParam);
-		virtual void onMessage(UINT msg, WPARAM wParam, LPARAM lParam);
+		virtual void onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 		virtual bool isPtInside(int x, int y);
 		
 		void		 setState(int iState);

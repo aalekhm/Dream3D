@@ -51,7 +51,9 @@ H_WND WComponent::Create(		const char* lpClassName,
 												bool bIsContainer, 
 												bool bIsChild
 ) {
+		memset(m_pClassName, 0, 255);
 		sprintf(m_pClassName, "%s", lpClassName);
+
 		setWindowName(lpWindowName);
 
 		m_iMainX = m_iMainY = 0;
@@ -75,6 +77,7 @@ H_WND WComponent::Create(		const char* lpClassName,
 			((WContainer*)m_pParent)->addComponent(this);
 
 		onCreateEx(lParam);
+		WWidgetManager::onEvent((H_WND)this , WM__CREATE, getComponentID(), 0);
 
 		return this;
 }
@@ -89,7 +92,7 @@ const char* WComponent::getWindowName() {
 
 void WComponent::setWindowName(const char* sWindowName) {
 	if(sWindowName != NULL && strlen(sWindowName) > 0) {
-		memset(m_pClassName, 0, 255);
+		memset(m_pWindowName, 0, 255);
 		sprintf(m_pWindowName, "%s", sWindowName);
 	}
 };
@@ -180,7 +183,7 @@ void WComponent::onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch) {
 
 }
 
-void WComponent::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+void WComponent::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 }
 

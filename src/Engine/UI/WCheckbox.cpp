@@ -134,9 +134,11 @@ void WCheckbox::onRender() {
 	RectF renderRect(getLeft(), getTop() + (CHECKBOX_TEXT_HEIGHT /2) - (widget->widgetSize.height / 2), getWidth(), getHeight());
 	WWidgetManager::renderWidget(checkButtonStateName, &renderRect);
 	
+	WWidgetManager::setColor(0xff000000);//ABGR
 	WWidgetManager::drawStringFont(m_pTitle, getLeft() + CHECKBOX_STRING_STARTX, getTop() + CHECKBOX_TOP_GUTTER, 0);
 	if(m_bChecked)//Make it look BOLD
 		WWidgetManager::drawStringFont(m_pTitle, getLeft() + CHECKBOX_STRING_STARTX + 1, getTop() + CHECKBOX_TOP_GUTTER, 0);
+	WWidgetManager::resetColor();
 }
 
 void WCheckbox::onMouseDown(int x, int y, int iButton) {
@@ -192,7 +194,7 @@ void WCheckbox::onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch) {
 
 }
 
-void WCheckbox::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+void WCheckbox::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 }
 

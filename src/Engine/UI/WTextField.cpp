@@ -706,7 +706,7 @@ void WTextField::onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch) {
 	}
 
 	if(m_pParent)
-		m_pParent->onMessage(KEY_DOWN, getComponentID(), (iVirtualKeycode<<32) | ch);
+		m_pParent->onMessage((H_WND)this, KEY_DOWN, getComponentID(), (iVirtualKeycode<<32) | ch);
 
 //printf("Ex onKeyBDown\n");
 }
@@ -777,7 +777,7 @@ void WTextField::onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch) {
 
 }
 
-void WTextField::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+void WTextField::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 void WTextField::setReadOnly(bool bRd) {

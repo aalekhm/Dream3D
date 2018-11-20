@@ -507,7 +507,7 @@ void WTree::onMouseWheelEx(WPARAM wParam, LPARAM lParam){
 	}
 }
 
-void WTree::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+void WTree::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	switch(msg) {
 		case MOUSE_DOWN:

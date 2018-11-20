@@ -11,7 +11,10 @@ using namespace std;
 
 unsigned int WConsoleLog::LINE_HEIGHT;
 
-WConsoleLog::WConsoleLog() {
+WConsoleLog::WConsoleLog() 
+	:	m_iMaxWidthPixels(0),
+		m_iMaxHeightPixels(0)
+{
 	setIsContainer(true);
 	m_iMainX = m_iMainY = 0;
 
@@ -181,13 +184,16 @@ void WConsoleLog::onCreateEx(LPVOID lpVoid) {
 
 void WConsoleLog::calculateMaxLineWidth() {
 	std::vector<std::string>::iterator pos = std::max_element(m_Lines.begin(), m_Lines.end(), maxLineLength());
-	m_MaxLineWidth = m_Lines[pos - m_Lines.begin()].size();
+	const char* str = m_Lines[pos - m_Lines.begin()].c_str();
+	m_iMaxWidthPixels = TB_LEFT_GUTTER + (WWidgetManager::getStringWidthTillPos(str, strlen(str)) + ((HAS_LINE_NO)?TB_LINE_NO_SPACE:0) ) + TB_RIGHT_GUTTER;
+	m_iMaxHeightPixels = (m_Lines.size() + 1)*LINE_HEIGHT;
 }
 
 void WConsoleLog::setText(const char* str) {
-	
-	m_Lines.clear();
-	appendText(str);
+	if(str != NULL && strlen(str) > 0) {
+		m_Lines.clear();
+		appendText(str);
+	}
 }
 
 void WConsoleLog::appendText(const char* str) {
@@ -214,8 +220,8 @@ void WConsoleLog::appendText(const char* str) {
 
 void WConsoleLog::setVScrollbarLength() {
 
-	float _part = LINES_PER_PAGE*LINE_HEIGHT;
-	float _total = m_Lines.size()*LINE_HEIGHT;
+	float _part = m_ClientRect.Height;
+	float _total = m_iMaxHeightPixels;
 	float _percentage = (_part / _total) * 100;
 
 	if(_percentage <= 100)
@@ -224,8 +230,8 @@ void WConsoleLog::setVScrollbarLength() {
 
 void WConsoleLog::setHScrollbarLength() {
 
-	float _part = CHARS_PER_PAGE*WWidgetManager::CHARACTER_WIDTH;
-	float _total = m_MaxLineWidth*WWidgetManager::CHARACTER_WIDTH;
+	float _part = m_ClientRect.Width;
+	float _total = m_iMaxWidthPixels;
 	float _percentage = (_part / _total) * 100;
 
 	if(_percentage <= 100)
@@ -241,7 +247,6 @@ void WConsoleLog::drawStringFont(int x, int y, int anchor) {
 	if(lineNo > m_Lines.size()-1)
 		return;
 
-	WWidgetManager* renderer = WWidgetManager::getInstance();
 	int X = 0, Y = 0;
 	
 	int xX = x;
@@ -268,17 +273,11 @@ void WConsoleLog::drawStringFont(int x, int y, int anchor) {
 				if(c > ' ') {
 					X = WWidgetManager::m_GlyphArray[c-32].uvCoords[0];
 					Y = WWidgetManager::m_GlyphArray[c-32].uvCoords[1];
-										
-					//Rect charRect(xX, yY, CHAR_WIDTH, WWidgetManager::CHARACTER_HEIGHT);
-					//renderer->fillRect(0.0f, 255.0f, 255.0f, 255.0f, &charRect);
 
 					WWidgetManager::setColor(0xff000000);
 					WWidgetManager::drawFont(xX, yY, CHAR_WIDTH, WWidgetManager::CHARACTER_HEIGHT, X, Y);
 					WWidgetManager::resetColor();
-
-					//renderer->drawHorizontalLine(0.0f, 0.0f, 0.0f, 255.0f, xX, yY + WWidgetManager::CHARACTER_HEIGHT - 2, CHAR_WIDTH, 1);
-					//renderer->drawHorizontalLine(0.0f, 0.0f, 0.0f, 255.0f, xX, yY + (WWidgetManager::CHARACTER_HEIGHT >> 1), CHAR_WIDTH, 1);
-					
+//printf("%c", c);
 					if(m_bIsSelecting)
 						bDrawSelect = isUnderSelection(lineNo, i);
 				}
@@ -454,8 +453,6 @@ void WConsoleLog::getCaretPos(int x, int y) {
 
 void WConsoleLog::onUpdate() {
 
-	m_iMaxWidthPixels = m_iMaxHeightPixels = 0;
-	
 	setVScrollbarLength();
 	setHScrollbarLength();
 
@@ -471,12 +468,16 @@ void WConsoleLog::onUpdate() {
 		m_mainY = 0;
 	if(abs(m_mainY) > (m_Lines.size()*LINE_HEIGHT - LINES_PER_PAGE*LINE_HEIGHT))
 		m_mainY = -(m_Lines.size()*LINE_HEIGHT - LINES_PER_PAGE*LINE_HEIGHT);
+	//if(m_iMaxHeightPixels> m_ClientRect.Height) {
+	//	if(abs(m_mainY) > (m_iMaxHeightPixels - m_ClientRect.Height))
+	//		m_mainY = -(m_iMaxHeightPixels - m_ClientRect.Height);
+	//}
 
 	if(m_mainX > 0)
 		m_mainX = 0;
-	if(m_MaxLineWidth >= CHARS_PER_PAGE) {
-		if(abs(m_mainX) > (m_MaxLineWidth*WWidgetManager::CHARACTER_WIDTH - CHARS_PER_PAGE*WWidgetManager::CHARACTER_WIDTH))
-			m_mainX = -(m_MaxLineWidth*WWidgetManager::CHARACTER_WIDTH - LINES_PER_PAGE*WWidgetManager::CHARACTER_WIDTH);
+	if(m_iMaxWidthPixels > m_ClientRect.Width) {
+		if(abs(m_mainX) > (m_iMaxWidthPixels- m_ClientRect.Width))
+			m_mainX = -(m_iMaxWidthPixels - m_ClientRect.Width);
 	}
 	///////////////////////////////
 
@@ -487,66 +488,31 @@ void WConsoleLog::updateScrollBarVisibility() {
 	m_minX = getLeft() + ((HAS_LINE_NO)?TB_LINE_NO_SPACE:0) + TB_LEFT_GUTTER;
 	m_minY = getTop() + TB_TOP_GUTTER;
 
-	/*
-	///////// VERTICAL
-	bool bVertSBVisibility = (m_Lines.size() > LINES_PER_PAGE);
-	m_sbVertical->setVisible(bVertSBVisibility);
-	if(!bVertSBVisibility) {
-		m_sbHorizontal->setWidth(m_iMaxHScrollbarWidth + m_sbVertical->getWidth());
-		m_maxX = getRight() - TB_RIGHT_GUTTER;
-	}
-	else {
-		m_sbHorizontal->setWidth(m_iMaxHScrollbarWidth);
-		m_maxX = getRight() - m_sbVertical->getWidth() - TB_RIGHT_GUTTER;
-	}
-	CHARS_PER_PAGE = (m_maxX-m_minX)/WWidgetManager::CHARACTER_HEIGHT;
-	///////////////////////////////////////////////////
-
-	///////// HORIZONTAL
-	bool bHoriSBVisibility = (m_MaxLineWidth > CHARS_PER_PAGE);
-	m_sbHorizontal->setVisible(bHoriSBVisibility);
-	if(!bHoriSBVisibility) {
-		m_sbVertical->setHeight(m_iMaxVScrollbarHeight + m_sbHorizontal->getHeight());
-		m_maxY = getBottom() - TB_LEFT_GUTTER;
-	}
-	else {
-		m_sbVertical->setHeight(m_iMaxVScrollbarHeight);
-		m_maxY = getBottom() - m_sbHorizontal->getHeight() - TB_LEFT_GUTTER;
-	}
-
-	LINES_PER_PAGE = (m_maxY-m_minY)/LINE_HEIGHT;
-	///////////////////////////////////////////////////
-	//*/
-
 	///*
-	m_iMaxHeightPixels = m_Lines.size()*LINE_HEIGHT;
-	m_iMaxWidthPixels = m_MaxLineWidth*WWidgetManager::CHARACTER_WIDTH;
-
 	///////// VERTICAL
 	bool bVertSBVisibility = (m_iMaxHeightPixels > m_ClientRect.Height);
 	m_sbVertical->setVisible(bVertSBVisibility);
 	if(!bVertSBVisibility) {
-		m_ClientRect.Width = m_iClientRectW + m_sbVertical->getWidth();
+		//m_ClientRect.Width = m_iClientRectW + m_sbVertical->getWidth();
 		m_sbHorizontal->setWidth(m_iMaxHScrollbarWidth + m_sbVertical->getWidth());
 	}
 	else {
-		m_ClientRect.Width = m_iClientRectW;
+		//m_ClientRect.Width = m_iClientRectW;
 		m_sbHorizontal->setWidth(m_iMaxHScrollbarWidth);
 	}
 	if(!bVertSBVisibility)	m_maxX = getRight() - TB_RIGHT_GUTTER;
 	else					m_maxX = getRight() - m_sbVertical->getWidth() - TB_RIGHT_GUTTER;
-	CHARS_PER_PAGE = (m_maxX-m_minX)/WWidgetManager::CHARACTER_WIDTH;
 	///////////////////////////////////////////////////
 
 	///////// HORIZONTAL
 	bool bHoriSBVisibility = (m_iMaxWidthPixels > m_ClientRect.Width);
 	m_sbHorizontal->setVisible(bHoriSBVisibility);
 	if(!bHoriSBVisibility) {
-		m_ClientRect.Height = m_iClientRectH + m_sbHorizontal->getHeight();
+		//m_ClientRect.Height = m_iClientRectH + m_sbHorizontal->getHeight();
 		m_sbVertical->setHeight(m_iMaxVScrollbarHeight + m_sbHorizontal->getHeight());
 	}
 	else {
-		m_ClientRect.Height = m_iClientRectH;
+		//m_ClientRect.Height = m_iClientRectH;
 		m_sbVertical->setHeight(m_iMaxVScrollbarHeight);
 	}
 	if(!bHoriSBVisibility)	m_maxY = getBottom() - TB_LEFT_GUTTER;
@@ -558,7 +524,7 @@ void WConsoleLog::updateScrollBarVisibility() {
 
 void WConsoleLog::updateVBarPosition() {
 	float _part = abs(m_mainY);
-	float _total = m_Lines.size()*LINE_HEIGHT;
+	float _total = m_iMaxHeightPixels;
 	float _percentage = (_part / _total) * 100;
 
 	m_sbVertical->setCursorPositionInPercent(_percentage);
@@ -566,7 +532,7 @@ void WConsoleLog::updateVBarPosition() {
 
 void WConsoleLog::updateHBarPosition() {
 	float _part = abs(m_mainX);
-	float _total = m_MaxLineWidth*WWidgetManager::CHARACTER_WIDTH;
+	float _total = m_iMaxWidthPixels;
 	float _percentage = (_part / _total) * 100;
 
 	m_sbHorizontal->setCursorPositionInPercent(_percentage);
@@ -584,7 +550,9 @@ void WConsoleLog::onRender() {
 	{	
 			CHILD* child = m_TextBoxWidget->getChild("TextArea");
 			//renderer->renderChild(m_TextBoxWidget, child, &thisWndRect);
-			//renderer->renderClientArea(m_TextBoxWidget, 0, thisWndRect);
+
+			Rect clientRect(getLeft() + m_ClientRect.X, getTop() + m_ClientRect.Y, m_ClientRect.Width, m_ClientRect.Height);
+			renderer->fillRect(255.0, 255.0f, 0.0f, 255.0f, &clientRect);
 
 			if(mState == READONLY) {
 				Rect readOnlyRect(thisWndRect.X, thisWndRect.Y, thisWndRect.Width, thisWndRect.Height);
@@ -609,9 +577,9 @@ void WConsoleLog::onRender() {
 
 		if(hasKeyFocus()) {
 			WWidgetManager::drawVerticalLine(	m_minX + m_mainX + m_CaretPosX, 
-												m_minY + m_mainY + m_CaretPosY,
-												m_minX + m_mainX + m_CaretPosX, 
-												m_minY + m_mainY + m_CaretPosY + LINE_HEIGHT);
+																m_minY + m_mainY + m_CaretPosY,
+																m_minX + m_mainX + m_CaretPosX, 
+																m_minY + m_mainY + m_CaretPosY + LINE_HEIGHT);
 		}
 		
 		setSelection();
@@ -634,7 +602,9 @@ void WConsoleLog::drawLineNumbers() {
 
 			memset(dbStr, 0, 255);
 			sprintf(dbStr, "%d", (startLineNo+i));
+			WWidgetManager::setColor(0xff000000);//ABGR
 			WWidgetManager::drawStringFont(dbStr, getLeft() + TB_LINE_NO_SPACE - TB_LEFT_GUTTER, m_minY+(i*LINE_HEIGHT), 2);
+			WWidgetManager::resetColor();
 		}
 	}
 }
@@ -665,7 +635,7 @@ void WConsoleLog::setSelection() {
 void WConsoleLog::onMouseDownEx(int x, int y, int iButton) {
 
 	m_IsVScrolling = m_IsHScrolling = false;
-//printf("In onMouseDown\n");
+
 	if(	x < m_minX || x > m_maxX
 		||
 		y < m_minY || y > m_maxY
@@ -673,14 +643,13 @@ void WConsoleLog::onMouseDownEx(int x, int y, int iButton) {
 		return;
 	}
 
+	WWidgetManager::setCursor(IDC__IBEAM);
 	if(m_bIsSelecting && !GetAsyncKeyState(VK_SHIFT)) {
 		m_bIsSelecting = false;
 	}	
 
 	getCaretPos(x-m_minX-m_mainX, y-m_minY-m_mainY);
 	setCaretDrawPosition();
-
-//printf("Ex onMouseDown\n");
 }
 
 void WConsoleLog::onMouseUpEx(int x, int y, int iButton) {
@@ -689,7 +658,7 @@ void WConsoleLog::onMouseUpEx(int x, int y, int iButton) {
 		||
 		y < m_minY || y > m_maxY
 	) {
-			return;
+		return;
 	}
 
 	WWidgetManager::setCursor(IDC__IBEAM);
@@ -719,7 +688,7 @@ void WConsoleLog::onMouseMoveEx(int mCode, int x, int y, int prevX, int prevY) {
 	if(m_IsVScrolling || m_IsHScrolling)
 		return;
 
-	bool bHasHScrollBar = (m_MaxLineWidth > CHARS_PER_PAGE);
+	bool bHasHScrollBar = (m_iMaxWidthPixels > m_ClientRect.Width);
 
 	if(	(	x < m_minX || x > m_maxX
 			||
@@ -730,6 +699,8 @@ void WConsoleLog::onMouseMoveEx(int mCode, int x, int y, int prevX, int prevY) {
 	) {
 			return;
 	}
+
+	WWidgetManager::setCursor(IDC__IBEAM);
 
 	if(mCode & MK_LBUTTON) {
 		m_bIsSelecting = true;
@@ -1377,7 +1348,7 @@ void WConsoleLog::updateMains() {
 	}
 
 	if(xVal < m_minX) {
-		m_mainX += CHARS_PER_PAGE*WWidgetManager::CHARACTER_WIDTH;
+		m_mainX += m_ClientRect.Width;
 	}
 	if(m_mainX > 0)
 		m_mainX = 0;
@@ -1436,7 +1407,7 @@ void WConsoleLog::onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch) {
 
 }
 
-void WConsoleLog::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+void WConsoleLog::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch(msg) {
 		case MOUSE_DOWN:
 		{
@@ -1454,8 +1425,8 @@ void WConsoleLog::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 						case BTN_SCROLLBAR_DOWN:
 						{
 							m_mainY -= LINE_HEIGHT;
-							if(abs(m_mainY) > (m_Lines.size()*LINE_HEIGHT - LINES_PER_PAGE*LINE_HEIGHT))
-								m_mainY = -(m_Lines.size()*LINE_HEIGHT - LINES_PER_PAGE*LINE_HEIGHT);
+							if(abs(m_mainY) > (m_iMaxHeightPixels- m_ClientRect.Height))
+								m_mainY = -(m_iMaxHeightPixels - m_ClientRect.Height);
 						}
 						break;
 					}
@@ -1472,8 +1443,8 @@ void WConsoleLog::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 						case BTN_SCROLLBAR_RIGHT:
 						{
 							m_mainX -= WWidgetManager::CHARACTER_WIDTH;
-							if(abs(m_mainX) > (m_MaxLineWidth*WWidgetManager::CHARACTER_WIDTH - CHARS_PER_PAGE*WWidgetManager::CHARACTER_WIDTH))
-								m_mainX = -(m_MaxLineWidth*WWidgetManager::CHARACTER_WIDTH - CHARS_PER_PAGE*WWidgetManager::CHARACTER_WIDTH);
+							if(abs(m_mainX) > (m_iMaxWidthPixels - m_ClientRect.Width))
+								m_mainX = -(m_iMaxWidthPixels - m_ClientRect.Width);
 						}
 						break;
 					}
@@ -1486,9 +1457,10 @@ void WConsoleLog::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 			int buttonID = wParam;
 			switch(wParam) {
 				case ID_VERTICAL_SCROLLBAR:
-					
+					m_IsVScrolling = false;
 				break;
 				case ID_HORIZONTAL_SCROLLBAR:
+					m_IsHScrolling = false;
 				break;
 			}
 		}
@@ -1511,20 +1483,20 @@ void WConsoleLog::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 			switch(wParam) {
 				case ID_VERTICAL_SCROLLBAR:
 				{
-					float scrollMaterialHeight = m_Lines.size()*LINE_HEIGHT - LINES_PER_PAGE*LINE_HEIGHT;
+					float scrollMaterialHeight = m_iMaxHeightPixels - m_ClientRect.Height;
 					int mainYValue = (cursorPosInPercentage*scrollMaterialHeight)/100;
 
-					m_mainY = -(mainYValue/LINE_HEIGHT)*LINE_HEIGHT;
+					m_mainY = -mainYValue;
 
 					m_IsVScrolling = true;
 				}
 				break;
 				case ID_HORIZONTAL_SCROLLBAR:
 				{
-					float scrollMaterialWidth = m_MaxLineWidth*WWidgetManager::CHARACTER_HEIGHT - CHARS_PER_PAGE*WWidgetManager::CHARACTER_HEIGHT;
+					float scrollMaterialWidth = m_iMaxWidthPixels - m_ClientRect.Width;
 					int mainXValue = (cursorPosInPercentage*scrollMaterialWidth)/100;
 
-					m_mainX = -(mainXValue/LINE_HEIGHT)*LINE_HEIGHT;
+					m_mainX = -mainXValue;
 
 					m_IsHScrolling = true;
 				}

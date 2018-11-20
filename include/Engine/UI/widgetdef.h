@@ -3,7 +3,9 @@
 
 #include <windows.h>
 
-typedef void* H_WND;
+typedef void*		H_WND;
+typedef void*		H_FONT;
+typedef int		L_RESULT;
 
 #define IDC__ARROW				0x00
 #define IDC__IBEAM				0x01
@@ -51,6 +53,8 @@ typedef void* H_WND;
 #define WM__GETSIZE									0x008
 #define WM__SETSIZE									0x009
 #define WM__SETRECT									0x00A
+#define WM__CREATE									0x00B
+#define WM__PAINT										0x00C
 
 #define WM__ERR											-1
 #define WM__OKAY										1

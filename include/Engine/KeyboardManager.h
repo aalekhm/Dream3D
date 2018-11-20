@@ -9,11 +9,13 @@ class KeyboardManager {
 		KeyboardManager();
 		~KeyboardManager();
 
-		static bool isKeyPressed(int iKeyID);
-		void setKeyPressed(int iKeyID);
-		void setKeyReleased(int iKeyID);
+		static bool		isKeyPressed(int iKeyID);
+		void				keyPressed(unsigned int iVirtualKeycode, unsigned short ch);
+		void				keyReleased(unsigned int iVirtualKeycode, unsigned short ch);
+
 	private:
-		static bool		m_bKeys[DEF_MAX_KEYS];	// Array Used For The Keyboard Routine
+		static bool					m_bKeys[DEF_MAX_KEYS];	// Array Used For The Keyboard Routine
+		static unsigned int		m_iVirtualKeycode;
 };
 
 #endif

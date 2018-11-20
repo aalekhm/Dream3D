@@ -309,10 +309,12 @@ void WTable::onRender() {
 
 //char* ss = new char[255];
 //sprintf(ss, "%d-- %f, %d, %f, DragItm = %d", m_iMainY, m_ClientRect.Height, LINE_HEIGHT, ((m_ClientRect.Height)/LINE_HEIGHT), m_iDraggableColumn);
+//WWidgetManager::setColor(0xff000000);//ABGR
 //WWidgetManager::drawStringFont(	ss, 
 //									getLeft() + 10, 
 //									getTop() + 10, 
 //									2);
+//WWidgetManager::resetColor();
 //delete[] ss;
 	}
 	///////////////////////////////////////////////////
@@ -328,10 +330,12 @@ void WTable::drawLineNo() {
 		if(i <= m_vTableRowList.size()) {
 			memset(m_sLineNoStr, 0, 255);
 			sprintf(m_sLineNoStr, "%d", startLineNo);
+			WWidgetManager::setColor(0xff000000);//ABGR
 			WWidgetManager::drawStringFont(	m_sLineNoStr, 
 												getLeft() + TB_LINE_NO_SPACE, 
 												getTop() + TABLE_ROW_HEADER_HEIGHT + TABLE_TOP_GUTTER + (i*LINE_HEIGHT), 
 												2);
+			WWidgetManager::resetColor();
 		}
 		else
 			break;
@@ -424,7 +428,7 @@ void WTable::onMouseWheelEx(WPARAM wParam, LPARAM lParam){
 	}
 }
 
-void WTable::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+void WTable::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	switch(msg) {
 		case MOUSE_DOWN:

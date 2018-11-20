@@ -16,6 +16,17 @@ bool		m_bFULLSCREEN = true;		// Fullscreen Flag Set To TRUE By Default
 EngineManager* m_pEngineManager;
 //////////////////////////////////////////////////////////
 
+unsigned short getChar(WPARAM wParam, LPARAM lParam) {
+	BYTE* kbs = new BYTE[255];
+	GetKeyboardState(kbs);
+
+	UINT nScanCode = (lParam>>16)&0xff;
+	WORD ch = 0;
+	ToAscii(wParam, nScanCode, kbs, &ch, 0);
+
+	return ch;
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	switch(uMsg) {
 		case WM_ACTIVATE:
@@ -43,12 +54,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			}
 		case WM_KEYDOWN:
 			{
-				m_pEngineManager->setKeyPressed(wParam);
+				m_pEngineManager->keyPressed(wParam, getChar(wParam, lParam));
 				return 0;
 			}
 		case WM_KEYUP:
 			{
-				m_pEngineManager->setKeyReleased(wParam);
+				m_pEngineManager->keyReleased(wParam, getChar(wParam, lParam));
 				return 0;
 			}
 		case WM_SIZE:
@@ -198,18 +209,16 @@ bool createGLWindow(char* title, int width, int height, int bits, bool isFullScr
 	AdjustWindowRectEx(&windowRect, dwStyle, false, dwExStyle);
 
 	if(!(m_pHWnd = CreateWindowEx(	dwExStyle,
-									"Dream3D",
-									title,
-									dwStyle | 
-									WS_CLIPSIBLINGS |
-									WS_CLIPCHILDREN,
-									0, 0,
-									windowRect.right - windowRect.left,
-									windowRect.bottom - windowRect.top,
-									NULL,
-									NULL,
-									m_pHInstance,
-									NULL)
+													"Dream3D",
+													title,
+													dwStyle |  WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
+													0, 0,
+													windowRect.right - windowRect.left,
+													windowRect.bottom - windowRect.top,
+													NULL,
+													NULL,
+													m_pHInstance,
+													NULL)
 	)) {
 			killGLWindow();								// Reset The Display
 			MessageBox(NULL,"Window Creation Error.","ERROR",MB_OK|MB_ICONEXCLAMATION);
@@ -291,7 +300,7 @@ int winMainLoop() {
 		return 0;
 
 	m_pEngineManager = EngineManager::getInstance();
-	m_pEngineManager->startup(SCREEN_WIDTH, SCREEN_HEIGHT);
+	m_pEngineManager->startup(m_pHWnd);
 	
 	MSG		msg;
 	bool	done = false;
@@ -314,7 +323,7 @@ int winMainLoop() {
 				break;
 
 			if(EngineManager::isKeyPressed(VK_F1)) {
-				m_pEngineManager->setKeyPressed(VK_F1);
+				m_pEngineManager->keyPressed(0, VK_F1);
 				killGLWindow();
 				m_bFULLSCREEN = !m_bFULLSCREEN;
 				if(!createGLWindow("Dream3D!!!", SCREEN_WIDTH, SCREEN_HEIGHT, 16, m_bFULLSCREEN)) {

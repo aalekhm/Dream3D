@@ -26,7 +26,7 @@ struct WContainer : public WComponent {
 		virtual		void		onMouseEnterEx(int mCode, int x, int y, int prevX, int prevY) { };
 		virtual		void		onMouseHoverEx(int mCode, int x, int y, int prevX, int prevY) { };
 		virtual		void		onMouseLeaveEx(int mCode, int x, int y, int prevX, int prevY) { };
-		virtual		void		onMouseMoveEx(int mCode, int x, int y, int prevX, int prevY) { };
+		virtual		void		onMouseMoveEx(int mCode, int x, int y, int prevX, int prevY);
 		virtual		void		onMouseWheelEx(WPARAM wParam, LPARAM lParam) { }
 		virtual		void		onKeyBDownEx(unsigned int iVirtualKeycode, unsigned short ch) { };
 		virtual		void		onKeyBUpEx(unsigned int iVirtualKeycode, unsigned short ch) { };
@@ -45,7 +45,7 @@ struct WContainer : public WComponent {
 		virtual		void		onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch);
 		virtual		void		onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch);
 
-		virtual		void		onMessage(UINT msg, WPARAM wParam, LPARAM lParam);
+		virtual		void		onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 		H_WND					GetWindow(UINT ID_WINDOW);
 		H_WND					FindWindowQ(LPCSTR lpClassName, LPCSTR lpWindowName);

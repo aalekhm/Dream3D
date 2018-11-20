@@ -10,6 +10,8 @@ EngineManager::EngineManager()
 		m_pKeyboardManager(NULL),
 		m_pMouseManager(NULL),
 		m_pWidgetManager(NULL),
+		m_pHWnd(NULL),
+		m_pYAGUICameraNode(NULL),
 
 		m_iViewportW(0),
 		m_iViewportH(0),
@@ -29,7 +31,12 @@ EngineManager* EngineManager::getInstance() {
 	return m_pEngineManager;
 }
 
-void EngineManager::startup(int width, int height) {
+void EngineManager::startup(HWND pHWnd) {
+	m_pHWnd = pHWnd;
+	RECT rClientRect;
+	GetClientRect(m_pHWnd, &rClientRect);
+	setViewport(rClientRect.right - rClientRect.left, rClientRect.bottom - rClientRect.top);
+
 	m_pKeyboardManager = new KeyboardManager();
 	m_pMouseManager = new MouseManager();
 	m_pWidgetManager = WWidgetManager::getInstance();
@@ -38,8 +45,10 @@ void EngineManager::startup(int width, int height) {
 	initTimer();
 
 	m_iState = RUNNING;
+}
 
-	setViewport(width, height);
+HWND EngineManager::getWindowHandle() {
+	return m_pHWnd;
 }
 
 void EngineManager::shutdown() {
@@ -74,12 +83,14 @@ bool EngineManager::isKeyPressed(int iKeyID) {
 	return KeyboardManager::isKeyPressed(iKeyID);
 }
 
-void EngineManager::setKeyPressed(int iKeyID) {
-	m_pKeyboardManager->setKeyPressed(iKeyID);
+void EngineManager::keyPressed(unsigned int iVirtualKeycode, unsigned short ch) {
+	m_pKeyboardManager->keyPressed(iVirtualKeycode, ch);
+	m_pWidgetManager->keyPressed(iVirtualKeycode, ch);
 }
 
-void EngineManager::setKeyReleased(int iKeyID) {
-	m_pKeyboardManager->setKeyReleased(iKeyID);
+void EngineManager::keyReleased(unsigned int iVirtualKeycode, unsigned short ch) {
+	m_pKeyboardManager->keyReleased(iVirtualKeycode, ch);
+	m_pWidgetManager->keyReleased(iVirtualKeycode, ch);
 }
 
 void EngineManager::frame() {
@@ -173,6 +184,19 @@ void EngineManager::addUIListener(YAGUICallback callbackProc) {
 
 	if(callbackProc != NULL) {
 		m_pWidgetManager->setCallback(callbackProc);
+	}
+}
+
+void EngineManager::setUICameraNode(Node* pCameraNode) {
+	GP_ASSERT( pCamera );
+
+	m_pYAGUICameraNode = pCameraNode;
+}
+
+Camera* EngineManager::getUICamera() {
+
+	if(m_pYAGUICameraNode != NULL) {
+		return m_pYAGUICameraNode->getCamera();
 	}
 }
 

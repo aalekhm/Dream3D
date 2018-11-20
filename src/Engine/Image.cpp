@@ -5,7 +5,6 @@ Image::Image() {
 }
 
 Image* Image::createImage(const char* sTexWithPath) {
-	//TGAImg* tgaImg = new TGAImg();        // Image loader
 	TGAImg tgaImg;
 
 	// Load our Texture
@@ -32,7 +31,6 @@ Image* Image::createImage(const char* sTexWithPath) {
 	image->m_pPixelData = new unsigned char[size];
 	_memccpy(image->m_pPixelData, tgaImg.GetImg(), sizeof(unsigned char), size);
 
-	//SAFE_DELETE(tgaImg);
 	return image;
 }
 

@@ -178,7 +178,7 @@ void WScrollbar::onCreateEx(LPVOID lpVoid) {
 	setAsIntegral(true);
 }
 
-void WScrollbar::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+void WScrollbar::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	
 	switch(msg) {
 		case MOUSE_DOWN:
@@ -188,12 +188,12 @@ void WScrollbar::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 				case BTN_SCROLLBAR_LEFT:
 				case BTN_SCROLLBAR_UP:
 					if(m_pParent)
-						m_pParent->onMessage(MOUSE_DOWN, getComponentID(), (m_Align == HORIZONTAL)?BTN_SCROLLBAR_LEFT:BTN_SCROLLBAR_UP);
+						m_pParent->onMessage((H_WND)this, MOUSE_DOWN, getComponentID(), (m_Align == HORIZONTAL)?BTN_SCROLLBAR_LEFT:BTN_SCROLLBAR_UP);
 				break;
 				case BTN_SCROLLBAR_RIGHT:
 				case BTN_SCROLLBAR_DOWN:
 					if(m_pParent)
-						m_pParent->onMessage(MOUSE_DOWN, getComponentID(), (m_Align == HORIZONTAL)?BTN_SCROLLBAR_RIGHT:BTN_SCROLLBAR_DOWN);
+						m_pParent->onMessage((H_WND)this, MOUSE_DOWN, getComponentID(), (m_Align == HORIZONTAL)?BTN_SCROLLBAR_RIGHT:BTN_SCROLLBAR_DOWN);
 				break;
 				case BTN_SCROLLBAR_SCROLL:
 				break;
@@ -208,12 +208,12 @@ void WScrollbar::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 				case BTN_SCROLLBAR_LEFT:
 				case BTN_SCROLLBAR_UP:
 					if(m_pParent)
-						m_pParent->onMessage(MOUSE_UP, getComponentID(), (m_Align == HORIZONTAL)?BTN_SCROLLBAR_LEFT:BTN_SCROLLBAR_UP);
+						m_pParent->onMessage((H_WND)this, MOUSE_UP, getComponentID(), (m_Align == HORIZONTAL)?BTN_SCROLLBAR_LEFT:BTN_SCROLLBAR_UP);
 				break;
 				case BTN_SCROLLBAR_RIGHT:
 				case BTN_SCROLLBAR_DOWN:
 					if(m_pParent)
-						m_pParent->onMessage(MOUSE_UP, getComponentID(), (m_Align == HORIZONTAL)?BTN_SCROLLBAR_RIGHT:BTN_SCROLLBAR_DOWN);
+						m_pParent->onMessage((H_WND)this, MOUSE_UP, getComponentID(), (m_Align == HORIZONTAL)?BTN_SCROLLBAR_RIGHT:BTN_SCROLLBAR_DOWN);
 				break;
 				case BTN_SCROLLBAR_SCROLL:					
 				break;
@@ -247,7 +247,7 @@ void WScrollbar::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 							float percentage = (actualVal/_total)*100;
 
 							//printf("Percentage *********************************** = %f\n", percentage);
-							m_pParent->onMessage(SCROLLER_POS_ON_DRAG, getComponentID(), percentage);
+							m_pParent->onMessage((H_WND)this, SCROLLER_POS_ON_DRAG, getComponentID(), percentage);
 						}
 					}
 				}

@@ -4,15 +4,18 @@
 #include "Engine/UI/widgetdef.h"
 #include "Engine/UI/UIDefines.h"
 
+#include "Engine/Node.h"
+#include "Engine/Camera.h"
 #include <gl\gl.h>						// Header File For The OpenGL32 Library
-#include <gl\glu.h>						// Header File For The GLu32 Library
+
+#include "Engine/Texture.h"
 
 #define TEXTURE_CORE		0
 #define TEXTURE_FONT_ROSEMARY_16		1
 
 #define MAX_WIDGETS			80
 
-typedef void (__stdcall* YAGUICallback)(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+typedef L_RESULT (__stdcall* YAGUICallback)(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 struct WWidgetManager {
 
@@ -40,6 +43,7 @@ struct WWidgetManager {
 		void					onMouseWheel(WPARAM wParam, LPARAM lParam);
 
 		void					setGLStates();
+		void					setupOrthogonalProjection();
 		void					flush();
 		static void			drawFont(int x, int y, int charW, int charH, int tX, int tY);
 		static int			getGlyphU(int c);
@@ -74,50 +78,18 @@ struct WWidgetManager {
 		static void			clearScreen();
 		static void			setCursor(int MOUSE_IDC);
 
-		void					drawTGA(int texID, int x, int y);
-		static void			glSelectTexture(int id);
-		static bool			loadTexture(char* sTexName, GLuint &texid, GLuint* texWH);
-
-		static void			setupOrthogonalProjection();
-		static void			drawQuadU(	int TEXTURE_ID, 
+		static void			drawQuadU(	Texture* texture, 
 													float posX, float posY, float posW, float posH,
 													float texX, float texY, float texW, float texH);
-		static void			drawQuad(	GLfloat xTexLT,	GLfloat yTexLT,		GLfloat xTexLB,		GLfloat yTexLB,
-												GLfloat xTexRB,	GLfloat yTexRB,		GLfloat xTexRT,		GLfloat yTexRT,
-												GLfloat xQuadLT,	GLfloat yQuadLT,	GLfloat xQuadLB,	GLfloat yQuadLB,
-												GLfloat xQuadRB,	GLfloat yQuadRB,	GLfloat xQuadRT,	GLfloat yQuadRT);
-
-		static void			drawQuadU(	GLfloat xTexLT,	GLfloat yTexLT,		GLfloat xTexLB,		GLfloat yTexLB,
-													GLfloat xTexRB,	GLfloat yTexRB,		GLfloat xTexRT,		GLfloat yTexRT,
-													GLfloat xQuadLT,	GLfloat yQuadLT,	GLfloat xQuadLB,	GLfloat yQuadLB,
-													GLfloat xQuadRB,	GLfloat yQuadRB,	GLfloat xQuadRT,	GLfloat yQuadRT);
 		static void			setColor(unsigned int iColor) { m_iRenderColor = iColor; }
 		static void			resetColor() { m_iRenderColor = 0xffffffff; }
 
-		static bool			loadFont(const char* sFontFileName, unsigned int iFontSize, unsigned int iFontDPI);
+		static H_FONT	loadFont(const char* sFontFileName, unsigned int iFontSize, unsigned int iFontDPI);
+		static bool			selectFont(H_FONT hFont);
 
-		static void			onEvent(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-		static H_WND		getWindow(int wndID);
-
-		struct STGA
-		{
-			STGA()
-			{
-					data = (unsigned char*)0;
-					width = 0;
-					height = 0;
-					byteCount = 0;
-			}
-
-			~STGA() { delete[] data; data = 0; }
-
-			void destroy() { delete[] data; data = 0; }
-
-			int width;
-			int height;
-			unsigned char byteCount;
-			unsigned char* data;
-		};
+		static L_RESULT	onEvent(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+		static H_WND			getWindow(int wndID);
+		void						setCursorPosition(int x, int y);
 
 		static char*					m_clipboardTextData;
 
@@ -145,12 +117,11 @@ struct WWidgetManager {
 
 		static RectF								m_ClipRect;
 		static int									m_iCurrentTextureID;
+		static Texture*							m_pCurrentTexture;
+		static Texture*							m_pTextureCoreUI;
+		static H_FONT							m_pCurrentFont;
 
 		ColorUV										m_ColorWhiteUV;
-
-		static unsigned int						m_iFontSize;
-		static unsigned int						m_iFontDPI;
-		static CCString							m_sFontName;
 
 		int											lastMouseX;
 		int											lastMouseY;
@@ -161,10 +132,6 @@ struct WWidgetManager {
 		static HCURSOR							m_hCurSizeWE;
 		static HCURSOR							m_hCurSizeNESW;
 		static HCURSOR							m_hCurSizeNWSE;
-
-		static GLuint								m_texture[3];				// Storage For Our Font Texture
-		static GLuint								m_textureWH[3][3];			// W/H Storage For Our Font Texture
-
 };
 
 #endif

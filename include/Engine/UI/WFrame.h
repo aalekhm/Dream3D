@@ -40,7 +40,7 @@ struct WFrame : public WContainer {
 		virtual void onMouseUpEx(int x, int y, int iButton);
 		virtual void onMouseWheelEx(WPARAM wParam, LPARAM lParam);
 
-		virtual void onMessage(UINT msg, WPARAM wParam, LPARAM lParam);
+		virtual void onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 		virtual bool isPtInside(int x, int y);
 		
 		void updateVBarPosition();

@@ -49,7 +49,7 @@ struct WListBox : public WContainer {
 		virtual void		onMouseMoveEx(int mCode, int x, int y, int prevX, int prevY);
 		virtual void		onMouseWheelEx(WPARAM wParam, LPARAM lParam);
 
-		virtual void		onMessage(UINT msg, WPARAM wParam, LPARAM lParam);
+		virtual void		onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 		
 		void				setVScrollbarLength();
 		void				setHScrollbarLength();
@@ -68,13 +68,15 @@ struct WListBox : public WContainer {
 		ListBoxState							mState;
 		WIDGET*								m_ListBoxWidget;
 		std::vector<LISTBOX_ITEM*>	m_Data;
-		int										m_MaxLineWidth;
+		int										m_iMaxWidthPixels;
+		int										m_iMaxHeightPixels;
+		int										m_iMaxHScrollbarWidth;
+		int										m_iMaxVScrollbarHeight;
 
 		void			drawStringFont(int x, int y, int anchor);
 		void			getCaretPos(int x, int y);
 		void			updateMains();
 		void			setCaretDrawPosition();
-		void			setTBLineNoSpace();
 		
 		int				CURSOR_LINE_NO;
 		int				PREV_CURSOR_LINE_NO;

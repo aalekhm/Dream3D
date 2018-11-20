@@ -263,7 +263,7 @@ bool WInspectorTab::isPtInside(int x, int y) {
 	return true;
 }
 
-void WInspectorTab::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+void WInspectorTab::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	switch(msg) {
 		case MOUSE_UP:

@@ -44,17 +44,17 @@ struct WComponent {
 						m_iOffsetY = newOffsetY;
 					}
 		void		setPositionX(int x) { setPosition(x, getOffsetY()); }
-		void		setLeft(int x)	{ m_iLeft = x; setWidth(getWidth()); }
-		void		setTop(int y)	{ m_iTop = y; setHeight(getHeight()); }
+		void		setLeft(int x)	{ m_iLeft += x; m_iRight += x; }
+		void		setTop(int y)	{ m_iTop += y; m_iBottom += y; }
 		void		setPositionY(int y) { setPosition(getOffsetX(), y); }
 		void		setSize(int w, int h) { m_iRight = m_iLeft + w; m_iBottom = m_iTop + h; }
 		void		setWidth(int w) { 
 						setSize(w, getHeight()); 
-						onMessage(WIDTH_CHANGED, getWidth(), w);
+						onMessage((H_WND)this, WIDTH_CHANGED, getWidth(), w);
 					}
 		void		setHeight(int h) { 
 						setSize(getWidth(), h); 
-						onMessage(HEIGHT_CHANGED, getHeight(), h);
+						onMessage((H_WND)this, HEIGHT_CHANGED, getHeight(), h);
 					}
 
 		void		setFixedZOrder(bool bFixed)	{ m_bFixedOrder = bFixed; }
@@ -118,7 +118,7 @@ struct WComponent {
 		virtual void		onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch);
 		virtual void		onActivate()	{ m_bActive = true; }
 		virtual void		onDeactivate()	{ m_bActive = false; }
-		virtual void		onMessage(UINT msg, WPARAM wParam, LPARAM lParam);
+		virtual void		onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 		
 		virtual bool	isPointInside(int x, int y);
 

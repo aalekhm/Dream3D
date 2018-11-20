@@ -462,7 +462,13 @@ void WWindow::resizeWidth(int iDiffWidth) {
 		if(iDiffWidth > 0 && getWidth() < m_WindowCWidget->widgetSize.width)
 			return;
 
-		setPositionX(getOffsetX() + iDiffWidth);
+		if((H_WND)this == WWidgetManager::getInstance()->GetWindow(0)) {
+			setLeft(iDiffWidth);
+		}
+		else {
+			setPositionX(getOffsetX() + iDiffWidth);
+		}
+
 		setWidth(getWidth() - iDiffWidth);
 	}
 
@@ -493,11 +499,10 @@ void WWindow::onMouseMoveEx(int mCode, int x, int y, int prevx, int prevy) {
 		if(m_pParent != NULL) {
 			setPosition(getOffsetX() + diffX, getOffsetY() + diffY);
 		}
-		else {
-			setLeft(getLeft() + diffX);
-			setTop(getTop() + diffY);
-
-			onResize(getWidth(), getHeight());
+		else 
+		if((H_WND)this == WWidgetManager::getInstance()->GetWindow(0)) {
+			setLeft(diffX);
+			setTop(diffY);
 		}
 	}
 }
@@ -523,7 +528,7 @@ bool WWindow::isPtInside(int x, int y) {
 	return true;
 }
 
-void WWindow::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+void WWindow::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	switch(msg) {
 		case MOUSE_DOWN:

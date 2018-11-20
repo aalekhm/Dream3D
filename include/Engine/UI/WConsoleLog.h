@@ -45,7 +45,7 @@ struct WConsoleLog : public WContainer {
 
 		virtual void	onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch);
 		virtual void	onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch);
-		virtual void	onMessage(UINT msg, WPARAM wParam, LPARAM lParam);
+		virtual void	onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 		void			setClip(int x, int y , int width, int height);
 		void			resetClip();
@@ -76,7 +76,6 @@ struct WConsoleLog : public WContainer {
 		WIDGET*						m_TextBoxWidget;
 		std::vector<std::string>	m_Lines;
 		CCString						m_sText;
-		int								m_MaxLineWidth;
 
 		void			drawStringFont(int x, int y, int anchor);
 		void			getCaretPos(int x, int y);
@@ -96,7 +95,6 @@ struct WConsoleLog : public WContainer {
 		int				SEL_CURSOR_LINE_NO;
 		int				SEL_COLUMN_NO;
 		int				LINES_PER_PAGE;
-		int				CHARS_PER_PAGE;
 		int				TB_LINE_NO_SPACE;
 		
 		bool				m_IsVScrolling;

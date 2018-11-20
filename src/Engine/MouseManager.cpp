@@ -1,4 +1,5 @@
 #include "Engine\MouseManager.h"
+#include "Engine\EngineManager.h"
 
 MouseManager::MouseManager() 
 	:	m_bLMouseDown(false),
@@ -79,6 +80,14 @@ int MouseManager::getMousePosX() {
 
 int MouseManager::getMousePosY() {
 	return m_iMouseY;
+}
+
+void MouseManager::setCursorPosition(int x, int y) {
+
+	POINT rClientPos;
+	ClientToScreen(EngineManager::getInstance()->getWindowHandle(), &rClientPos);
+
+	SetCursorPos(x, y);
 }
 
 MouseManager::~MouseManager() {

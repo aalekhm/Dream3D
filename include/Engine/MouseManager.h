@@ -1,6 +1,8 @@
 #ifndef MOUSE_MANAGER_H
 #define MOUSE_MANAGER_H
 
+#include <windows.h>
+
 class MouseManager {
 
 	public:
@@ -20,6 +22,8 @@ class MouseManager {
 
 		int		getMousePosX();
 		int		getMousePosY();
+
+		void		setCursorPosition(int x, int y);
 	private:
 		bool	m_bLMouseDown;
 		bool	m_bMMouseDown;

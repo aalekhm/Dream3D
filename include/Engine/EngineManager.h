@@ -9,6 +9,9 @@
 
 class EngineManager {
 
+	friend class Node;
+	friend class Camera;
+
 	public:
 		enum State {
 			UNINITIALIZED,
@@ -22,7 +25,7 @@ class EngineManager {
 		static EngineManager* getInstance();
 		MouseManager*	getMouseManager() const;
 
-		void					startup(int width, int height);
+		void					startup(HWND pHWnd);
 		void					shutdown();
 		void					exit();
 		State				getState();
@@ -30,10 +33,11 @@ class EngineManager {
 		void					setViewport(int w, int h);
 		void					initTimer();
 		Timer*				getTimer();
+		HWND				getWindowHandle();
 
 		static bool			isKeyPressed(int iKeyID);
-		void					setKeyPressed(int iKeyID);
-		void					setKeyReleased(int iKeyID);
+		void					keyPressed(unsigned int iVirtualKeycode, unsigned short ch);
+		void					keyReleased(unsigned int iVirtualKeycode, unsigned short ch);
 	
 		void					onMouseDown(int mCode, int x, int y);
 		void					onMouseMove(int mCode, int x, int y);
@@ -57,12 +61,16 @@ class EngineManager {
 		virtual void			render(float elapsedTime) = 0;
 
 		void					addUIListener(YAGUICallback callbackProc);
+		void					setUICameraNode(Node* pCameraNode);
+		Camera*			getUICamera();
 	private:
 		static EngineManager*	m_pEngineManager;
 		Timer*							m_pTimer;
 		KeyboardManager*			m_pKeyboardManager;
 		MouseManager*				m_pMouseManager;
 		WWidgetManager*			m_pWidgetManager;
+		HWND							m_pHWnd;
+		Node*							m_pYAGUICameraNode;
 
 		int								m_iViewportW;
 		int								m_iViewportH;

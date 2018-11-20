@@ -38,7 +38,7 @@ class Texture {
 		{
 			REPEAT = GL_REPEAT,
 			CLAMP = GL_CLAMP,
-			CLAMP_TO_EGDE = GL_CLAMP_TO_EDGE
+			//CLAMP_TO_EGDE = GL_CLAMP_TO_EDGE
 		};
 
 		/**

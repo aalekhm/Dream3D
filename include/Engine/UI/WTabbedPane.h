@@ -22,7 +22,7 @@ struct WTabbedPane : public WContainer {
 		virtual void	onCreateEx(LPVOID lpVoid);
 		virtual void	onUpdate();
 		virtual void	onRender();
-		virtual void	onMessage(UINT msg, WPARAM wParam, LPARAM lParam);
+		virtual void	onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 		virtual void	onMouseDownEx(int x, int y, int iButton);
 
 		WContainer*		m_pParent;

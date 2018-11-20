@@ -694,7 +694,9 @@ enum ENUM_ALIGN {
 	VSTRETCH,
 	VCENTER,
 	RELATIVE_X,
-	RELATIVE_Y
+	RELATIVE_Y,
+	LEFTRIGHT_STRETCH,
+	TOPBOTTOM_STRETCH
 };
 
 enum ENUM_TEXT_ALIGN {
@@ -788,5 +790,12 @@ struct ColorUV
 };
 
 #define					IDC_CB_FONT	100
+
+struct TextureData
+{
+	unsigned int m_iTextureID;					// Storage For Our Texture
+	unsigned int m_iTextureWidth;			// W/H Storage For Our Texture
+	unsigned int m_iTextureHeight;
+};
 
 #endif

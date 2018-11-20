@@ -4,6 +4,9 @@
 #include "Engine/UI/WComponentFactory.h"
 #include "Engine/TGA.h"
 
+#define CORE_TEXTURE_UI		"data/core.tga"
+#define CORE_FONT_UI				"Rosemary_DroidSans"
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 WWidgetManager*		WWidgetManager::m_pInstance = NULL;
 YAGUICallback			WWidgetManager::m_lpfnWWndProc = NULL;
@@ -14,12 +17,13 @@ int							WWidgetManager::m_FrameCount;
 int							WWidgetManager::m_iRenderColor;
 char*						WWidgetManager::m_clipboardTextData;
 int							WWidgetManager::m_iCurrentTextureID;
+Texture*					WWidgetManager::m_pCurrentTexture = NULL;
+Texture*					WWidgetManager::m_pTextureCoreUI = NULL;
+H_FONT						WWidgetManager::m_pCurrentFont = NULL;
+
 unsigned int				WWidgetManager::CHARACTER_WIDTH;
 unsigned int				WWidgetManager::CHARACTER_HEIGHT;
 Glyph						WWidgetManager::m_GlyphArray[ASCII_END_INDEX - ASCII_START_INDEX];
-unsigned int				WWidgetManager::m_iFontSize;
-unsigned int				WWidgetManager::m_iFontDPI;
-CCString					WWidgetManager::m_sFontName;
 
 HCURSOR					WWidgetManager::m_hCurArrow;
 HCURSOR					WWidgetManager::m_hCurIBeam;
@@ -27,9 +31,6 @@ HCURSOR					WWidgetManager::m_hCurCross;
 HCURSOR					WWidgetManager::m_hCurSizeWE;
 HCURSOR					WWidgetManager::m_hCurSizeNESW;
 HCURSOR					WWidgetManager::m_hCurSizeNWSE;
-
-GLuint		WWidgetManager::m_texture[3];				// Storage For Our Font Texture
-GLuint		WWidgetManager::m_textureWH[3][3];			// W/H Storage For Our Font Texture
 
 VertexT2F_C4UB_V3F*			WWidgetManager::m_VB;
 //VertexT2F_V3F*			WWidgetManager::m_VB;
@@ -53,6 +54,7 @@ WWidgetManager::WWidgetManager() {
 	WComponentFactory::Get()->Register("WTree", &WTree::Create);
 	WComponentFactory::Get()->Register("WTable", &WTable::Create);
 	WComponentFactory::Get()->Register("WDummy", &WDummy::Create);
+	WComponentFactory::Get()->Register("WCanvas", &WCanvas::Create);
 	WComponentFactory::Get()->Register("WInspectorTab", &WInspectorTab::Create);
 	WComponentFactory::Get()->Register("WInspector", &WInspector::Create);
 
@@ -92,13 +94,15 @@ bool WWidgetManager::loadMainWindowDefaults() {
 	if(!readMap("data/coreInfo.txt"))
 		return FALSE;
 
-	glGenTextures(3, &m_texture[0]);				// Create The Texture
-
-	if(!loadTexture("data/core.tga", m_texture[TEXTURE_CORE], m_textureWH[TEXTURE_CORE]))
+	Texture* pTexture = Texture::createEx(CORE_TEXTURE_UI, false);
+	if(pTexture == NULL)
 		return FALSE;
+	m_pTextureCoreUI = pTexture;
 
-	if(!loadFont("Rosemary_DroidSans", 10, 96))
+	H_FONT hFont = loadFont(CORE_FONT_UI, 10, 96);
+	if(hFont == NULL)
 		return FALSE;
+	m_pCurrentFont = hFont;
 
 	m_ColorWhiteUV.u = 675;
 	m_ColorWhiteUV.v = 65;
@@ -109,54 +113,14 @@ bool WWidgetManager::loadMainWindowDefaults() {
 	//m_VB = new VertexT2F_C3F_V3F[SPR_MAX * 4];
 }
 
-bool WWidgetManager::loadTexture(char* sTexName, GLuint &texid, GLuint* texWH) {
-	TGAImg Img;        // Image loader
-
-	// Load our Texture
-	if(Img.Load(sTexName) != IMG_OK)
+bool WWidgetManager::selectFont(H_FONT hFont) {
+	if(hFont == NULL)
 		return false;
 
-	glBindTexture(GL_TEXTURE_2D, texid); // Set our Tex handle as current
-
-	// Specify filtering and edge actions
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
-	
-	// Create the texture
-	if(Img.GetBPP() == 24) {
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, Img.GetWidth(), Img.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, Img.GetImg());
-	}
-	else 
-	if(Img.GetBPP() == 32){
-		glTexImage2D(GL_TEXTURE_2D, 0, 4, Img.GetWidth(), Img.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, Img.GetImg());
-	}
-	else
-		return false;
-	
-	texWH[0] = Img.GetWidth();
-	texWH[1] = Img.GetHeight();
-
-	/////////////////////////////////////////////
-	//unsigned char* imgs = Img.GetImg();
-	//for(int i = 0; i < Img.GetWidth()*Img.GetWidth()*(Img.GetBPP()/8); i+=4) {
-	//	printf("--%d %d %d %d\n", imgs[i], imgs[i+1], imgs[i+2], imgs[i+3]);
-	//}
-	/////////////////////////////////////////////
-
-	return true;
- }
-
-void WWidgetManager::glSelectTexture(int id) {
-	glBindTexture(GL_TEXTURE_2D, m_texture[id]); // Select Our Font Texture
+	m_pCurrentFont = hFont;
 }
 
-bool WWidgetManager::loadFont(const char* sFontFile, unsigned int iFontSize, unsigned int iFontDPI) {
-	m_iFontSize = iFontSize;
-	m_iFontDPI = iFontDPI;
-
-	m_sFontName = sFontFile;
+H_FONT WWidgetManager::loadFont(const char* sFontFile, unsigned int iFontSize, unsigned int iFontDPI) {
 	//Rosemary_DroidSans
 	//Crisp
 	//Consolas
@@ -172,16 +136,17 @@ bool WWidgetManager::loadFont(const char* sFontFile, unsigned int iFontSize, uns
 
 	char str[255] = "";
 	memset(str, 0, 255);
-	sprintf(str, "data/%s.ttf", m_sFontName, m_iFontSize, m_iFontDPI);
+	sprintf(str, "data/%s.ttf", sFontFile, iFontSize, iFontDPI);
 
 	TTFFontEncoder* ttfEncoder = new TTFFontEncoder();
-	ttfEncoder->encode(str, m_iFontSize, m_iFontDPI, true);
+	ttfEncoder->encode(str, iFontSize, iFontDPI, true);
 
-	sprintf(str, "data/%s_%d_%dDPI", m_sFontName, m_iFontSize, m_iFontDPI);
+	sprintf(str, "data/%s_%d_%dDPI", sFontFile, iFontSize, iFontDPI);
 	CCString sFontFileName = str;
 	sFontFileName += ".tga";
 
-	if(!loadTexture(sFontFileName.c_str(), m_texture[TEXTURE_FONT_ROSEMARY_16], m_textureWH[TEXTURE_FONT_ROSEMARY_16]))
+	Texture* pTexture = Texture::createEx(sFontFileName.c_str(), false);
+	if(pTexture == NULL)
 		return FALSE;
 
 	///////////////////////////////////////////////////
@@ -200,11 +165,13 @@ bool WWidgetManager::loadFont(const char* sFontFile, unsigned int iFontSize, uns
 	m_GlyphArray[0].width = CHARACTER_WIDTH;
 	rafIn->close();
 	///////////////////////////////////////////////////
+
+	return (H_FONT)pTexture;
 }
 
 void WWidgetManager::setGLStates() {
-	//clearScreen();
-	setupOrthogonalProjection();
+	Camera* pCamera = EngineManager::getInstance()->getUICamera();
+	pCamera->setType(Camera::ORTHOGRAPHIC);
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
@@ -212,7 +179,7 @@ void WWidgetManager::setGLStates() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	setClip(0, 0, ((WContainer*)m_pBaseWindow)->getWidth(), ((WContainer*)m_pBaseWindow)->getHeight());
+	setClip(((WContainer*)m_pBaseWindow)->getLeft(), ((WContainer*)m_pBaseWindow)->getTop(), ((WContainer*)m_pBaseWindow)->getWidth(), ((WContainer*)m_pBaseWindow)->getHeight());
 }
 
 void WWidgetManager::clearScreen() {
@@ -231,7 +198,7 @@ void WWidgetManager::update(float deltaTimeMs) {
 
 		char str[255];
 		sprintf(str, "FPS : %d", EngineManager::getInstance()->getFPS());
-		drawStringFont(str, 10, 20, 0);
+		drawStringFont(str, ((WContainer*)m_pBaseWindow)->getLeft() + 10, ((WContainer*)m_pBaseWindow)->getTop() + 20, 0);
 
 		flush();
 		m_FrameCount++;
@@ -240,10 +207,9 @@ void WWidgetManager::update(float deltaTimeMs) {
 }
 
 void WWidgetManager::flush() {
-	if(m_iCurrentTextureID != -1)
+	if(m_pCurrentTexture != NULL)
 	{
-		glEnable(GL_TEXTURE_2D);
-		WWidgetManager::glSelectTexture(m_iCurrentTextureID);
+		m_pCurrentTexture->bind();
 
 		//glInterleavedArrays( GL_T2F_V3F, 0, m_VB);
 		//glInterleavedArrays( GL_T2F_V3F, 0, m_VB);
@@ -568,6 +534,12 @@ int WWidgetManager::getWidgetAlignInt(char* sAlign) {
 	else
 	if(strcmp(sAlign, "RELATIVE_Y") == 0)
 		return RELATIVE_Y;
+	else
+	if(strcmp(sAlign, "LeftRightStretch") == 0)
+		return LEFTRIGHT_STRETCH;
+	else
+	if(strcmp(sAlign, "TopBottomStretch") == 0)
+		return TOPBOTTOM_STRETCH;
 
 	return LEFT;
 }
@@ -625,7 +597,7 @@ void WWidgetManager::renderSkin(WIDGET* widget, BASESKIN* skinPtr, RectF* wndRec
 						vAlign
 					);
 	
-	drawQuadU(TEXTURE_CORE, destRect.X, destRect.Y, destRect.Width, destRect.Height, skinRect.X, skinRect.Y, skinRect.Width, skinRect.Height);
+	drawQuadU(m_pTextureCoreUI, destRect.X, destRect.Y, destRect.Width, destRect.Height, skinRect.X, skinRect.Y, skinRect.Width, skinRect.Height);
 }
 
 void WWidgetManager::renderChild(WIDGET* widget, CHILD* childPtr, RectF* wndRect) {
@@ -752,6 +724,17 @@ void WWidgetManager::getDestinationRect(RectF& destRect, float parentW, float pa
 				destRect.Width = wW - idealRect->X;
 			}
 			break;
+		case LEFTRIGHT_STRETCH:
+			{
+				int XX1 = idealRect->X;
+				int XX2 = idealRect->Width;
+
+				int x1 = wndRect->X + XX1;
+				int x2 = wndRect->X + wndRect->Width - (parentW - XX2);
+
+				destRect.Width = x2 - x1;
+			}
+			break;
 	}
 
 	switch(vAlign) {
@@ -769,8 +752,21 @@ void WWidgetManager::getDestinationRect(RectF& destRect, float parentW, float pa
 			}
 			break;
 		case VCENTER:
-			destRect.Y = (wndRect->Y + wndRect->Height) - ((parentH - idealRect->Y)/2);
-			destRect.Height = idealRect->Height;
+			{
+				destRect.Y = (wndRect->Y + wndRect->Height) - ((parentH - idealRect->Y)/2);
+				destRect.Height = idealRect->Height;
+			}
+			break;
+		case TOPBOTTOM_STRETCH:
+			{
+				int YY1 = idealRect->Y;
+				int YY2 = idealRect->Height;
+
+				int y1 = wndRect->Y + YY1;
+				int y2 = wndRect->Y + wndRect->Height - (parentH - YY2);
+
+				destRect.Height = y2 - y1;
+			}
 			break;
 	}
 }
@@ -817,17 +813,17 @@ float WWidgetManager::getWidgetHeight(const char* sWidgetName) {
 	return height;
 }
 
-void WWidgetManager::drawQuadU(	int TEXTURE_ID, 
-									float posX, float posY, float posW, float posH,
-									float texX, float texY, float texW, float texH
+void WWidgetManager::drawQuadU(	Texture* pTexture, 
+													float posX, float posY, float posW, float posH,
+													float texX, float texY, float texW, float texH
 ) {
-	if(TEXTURE_ID != m_iCurrentTextureID)
+	if(pTexture != m_pCurrentTexture)
 		WWidgetManager::getInstance()->flush();
 
-	m_iCurrentTextureID = TEXTURE_ID;
+	m_pCurrentTexture = pTexture;
 
-	GLuint TEX_WIDTH = m_textureWH[TEXTURE_ID][0];
-	GLuint TEX_HEIGHT = m_textureWH[TEXTURE_ID][1];
+	GLuint TEX_WIDTH = m_pCurrentTexture->getWidth();
+	GLuint TEX_HEIGHT = m_pCurrentTexture->getHeight();
 	GLfloat tX = texX/TEX_WIDTH, tY = texY/TEX_HEIGHT, tW = texW/TEX_WIDTH, tH = texH/TEX_HEIGHT;
 
 	RectF drawRect(posX, posY, posW, posH);
@@ -881,34 +877,6 @@ void WWidgetManager::drawQuadU(	int TEXTURE_ID,
 		
 		m_SpriteCount += 4;
 	}
-}
-
-void WWidgetManager::setupOrthogonalProjection() {
-	// Setup and orthogonal, pixel-to-pixel projection matrix
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	//int left = ((WContainer*)WWidgetManager::getInstance()->m_pBaseWindow)->getLeft();
-	//int right = left + ((WContainer*)WWidgetManager::getInstance()->m_pBaseWindow)->getWidth();
-	//int top = ((WContainer*)WWidgetManager::getInstance()->m_pBaseWindow)->getTop();
-	//int bottom = top + ((WContainer*)WWidgetManager::getInstance()->m_pBaseWindow)->getHeight();
-
-	//glOrtho(	left,
-	//				right, 
-	//				bottom, 
-	//				top, 
-	//				0.0, 
-	//				1.0);
-
-	glOrtho(	0,
-					1024, 
-					768, 
-					0, 
-					0.0, 
-					1.0);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
 }
 
 int WWidgetManager::getStringWidthTillPos(const char* cStr, int iPos) {
@@ -970,9 +938,9 @@ void WWidgetManager::drawStringFont(const char* cStr, int x, int y, int anchor) 
 			X = getGlyphU(c);
 			Y = getGlyphV(c);
 
-			WWidgetManager::setColor(0xff000000);//ABGR
+			//WWidgetManager::setColor(0xff000000);//ABGR
 			WWidgetManager::drawFont(xX, yY, CHAR_WIDTH, WWidgetManager::CHARACTER_HEIGHT, X, Y);
-			WWidgetManager::resetColor();
+			//WWidgetManager::resetColor();
 
 			xX += CHAR_WIDTH;
 		}
@@ -1026,7 +994,7 @@ void WWidgetManager::fillRect(float r, float g, float b, float a, Rect* rect) {
 	glPopAttrib();
 #endif
 	setColor( ((int)a << 24) | ((int)b << 16) | ((int)g << 8) | (int)r );//ABGR
-	drawQuadU(TEXTURE_CORE, rect->X, rect->Y, rect->Width, rect->Height, m_ColorWhiteUV.u, m_ColorWhiteUV.v, 1, 1);
+	drawQuadU(m_pTextureCoreUI, rect->X, rect->Y, rect->Width, rect->Height, m_ColorWhiteUV.u, m_ColorWhiteUV.v, 1, 1);
 	resetColor();
 }
 
@@ -1040,19 +1008,19 @@ void WWidgetManager::drawRect(float r, float g, float b, float a, Rect* rect, in
 void WWidgetManager::drawHorizontalLine(float r, float g, float b, float a, int x, int y, int width, int iStrokeWidth) {
 	
 	setColor( ((int)a << 24) | ((int)b << 16) | ((int)g << 8) | (int)r );//ABGR
-	drawQuadU(TEXTURE_CORE, x, y, width, iStrokeWidth, m_ColorWhiteUV.u, m_ColorWhiteUV.v, 1, 1);
+	drawQuadU(m_pTextureCoreUI, x, y, width, iStrokeWidth, m_ColorWhiteUV.u, m_ColorWhiteUV.v, 1, 1);
 	resetColor();
 }
 
 void WWidgetManager::drawVerticalLine(float r, float g, float b, float a, int x, int y, int height, int iStrokeWidth) {
 
 	setColor( ((int)a << 24) | ((int)b << 16) | ((int)g << 8) | (int)r );//ABGR
-	drawQuadU(TEXTURE_CORE, x, y, iStrokeWidth, height, m_ColorWhiteUV.u, m_ColorWhiteUV.v, 1, 1);
+	drawQuadU(m_pTextureCoreUI, x, y, iStrokeWidth, height, m_ColorWhiteUV.u, m_ColorWhiteUV.v, 1, 1);
 	resetColor();
 }
 
 void WWidgetManager::drawVerticalLine(float x1, float y1, float x2, float y2) {
-	drawQuadU(TEXTURE_CORE, x1, y1, 1, (y2 - y1), 675, 50, 1, 1);
+	drawQuadU(m_pTextureCoreUI, x1, y1, 1, (y2 - y1), 675, 50, 1, 1);
 }
 
 int WWidgetManager::getNextWhitespacePos(const char* str, int curPos, bool isLeft) {
@@ -1087,14 +1055,8 @@ int WWidgetManager::getNextWhitespacePos(const char* str, int curPos, bool isLef
 	}
 }
 
-void WWidgetManager::drawTGA(int texID, int x, int y) {
-	GLuint TEX_WIDTH = m_textureWH[texID][0];
-	GLuint TEX_HEIGHT = m_textureWH[texID][1];
-	drawQuadU(texID, x, y, TEX_WIDTH, TEX_HEIGHT, 0, 0, TEX_WIDTH, TEX_HEIGHT);
-}
-
 void WWidgetManager::drawFont(int xX, int yY, int charW, int charH, int tX, int tY) {
-	drawQuadU(TEXTURE_FONT_ROSEMARY_16, xX, yY, charW, charH, tX, tY, charW, charH);
+	drawQuadU((Texture*)m_pCurrentFont, xX, yY, charW, charH, tX, tY, charW, charH);
 }
 
 void WWidgetManager::setCallback(YAGUICallback wndProc) {
@@ -1102,10 +1064,10 @@ void WWidgetManager::setCallback(YAGUICallback wndProc) {
 		m_lpfnWWndProc = wndProc;
 }
 
-void WWidgetManager::onEvent(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+L_RESULT WWidgetManager::onEvent(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	if(m_lpfnWWndProc != NULL)
-		m_lpfnWWndProc(hWnd, msg, wParam, lParam);
+		return m_lpfnWWndProc(hWnd, msg, wParam, lParam);
 }
 
 H_WND WWidgetManager::GetWindow(int ID_WINDOW) {

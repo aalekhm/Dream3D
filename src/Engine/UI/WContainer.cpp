@@ -75,7 +75,14 @@ void WContainer::frameRender() {
 	WWidgetManager::GetClipBounds(&reclaimRect);
 
 	// Render the container itself
-	onRender();
+	//if(WWidgetManager::onEvent((H_WND)this , WM__PAINT, getComponentID(), 0) <= 0) 
+	{
+		onRender();
+	}
+	//else {
+	//	WWidgetManager::getInstance()->flush();
+	//	WWidgetManager::getInstance()->setGLStates();
+	//}
 
 	///////////////////////////////////////////////////
 	bool bRenderChilds = true;
@@ -283,6 +290,19 @@ void WContainer::onMouseMove(int mCode, int x, int y, int prevX, int prevY) {
 	}
 }
 
+void WContainer::onMouseMoveEx(int mCode, int x, int y, int prevX, int prevY) {
+
+	// Drag window around:
+	int diffX = (x - prevX);
+	int diffY = (y - prevY);
+
+	if((mCode & MK_LBUTTON) != 0) {
+		if(m_pParent != NULL) {
+			setPosition(getOffsetX() + diffX, getOffsetY() + diffY);
+		}
+	}
+}
+
 void WContainer::onMouseWheel(WPARAM wParam, LPARAM lParam) {
 //printf("WContainer::onMouseWheel\n");
 	// call onMouseWheel of active component
@@ -319,7 +339,7 @@ void WContainer::onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch) {
 		onKeyBUpEx(iVirtualKeycode, ch);
 }
 
-void WContainer::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+void WContainer::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 }
 

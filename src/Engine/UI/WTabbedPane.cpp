@@ -192,7 +192,7 @@ void WTabbedPane::onRender() {
 	}
 }
 
-void WTabbedPane::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+void WTabbedPane::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch(msg) {
 		case MOUSE_DOWN:
 		{

@@ -293,7 +293,7 @@ struct TREEITEM {
 		virtual void onMouseMoveEx(int mCode, int x, int y, int prevx, int prevy);
 		virtual void onMouseUpEx(int x, int y, int iButton);
 		virtual void onMouseWheelEx(WPARAM wParam, LPARAM lParam);
-		virtual void onMessage(UINT msg, WPARAM wParam, LPARAM lParam);
+		virtual void onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 		virtual void onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch);
 
 		void updateVBarPosition();
