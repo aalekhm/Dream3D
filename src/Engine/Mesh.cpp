@@ -11,7 +11,9 @@ Mesh::Mesh(const VertexFormat& vertexFormat)
 		m_bDynamic(false),
 		m_ppMeshParts(NULL),
 		m_iPartCount(0),
-		m_pTexture(NULL)
+		m_pTexture(NULL),
+
+		m_pVertexAttributeBinding(NULL)
 {
 
 }
@@ -131,7 +133,7 @@ void Mesh::draw(bool bWireframe) {
 		GL_ASSERT( glDrawArrays(getPrimitiveType(), 0, getVertexCount()) );
 	}
 	else {
-		for(int i = 0; i < getMeshPartCount(); i++) {
+		for(unsigned int i = 0; i < getMeshPartCount(); i++) {
 			MeshPart* meshPart = getMeshPart(i);
 			GP_ASSERT( meshPart );
 

@@ -82,6 +82,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\Engine\MeshBatch.cpp" />
     <ClCompile Include="..\src\Engine\MeshPart.cpp" />
     <ClCompile Include="..\src\Engine\VertexAttributeBinding.cpp" />
     <ClCompile Include="..\src\WinMain.cpp" />
@@ -105,6 +106,7 @@
     <ClInclude Include="..\include\Engine\Image.h" />
     <ClInclude Include="..\include\Engine\KeyboardManager.h" />
     <ClInclude Include="..\include\Engine\Mesh.h" />
+    <ClInclude Include="..\include\Engine\MeshBatch.h" />
     <ClInclude Include="..\include\Engine\MeshPart.h" />
     <ClInclude Include="..\include\Engine\MouseManager.h" />
     <ClInclude Include="..\include\Engine\Texture.h" />

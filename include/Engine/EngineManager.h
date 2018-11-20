@@ -40,6 +40,7 @@ class EngineManager {
 		unsigned int getHeight();
 		
 		void	frame();
+
 		virtual void initialize() = 0;
 		virtual void update(float elapsedTime) = 0;
 		virtual void render(float elapsedTime) = 0;

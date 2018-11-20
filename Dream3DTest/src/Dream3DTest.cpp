@@ -1,12 +1,17 @@
 #include "Dream3DTest.h"
 #include "Engine/Mesh.h"
 #include "Engine/MeshPart.h"
+#include "Engine/MeshBatch.h"
 #include "Engine/VertexAttributeBinding.h"
 #include "Engine/Texture.h"
 #include "Engine/TGA.h"
 
 // Declare our game instance
 Dream3DTest game;
+
+void drawTriangle(const Vector3& p1, const Vector3& p2, const Vector3& p3);
+void drawGrid(int iSize, float fStep);
+void drawLine(const Vector3& p1, const Vector3& p2);
 
 Mesh* createTriangleMesh();
 Mesh* triangleMesh;
@@ -25,6 +30,27 @@ Mesh* cubeMeshIndexed;
 
 GLuint texID[2];
 GLuint textureWH[2][2];
+
+/////////////////////////////////////////
+struct MeshBatchVertex
+{
+	Vector3 position;
+	Vector3 color;
+	float	s;
+	float	t;
+
+	MeshBatchVertex() { }
+
+	MeshBatchVertex(const Vector3& position, const Vector3& color, const float s, const float t) : position(position), color(color), s(s), t(t) { }
+};
+Vector3 randomColor() {
+	return Vector3(MATH_RANDOM_0_1(), MATH_RANDOM_0_1(), MATH_RANDOM_0_1());
+}
+
+MeshBatch* meshBatch;
+MeshBatch* createMeshBatch();
+std::vector<MeshBatchVertex> _meshBatchVertices;
+/////////////////////////////////////////
 
 bool loadTexture(char* sTexName, GLuint &texid, GLuint* texWH) {
 	TGAImg Img;        // Image loader
@@ -69,7 +95,7 @@ Dream3DTest::~Dream3DTest() {
 }
 
 void Dream3DTest::initialize() {
-	m_pCamera = Camera::createPerspective(0, 0, getWidth(), getHeight(), 45.0f, 0.1f, 10.0f);
+	m_pCamera = Camera::createPerspective(0, 0, getWidth(), getHeight(), 45.0f, 0.01f, 10.0f);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -80,8 +106,12 @@ void Dream3DTest::initialize() {
 	lineMesh = createLineMesh();
 	cubeMeshIndexed = createCubeMeshIndexed(0.25f);
 
+	meshBatch = createMeshBatch();
+
 	loadTexture("data/ColorFul_2048x1300.tga", texID[0], textureWH[0]);
 	loadTexture("data/core.tga", texID[1], textureWH[1]);
+
+	
 }
 
 void Dream3DTest::update(float deltaTimeMs) {
@@ -91,7 +121,7 @@ void Dream3DTest::update(float deltaTimeMs) {
 	m_pCamera->update(deltaTimeMs);
 }
 
-void Dream3DTest::drawGrid(int iSize, float fStep) {
+void drawGrid(int iSize, float fStep) {
 	glBegin(GL_LINES);
 	glColor3f(1.0f, 1.0f, 1.0f);
 	for(float i = (float)-iSize; i < iSize; i += fStep) {
@@ -107,7 +137,7 @@ void Dream3DTest::drawGrid(int iSize, float fStep) {
 	glEnd();
 }
 
-void Dream3DTest::drawTriangle(const Vector3& p1, const Vector3& p2, const Vector3& p3) {
+void drawTriangle(const Vector3& p1, const Vector3& p2, const Vector3& p3) {
 	glBegin(GL_TRIANGLES);
 		glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
 		glVertex3f(p1.x, p1.y, p1.z);
@@ -120,7 +150,7 @@ void Dream3DTest::drawTriangle(const Vector3& p1, const Vector3& p2, const Vecto
 	glEnd();
 }
 
-void Dream3DTest::drawLine(const Vector3& p1, const Vector3& p2) {
+void drawLine(const Vector3& p1, const Vector3& p2) {
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 	glBegin(GL_LINES);
@@ -373,6 +403,34 @@ Mesh* createCubeMeshIndexed(float size = 1.0f) {
 	return mesh;
 }
 
+MeshBatch* createMeshBatch() {
+	VertexFormat::Element elements[] = 
+	{
+		VertexFormat::Element(VertexFormat::POSITION, 3),
+		VertexFormat::Element(VertexFormat::COLOR, 3),
+		VertexFormat::Element(VertexFormat::TEXCOORD0, 2)
+	};
+	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
+	VertexFormat* vf = new VertexFormat(elements, elementCount);
+	MeshBatch* mb = MeshBatch::create(*vf, Mesh::TRIANGLES, false);
+	
+	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(0, 0.5f, -0.5f), randomColor(), 0.0f, 0.0f));
+	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(-0.5f, -0.5f, -0.5f), randomColor(), 0.0f, 1.0f));
+	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(0.5f, -0.5f, -0.5f), randomColor(), 1.0f, 1.0f));
+
+	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(0, 0.5f, -1.5f), randomColor(), 0.0f, 0.0f));
+	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(-0.5f, -0.5f, -0.5f), randomColor(), 0.0f, 1.0f));
+	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(0.5f, -0.5f, -0.5f), randomColor(), 1.0f, 1.0f));
+
+	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(0, 0.5f, 1.5f), randomColor(), 0.0f, 0.0f));
+	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(-0.5f, -0.5f, -0.5f), randomColor(), 0.0f, 1.0f));
+	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(0.5f, -0.5f, -0.5f), randomColor(), 1.0f, 1.0f));
+
+	mb->setTexture("data/cartoon.tga");
+
+	return mb;
+}
+
 void Dream3DTest::render(float deltaTimeMs) {
 	glClearColor(0.1f, 0.1f, 0.1f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
@@ -411,7 +469,12 @@ void Dream3DTest::render(float deltaTimeMs) {
 	lineMesh->draw();
 
 	cubeMeshIndexed->draw(!true);
-
+	
+	// Draw all of the triangles as one mesh batch.
+	meshBatch->start();
+	meshBatch->add(&_meshBatchVertices[0], (unsigned int)_meshBatchVertices.size());
+	meshBatch->stop();
+	meshBatch->draw();
 	////////////////////////////////////////////////////////////////
 }
 
