@@ -28,7 +28,6 @@ Camera::Camera(int x, int y, int w, int h, float iFieldOfView, float fNearPlane,
 
 		m_CameraPosition(),
 		m_CameraAngle(),
-		m_MatrixView(),
 		m_MatrixProjection(),
 		m_MatrixViewProjection()
 {
@@ -49,7 +48,6 @@ Camera::Camera(int x, int y, int w, int h, float fNearPlane, float fFarPlane)
 
 		m_CameraPosition(),
 		m_CameraAngle(),
-		m_MatrixView(),
 		m_MatrixProjection(),
 		m_MatrixViewProjection()
 {
@@ -133,13 +131,13 @@ Matrix4& Camera::getViewMatrix() {
 		}
 		//else
 		{
-			m_MatrixView.identity();
+			setIdentity();
 		}
 
 		m_iDirty &= ~CAMERA_DIRTY_VIEW;
 	}
 
-	return m_MatrixView;
+	return getMatrix();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -258,38 +256,15 @@ void Camera::setCamera(float posX, float posY, float posZ, float targetX, float 
 	position[3] = 1.0f;
 
 	// copy axis vectors to matrix
-	m_MatrixView.identity();
-	m_MatrixView.setColumn(0, left);
-	m_MatrixView.setColumn(1, up);
-	m_MatrixView.setColumn(2, forward);
-	m_MatrixView.setRow(3, position);
+	setIdentity();
+	setAxisX(Vector3(left[0], left[1], left[2]));
+	setAxisY(Vector3(up[0], up[1], up[2]));
+	setAxisZ(Vector3(forward[0], forward[1], forward[2]));
+	setPosition(Vector3(position[0], position[1], position[2]));
+	
 }
 
-void Camera::translate(Matrix4 &mat, Vector3 camPos) {
-	mat[3] = -camPos.x;
-	mat[7] = -camPos.y;
-	mat[11] = -camPos.z;
-}
-
-void Camera::moveForward(float distance) {
-	Vector3 viewVector = m_MatrixView.getColumn(2);
-	viewVector *= distance;
-	m_CameraPosition += viewVector;
-}
-
-void Camera::strafe(float distance) {
-	Vector3 rightVector = m_MatrixView.getColumn(0);
-	rightVector *= distance;
-	m_CameraPosition += rightVector;
-}
-
-void Camera::moveUpward(float distance) {
-	Vector3 upVector = m_MatrixView.getColumn(1);
-	upVector *= distance;
-	m_CameraPosition += upVector;
-}
-
-void Camera::handleMouse() {
+void Camera::handleMouse(float deltaTimeMs) {
 	int screenCenterX = EngineManager::getInstance()->getWidth()>>1;
 	int screenCenterY = EngineManager::getInstance()->getHeight()>>1;
 
@@ -308,88 +283,71 @@ void Camera::handleMouse() {
 
 	bool yesRotateX = false;
 	if(deltaY <= 0) {
-		if(m_CameraAngle.x < 80) {
+		if(getRotateX() < 80) {
 			yesRotateX = true;
 		}
 	}
 	else 
 	if(deltaY > 0) {
-		if(m_CameraAngle.x > -80) {
+		if(getRotateX() > -80) {
 			yesRotateX = true;
 		}
 	}
 
-		if(yesRotateX) {
-			m_CameraAngle.x -= deltaY;
-		}
+	if(yesRotateX) {
+		rotateX(-deltaY);
+	}
 
-		m_CameraAngle.y -= deltaX;
+	rotateY(-deltaX);
 }
 
 void Camera::handleKeyboard(float deltaTimeMs) {
 	if(EngineManager::isKeyPressed('Q') || EngineManager::isKeyPressed(VK_LEFT)) {
-		m_CameraAngle.y += ROTATE_SPEED * deltaTimeMs;
-		if(m_CameraAngle.y > 360.0f) m_CameraAngle.y = 0.0f;
+		rotateY(ROTATE_SPEED * deltaTimeMs);
 	}
 	else
 	if(EngineManager::isKeyPressed('E') || EngineManager::isKeyPressed(VK_RIGHT)) {
-		m_CameraAngle.y -= ROTATE_SPEED * deltaTimeMs;
-		if(m_CameraAngle.y < 0.0f) m_CameraAngle.y = 360.0f;
+		rotateY(-ROTATE_SPEED * deltaTimeMs);
 	}
 
 	if(EngineManager::isKeyPressed('W')) {
-		moveForward(-WALK_SPEED * deltaTimeMs);
+		translateForward(-WALK_SPEED * deltaTimeMs);
 	}
 	else
 	if(EngineManager::isKeyPressed('S')) {
-		moveForward(WALK_SPEED * deltaTimeMs);
+		translateForward(WALK_SPEED * deltaTimeMs);
 	}
 
 	if(EngineManager::isKeyPressed('A')) {
-		strafe(-WALK_SPEED * deltaTimeMs);
+		translateLeft(-WALK_SPEED * deltaTimeMs);
 	}
 	else
 	if(EngineManager::isKeyPressed('D')) {
-		strafe(WALK_SPEED * deltaTimeMs);
+		translateLeft(WALK_SPEED * deltaTimeMs);
+	}
+
+	if(EngineManager::isKeyPressed(VK_PRIOR)) {
+		translateUp(WALK_SPEED * deltaTimeMs);
+	}
+	else
+	if(EngineManager::isKeyPressed(VK_NEXT)) {
+		translateUp(-WALK_SPEED * deltaTimeMs);
 	}
 
 	if(EngineManager::isKeyPressed(VK_UP)) {
-		if(m_CameraAngle.x < 80) {
-			m_CameraAngle.x += ROTATE_SPEED * deltaTimeMs;
+		if(getRotateX() < 80) {
+			rotateX(ROTATE_SPEED * deltaTimeMs);
 		}
 	}
 	else
 	if(EngineManager::isKeyPressed(VK_DOWN)) {
-		if(m_CameraAngle.x > -80) {
-			m_CameraAngle.x -= ROTATE_SPEED * deltaTimeMs;
+		if(getRotateX() > -80) {
+			rotateX(-ROTATE_SPEED * deltaTimeMs);
 		}
 	}
-
-	if(EngineManager::isKeyPressed(VK_PRIOR)) {
-		moveUpward(WALK_SPEED * deltaTimeMs);
-	}
-	else
-	if(EngineManager::isKeyPressed(VK_NEXT)) {
-		moveUpward(-WALK_SPEED * deltaTimeMs);
-	}
-}
-
-void Camera::updateViewMatrix() {
-	// transform the camera (viewing matrix) from world space to eye space
-	// Notice all values are negated, because we move the whole scene with the
-	// inverse of camera transform    matrixView.identity();
-	m_MatrixView.identity();
-
-	translate(m_MatrixView, m_CameraPosition);
-
-	m_MatrixView.rotateZ(-m_CameraAngle.z);    // roll
-	m_MatrixView.rotateY(-m_CameraAngle.y);    // heading
-	m_MatrixView.rotateX(-m_CameraAngle.x);    // pitch	
 }
 
 void Camera::update(float deltaTimeMs) {
 	handleKeyboard(deltaTimeMs);
-	handleMouse();
-
-	updateViewMatrix();
+	handleMouse(deltaTimeMs);
 }

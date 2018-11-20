@@ -280,7 +280,7 @@ extern "C" int APIENTRY WinMain(	HINSTANCE	hInstance,
 	//if(MessageBox(NULL, "Would you like to run in FULLSCREEN mode?", "Start FullScreen", MB_YESNO) == IDNO)
 		m_bFULLSCREEN = false;
 
-	if(!createGLWindow("openGL Window...Press F1 to toogle between windowed & Fullscreen Mode.", SCREEN_WIDTH, SCREEN_HEIGHT, 16, m_bFULLSCREEN))
+	if(!createGLWindow("Dream3D!!!", SCREEN_WIDTH, SCREEN_HEIGHT, 16, m_bFULLSCREEN))
 		return 0;
 
 	m_pEngineManager = EngineManager::getInstance();
@@ -308,7 +308,7 @@ extern "C" int APIENTRY WinMain(	HINSTANCE	hInstance,
 				m_pEngineManager->setKeyPressed(VK_F1);
 				killGLWindow();
 				m_bFULLSCREEN = !m_bFULLSCREEN;
-				if(!createGLWindow("NeHe's First Polygon Tutorial", SCREEN_WIDTH, SCREEN_HEIGHT, 16, m_bFULLSCREEN)) {
+				if(!createGLWindow("Dream3D!!!", SCREEN_WIDTH, SCREEN_HEIGHT, 16, m_bFULLSCREEN)) {
 					return 0;
 				}
 			}

@@ -9,7 +9,7 @@ const float DEG2RAD = 3.141593f / 180;
 ///////////////////////////////////////////////////////////////////////////
 // 4x4 matrix
 ///////////////////////////////////////////////////////////////////////////
-class Matrix4
+struct Matrix4
 {
 	public:
 		// constructors
@@ -36,26 +36,34 @@ class Matrix4
 
 		const float* get() const;
 		const float* getTranspose();                        // return transposed matrix
-		float        getDeterminant();
+		//float        getDeterminant();
 
 		Matrix4&    identity();
 		Matrix4&    transpose();                            // transpose itself and return reference
 		//Matrix4&    invert();                               // check best inverse method before inverse
-		Matrix4&    invertEuclidean();                      // inverse of Euclidean transform matrix
+		//Matrix4&    invertEuclidean();                      // inverse of Euclidean transform matrix
 		//Matrix4&    invertAffine();                         // inverse of affine transform matrix
 		//Matrix4&    invertProjective();                     // inverse of projective matrix using partitioning
-		Matrix4&    invertGeneral();                        // inverse of generic matrix
+		//Matrix4&    invertGeneral();                        // inverse of generic matrix
 
 		// transform matrix
 		Matrix4&    translate(float x, float y, float z);   // translation by (x,y,z)
+		Matrix4&	setTranslate(float x, float y, float z);
 		Matrix4&    translate(const Vector3& v);            //
+		
 		Matrix4&    rotate(float angle, const Vector3& axis); // rotate angle(degree) along the given axix
 		Matrix4&    rotate(float angle, float x, float y, float z);
+		Matrix4&	rotate(const Vector3& vAngles);			// rotate on X,Y & Z-axis with angle in the Vector3
 		Matrix4&    rotateX(float angle);                   // rotate on X-axis with degree
 		Matrix4&    rotateY(float angle);                   // rotate on Y-axis with degree
 		Matrix4&    rotateZ(float angle);                   // rotate on Z-axis with degree
+		
 		Matrix4&    scale(float scale);                     // uniform scale
 		Matrix4&    scale(float sx, float sy, float sz);    // scale by (sx, sy, sz) on each axis
+		Matrix4&	scale(const Vector3& v);
+		Matrix4&    scaleX(float sx);
+		Matrix4&    scaleY(float sy);
+		Matrix4&    scaleZ(float sz);
 
 		// operators
 		Matrix4     operator+(const Matrix4& rhs) const;    // add rhs

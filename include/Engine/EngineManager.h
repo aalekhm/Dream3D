@@ -20,30 +20,32 @@ class EngineManager {
 		
 		static EngineManager* getInstance();
 
-		void	startup();
-		void	shutdown();
-		void	exit();
-		State	getState();
+		void			startup();
+		void			shutdown();
+		void			exit();
+		State			getState();
 
-		void	setViewport(int w, int h);
-		void	initTimer();
-		Timer*	getTimer();
-		static bool	isKeyPressed(int iKeyID);
-		void	setKeyPressed(int iKeyID);
-		void	setKeyReleased(int iKeyID);
+		void			setViewport(int w, int h);
+		void			initTimer();
+		Timer*			getTimer();
+		static bool		isKeyPressed(int iKeyID);
+		void			setKeyPressed(int iKeyID);
+		void			setKeyReleased(int iKeyID);
 
-		void	setLMouseStatus(bool bPressed, int mouseX, int mouseY);
-		void	setRMouseStatus(bool bPressed, int mouseX, int mouseY);
-		void	setMouseMove(WPARAM keyState, int mouseX, int mouseY);
+		void			setLMouseStatus(bool bPressed, int mouseX, int mouseY);
+		void			setRMouseStatus(bool bPressed, int mouseX, int mouseY);
+		void			setMouseMove(WPARAM keyState, int mouseX, int mouseY);
 
-		unsigned int getWidth();
-		unsigned int getHeight();
+		unsigned int	getWidth();
+		unsigned int	getHeight();
 		
-		void	frame();
+		void			frame();
+		void			updateFPS();
+		unsigned int	getFPS();
 
-		virtual void initialize() = 0;
-		virtual void update(float elapsedTime) = 0;
-		virtual void render(float elapsedTime) = 0;
+		virtual void	initialize() = 0;
+		virtual void	update(float elapsedTime) = 0;
+		virtual void	render(float elapsedTime) = 0;
 	private:
 		static EngineManager*	m_pEngineManager;
 		Timer*					m_pTimer;
@@ -55,6 +57,10 @@ class EngineManager {
 
 		State					m_iState;
 		bool					m_bInitialized;
+
+		unsigned int			m_iFrameCount;
+		unsigned int			m_iFrameRate;
+		double					m_dLastElapsedFPSTimeMs;
 };
 
 #endif

@@ -41,6 +41,7 @@ public:
 	void	initTimer();
 	void	startFrame();
 	void	endFrame();
+	double	getFrameElapsedTime() const;
 protected:
 
 private:

@@ -172,30 +172,30 @@ Matrix4& Matrix4::transpose()
 //  [ --+-- ]   =  [ ----+--------- ]    (T denotes 1x3 translation)
 //  [ 0 | 1 ]      [  0  |     1    ]    (R^T denotes R-transpose)
 ///////////////////////////////////////////////////////////////////////////////
-Matrix4& Matrix4::invertEuclidean()
-{
-    // transpose 3x3 rotation matrix part
-    // | R^T | 0 |
-    // | ----+-- |
-    // |  0  | 1 |
-    float tmp;
-    tmp = m[1];  m[1] = m[4];  m[4] = tmp;
-    tmp = m[2];  m[2] = m[8];  m[8] = tmp;
-    tmp = m[6];  m[6] = m[9];  m[9] = tmp;
-
-    // compute translation part -R^T * T
-    // | 0 | -R^T x |
-    // | --+------- |
-    // | 0 |   0    |
-    float x = m[12];
-    float y = m[13];
-    float z = m[14];
-    m[12] = -(m[0] * x + m[4] * y + m[8] * z);
-    m[12] = -(m[1] * x + m[5] * y + m[9] * z);
-    m[12] = -(m[2] * x + m[6] * y + m[10]* z);
-
-    return *this;
-}
+//Matrix4& Matrix4::invertEuclidean()
+//{
+//    // transpose 3x3 rotation matrix part
+//    // | R^T | 0 |
+//    // | ----+-- |
+//    // |  0  | 1 |
+//    float tmp;
+//    tmp = m[1];  m[1] = m[4];  m[4] = tmp;
+//    tmp = m[2];  m[2] = m[8];  m[8] = tmp;
+//    tmp = m[6];  m[6] = m[9];  m[9] = tmp;
+//
+//    // compute translation part -R^T * T
+//    // | 0 | -R^T x |
+//    // | --+------- |
+//    // | 0 |   0    |
+//    float x = m[12];
+//    float y = m[13];
+//    float z = m[14];
+//    m[12] = -(m[0] * x + m[4] * y + m[8] * z);
+//    m[12] = -(m[1] * x + m[5] * y + m[9] * z);
+//    m[12] = -(m[2] * x + m[6] * y + m[10]* z);
+//
+//    return *this;
+//}
 
 ///////////////////////////////////////////////////////////////////////////////
 // compute the inverse of a 4x4 affine transformation matrix
@@ -307,73 +307,73 @@ Matrix4& Matrix4::invertEuclidean()
 // If cannot find inverse, set indentity matrix
 // M^-1 = adj(M) / det(M)
 ///////////////////////////////////////////////////////////////////////////////
-Matrix4& Matrix4::invertGeneral()
-{
-    // get cofactors of minor matrices
-    float cofactor0 = getCofactor(m[5],m[6],m[7], m[9],m[10],m[11], m[13],m[14],m[15]);
-    float cofactor1 = getCofactor(m[4],m[6],m[7], m[8],m[10],m[11], m[12],m[14],m[15]);
-    float cofactor2 = getCofactor(m[4],m[5],m[7], m[8],m[9], m[11], m[12],m[13],m[15]);
-    float cofactor3 = getCofactor(m[4],m[5],m[6], m[8],m[9], m[10], m[12],m[13],m[14]);
-
-    // get determinant
-    float determinant = m[0] * cofactor0 - m[1] * cofactor1 + m[2] * cofactor2 - m[3] * cofactor3;
-    if(fabs(determinant) <= 0.00001f)
-    {
-        return identity();
-    }
-
-    // get rest of cofactors for adj(M)
-    float cofactor4 = getCofactor(m[1],m[2],m[3], m[9],m[10],m[11], m[13],m[14],m[15]);
-    float cofactor5 = getCofactor(m[0],m[2],m[3], m[8],m[10],m[11], m[12],m[14],m[15]);
-    float cofactor6 = getCofactor(m[0],m[1],m[3], m[8],m[9], m[11], m[12],m[13],m[15]);
-    float cofactor7 = getCofactor(m[0],m[1],m[2], m[8],m[9], m[10], m[12],m[13],m[14]);
-
-    float cofactor8 = getCofactor(m[1],m[2],m[3], m[5],m[6], m[7],  m[13],m[14],m[15]);
-    float cofactor9 = getCofactor(m[0],m[2],m[3], m[4],m[6], m[7],  m[12],m[14],m[15]);
-    float cofactor10= getCofactor(m[0],m[1],m[3], m[4],m[5], m[7],  m[12],m[13],m[15]);
-    float cofactor11= getCofactor(m[0],m[1],m[2], m[4],m[5], m[6],  m[12],m[13],m[14]);
-
-    float cofactor12= getCofactor(m[1],m[2],m[3], m[5],m[6], m[7],  m[9], m[10],m[11]);
-    float cofactor13= getCofactor(m[0],m[2],m[3], m[4],m[6], m[7],  m[8], m[10],m[11]);
-    float cofactor14= getCofactor(m[0],m[1],m[3], m[4],m[5], m[7],  m[8], m[9], m[11]);
-    float cofactor15= getCofactor(m[0],m[1],m[2], m[4],m[5], m[6],  m[8], m[9], m[10]);
-
-    // build inverse matrix = adj(M) / det(M)
-    // adjugate of M is the transpose of the cofactor matrix of M
-    float invDeterminant = 1.0f / determinant;
-    m[0] =  invDeterminant * cofactor0;
-    m[1] = -invDeterminant * cofactor4;
-    m[2] =  invDeterminant * cofactor8;
-    m[3] = -invDeterminant * cofactor12;
-
-    m[4] = -invDeterminant * cofactor1;
-    m[5] =  invDeterminant * cofactor5;
-    m[6] = -invDeterminant * cofactor9;
-    m[7] =  invDeterminant * cofactor13;
-
-    m[8] =  invDeterminant * cofactor2;
-    m[9] = -invDeterminant * cofactor6;
-    m[10]=  invDeterminant * cofactor10;
-    m[11]= -invDeterminant * cofactor14;
-
-    m[12]= -invDeterminant * cofactor3;
-    m[13]=  invDeterminant * cofactor7;
-    m[14]= -invDeterminant * cofactor11;
-    m[15]=  invDeterminant * cofactor15;
-
-    return *this;
-}
+//Matrix4& Matrix4::invertGeneral()
+//{
+//    // get cofactors of minor matrices
+//    float cofactor0 = getCofactor(m[5],m[6],m[7], m[9],m[10],m[11], m[13],m[14],m[15]);
+//    float cofactor1 = getCofactor(m[4],m[6],m[7], m[8],m[10],m[11], m[12],m[14],m[15]);
+//    float cofactor2 = getCofactor(m[4],m[5],m[7], m[8],m[9], m[11], m[12],m[13],m[15]);
+//    float cofactor3 = getCofactor(m[4],m[5],m[6], m[8],m[9], m[10], m[12],m[13],m[14]);
+//
+//    // get determinant
+//    float determinant = m[0] * cofactor0 - m[1] * cofactor1 + m[2] * cofactor2 - m[3] * cofactor3;
+//    if(fabs(determinant) <= 0.00001f)
+//    {
+//        return identity();
+//    }
+//
+//    // get rest of cofactors for adj(M)
+//    float cofactor4 = getCofactor(m[1],m[2],m[3], m[9],m[10],m[11], m[13],m[14],m[15]);
+//    float cofactor5 = getCofactor(m[0],m[2],m[3], m[8],m[10],m[11], m[12],m[14],m[15]);
+//    float cofactor6 = getCofactor(m[0],m[1],m[3], m[8],m[9], m[11], m[12],m[13],m[15]);
+//    float cofactor7 = getCofactor(m[0],m[1],m[2], m[8],m[9], m[10], m[12],m[13],m[14]);
+//
+//    float cofactor8 = getCofactor(m[1],m[2],m[3], m[5],m[6], m[7],  m[13],m[14],m[15]);
+//    float cofactor9 = getCofactor(m[0],m[2],m[3], m[4],m[6], m[7],  m[12],m[14],m[15]);
+//    float cofactor10= getCofactor(m[0],m[1],m[3], m[4],m[5], m[7],  m[12],m[13],m[15]);
+//    float cofactor11= getCofactor(m[0],m[1],m[2], m[4],m[5], m[6],  m[12],m[13],m[14]);
+//
+//    float cofactor12= getCofactor(m[1],m[2],m[3], m[5],m[6], m[7],  m[9], m[10],m[11]);
+//    float cofactor13= getCofactor(m[0],m[2],m[3], m[4],m[6], m[7],  m[8], m[10],m[11]);
+//    float cofactor14= getCofactor(m[0],m[1],m[3], m[4],m[5], m[7],  m[8], m[9], m[11]);
+//    float cofactor15= getCofactor(m[0],m[1],m[2], m[4],m[5], m[6],  m[8], m[9], m[10]);
+//
+//    // build inverse matrix = adj(M) / det(M)
+//    // adjugate of M is the transpose of the cofactor matrix of M
+//    float invDeterminant = 1.0f / determinant;
+//    m[0] =  invDeterminant * cofactor0;
+//    m[1] = -invDeterminant * cofactor4;
+//    m[2] =  invDeterminant * cofactor8;
+//    m[3] = -invDeterminant * cofactor12;
+//
+//    m[4] = -invDeterminant * cofactor1;
+//    m[5] =  invDeterminant * cofactor5;
+//    m[6] = -invDeterminant * cofactor9;
+//    m[7] =  invDeterminant * cofactor13;
+//
+//    m[8] =  invDeterminant * cofactor2;
+//    m[9] = -invDeterminant * cofactor6;
+//    m[10]=  invDeterminant * cofactor10;
+//    m[11]= -invDeterminant * cofactor14;
+//
+//    m[12]= -invDeterminant * cofactor3;
+//    m[13]=  invDeterminant * cofactor7;
+//    m[14]= -invDeterminant * cofactor11;
+//    m[15]=  invDeterminant * cofactor15;
+//
+//    return *this;
+//}
 
 ///////////////////////////////////////////////////////////////////////////////
 // return determinant of 4x4 matrix
 ///////////////////////////////////////////////////////////////////////////////
-float Matrix4::getDeterminant()
-{
-    return m[0] * getCofactor(m[5],m[6],m[7], m[9],m[10],m[11], m[13],m[14],m[15]) -
-           m[1] * getCofactor(m[4],m[6],m[7], m[8],m[10],m[11], m[12],m[14],m[15]) +
-           m[2] * getCofactor(m[4],m[5],m[7], m[8],m[9], m[11], m[12],m[13],m[15]) -
-           m[3] * getCofactor(m[4],m[5],m[6], m[8],m[9], m[10], m[12],m[13],m[14]);
-}
+//float Matrix4::getDeterminant()
+//{
+//    return m[0] * getCofactor(m[5],m[6],m[7], m[9],m[10],m[11], m[13],m[14],m[15]) -
+//           m[1] * getCofactor(m[4],m[6],m[7], m[8],m[10],m[11], m[12],m[14],m[15]) +
+//           m[2] * getCofactor(m[4],m[5],m[7], m[8],m[9], m[11], m[12],m[13],m[15]) -
+//           m[3] * getCofactor(m[4],m[5],m[6], m[8],m[9], m[10], m[12],m[13],m[14]);
+//}
 
 ///////////////////////////////////////////////////////////////////////////////
 // compute cofactor of 3x3 minor matrix without sign
@@ -396,7 +396,8 @@ float Matrix4::getCofactor(float m0, float m1, float m2,
 ///////////////////////////////////////////////////////////////////////////////
 Matrix4& Matrix4::translate(const Vector3& v)
 {
-    return translate(v.x, v.y, v.z);
+    //return translate(v.x, v.y, v.z);
+	return setTranslate(v.x, v.y, v.z);
 }
 
 Matrix4& Matrix4::translate(float x, float y, float z)
@@ -405,6 +406,15 @@ Matrix4& Matrix4::translate(float x, float y, float z)
     m[4] += m[12]*y;   m[5] += m[13]*y;   m[6] += m[14]*y;   m[7] += m[15]*y;
     m[8] += m[12]*z;   m[9] += m[13]*z;   m[10]+= m[14]*z;   m[11]+= m[15]*z;
 	
+	return *this;
+}
+
+Matrix4& Matrix4::setTranslate(float x, float y, float z)
+{
+    m[3] = m[15]*x;
+    m[7] = m[15]*y;
+    m[11]= m[15]*z;
+
 	return *this;
 }
 
@@ -421,10 +431,35 @@ Matrix4& Matrix4::scale(float x, float y, float z)
     m[0] = m[0]*x;   m[1] = m[1]*x;   m[2] = m[2]*x;   m[3] = m[3]*x;
     m[4] = m[4]*y;   m[5] = m[5]*y;   m[6] = m[6]*y;   m[7] = m[7]*y;
     m[8] = m[8]*z;   m[9] = m[9]*z;   m[10]= m[10]*z;  m[11]= m[11]*z;
-    return *this;
+    
+	return *this;
 }
 
+Matrix4& Matrix4::scale(const Vector3& v) {
+	scaleX(v.x);
+	scaleY(v.y);
+	scaleZ(v.z);
 
+	return *this;
+}
+
+Matrix4& Matrix4::scaleX(float sx) {
+	m[0] = m[0]*sx;   m[1] = m[1]*sx;   m[2] = m[2]*sx;   m[3] = m[3]*sx;
+
+	return *this;
+}
+
+Matrix4& Matrix4::scaleY(float sy) {
+	m[4] = m[4]*sy;   m[5] = m[5]*sy;   m[6] = m[6]*sy;   m[7] = m[7]*sy;
+
+	return *this;
+}
+
+Matrix4& Matrix4::scaleZ(float sz) {
+	m[8] = m[8]*sz;   m[9] = m[9]*sz;   m[10]= m[10]*sz;  m[11]= m[11]*sz;
+
+	return *this;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // build a rotation matrix with given angle(degree) and rotation axis, then
@@ -469,6 +504,15 @@ Matrix4& Matrix4::rotate(float angle, float x, float y, float z)
     *this = m * (*this);
 
     return *this;
+}
+
+Matrix4& Matrix4::rotate(const Vector3& vAngles)
+{
+	rotateZ(vAngles.z);	// roll
+	rotateY(vAngles.y);	// heading
+	rotateX(vAngles.x);	// pitch
+
+	return *this;
 }
 
 Matrix4& Matrix4::rotateX(float angle)

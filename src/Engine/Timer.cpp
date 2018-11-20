@@ -136,3 +136,6 @@ void Timer::endFrame() {
 	m_dElapasedGameTimeMs += m_dDeltaTimeMs;
 }
 
+double Timer::getFrameElapsedTime() const {
+	return m_dElapsedTimeMs;
+}

@@ -4,7 +4,7 @@
 #include <cmath>
 #include <iostream>
 
-class Matrix4;
+struct Matrix4;
 
 ///////////////////////////////////////////////////////////////////////////////
 // 2D vector
@@ -77,6 +77,8 @@ struct Vector3
 	Vector3     cross(const Vector3& vec) const;        // cross product
 	bool        equal(const Vector3& vec, float e) const; // compare with epsilon
 	static void	cross(const Vector3& v1, const Vector3& v2, Vector3* dst);
+	bool		isZero();
+	bool		isOne();
 
 	// operators
 	Vector3     operator-() const;                      // unary operator (negate)

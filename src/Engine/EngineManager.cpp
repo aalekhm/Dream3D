@@ -6,8 +6,18 @@
 EngineManager*	EngineManager::m_pEngineManager;
 
 EngineManager::EngineManager() 
-	:	m_iState(UNINITIALIZED),
-	 	m_bInitialized(false)
+	:	m_pTimer(NULL),
+		m_pKeyboardManager(NULL),
+		m_pMouseManager(NULL),
+		
+		m_iViewportW(0),
+		m_iViewportH(0),
+		m_iState(UNINITIALIZED),
+	 	m_bInitialized(false),
+
+		m_iFrameCount(0),
+		m_iFrameRate(0),
+		m_dLastElapsedFPSTimeMs(0.0f)
 {
 	GP_ASSERT(m_pEngineManager == NULL);
 	m_pEngineManager = this;
@@ -22,7 +32,6 @@ void EngineManager::startup() {
 	m_pKeyboardManager = new KeyboardManager();
 	m_pMouseManager = new MouseManager();
 	m_pTimer = new Timer();
-	//Texture* tex = Texture::create("data/core.tga");
 
 	initTimer();
 
@@ -81,6 +90,8 @@ void EngineManager::frame() {
 		update((float)m_pTimer->getDeltaTimeMs());
 		render((float)m_pTimer->getDeltaTimeMs());
 
+		updateFPS();
+
 		m_pTimer->endFrame();
 	}
 }
@@ -103,6 +114,19 @@ unsigned int EngineManager::getWidth() {
 
 unsigned int EngineManager::getHeight() {
 	return m_iViewportH;
+}
+
+void EngineManager::updateFPS() {
+	++m_iFrameCount;
+	if( (m_pTimer->getFrameElapsedTime() - m_dLastElapsedFPSTimeMs) >= 1000.0f) {
+		m_iFrameRate = m_iFrameCount;
+		m_iFrameCount = 0;
+		m_dLastElapsedFPSTimeMs = m_pTimer->getElapsedTimeInMilliSec();
+	}
+}
+
+unsigned int EngineManager::getFPS() {
+	return m_iFrameRate;
 }
 
 EngineManager::~EngineManager() {

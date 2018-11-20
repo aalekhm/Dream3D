@@ -504,8 +504,8 @@ void Dream3DTest::render(float deltaTimeMs) {
 	////////////////////////////////////////////////////////////////
 
 	m_pCamera->setType(Camera::ORTHOGRAPHIC);
-	Vector4 src(0, 0, 900.0f, 695.0f);
 
+	Vector4 src(0, 0, 900.0f, 695.0f);
 	spriteBatch->setClip(0, 0, getWidth(), getHeight());
 	spriteBatch->start();
 		spriteBatch->setClip(0, 0, 100, 100);

@@ -86,6 +86,7 @@
     <ClCompile Include="..\src\Engine\MeshBatch.cpp" />
     <ClCompile Include="..\src\Engine\MeshPart.cpp" />
     <ClCompile Include="..\src\Engine\SpriteBatch.cpp" />
+    <ClCompile Include="..\src\Engine\Transform.cpp" />
     <ClCompile Include="..\src\Engine\VertexAttributeBinding.cpp" />
     <ClCompile Include="..\src\WinMain.cpp" />
     <ClCompile Include="..\src\Engine\Camera.cpp" />
@@ -116,6 +117,7 @@
     <ClInclude Include="..\include\Engine\Texture.h" />
     <ClInclude Include="..\include\Engine\TGA.h" />
     <ClInclude Include="..\include\Engine\Timer.h" />
+    <ClInclude Include="..\include\Engine\Transform.h" />
     <ClInclude Include="..\include\Engine\VertexAttributeBinding.h" />
     <ClInclude Include="..\include\Engine\VertexFormat.h" />
     <ClInclude Include="..\include\Common\Matrices.h" />

@@ -318,6 +318,14 @@ Vector3 operator*(const float a, const Vector3 vec) {
 	return Vector3(a*vec.x, a*vec.y, a*vec.z);
 }
 
+bool Vector3::isZero() {
+	return (x == 0.0f && y == 0.0f && z == 0.0f);
+}
+
+bool Vector3::isOne() {
+	return (x == 1.0f && y == 1.0f && z == 1.0f);
+}
+
 std::ostream& operator<<(std::ostream& os, const Vector3& vec) {
 	os << "(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
 	return os;

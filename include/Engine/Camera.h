@@ -4,8 +4,9 @@
 #include "Base.h"
 #include "Common/Vectors.h"
 #include "Common/Matrices.h"
+#include "Engine/Transform.h"
 
-class Camera {
+class Camera : public Transform {
 	public:
 		enum Type {
 			PERSPECTIVE = 1,
@@ -14,9 +15,8 @@ class Camera {
 
 		~Camera();
 
-		void		setCamera(float posX, float posY, float posZ, float targetX, float targetY, float targetZ);
-		void		update(float deltaTimeMs);
-		void		translate(Matrix4 &mat, Vector3 camPos);
+		void			setCamera(float posX, float posY, float posZ, float targetX, float targetY, float targetZ);
+		void			update(float deltaTimeMs);
 
 		void			setType(Camera::Type camType);
 
@@ -34,11 +34,7 @@ class Camera {
 		Matrix4&		getViewMatrix();
 
 		void			handleKeyboard(float deltaTimeMs);
-		void			handleMouse();
-		void			moveForward(float distance);
-		void			strafe(float distance);
-		void			moveUpward(float distance);
-		void			updateViewMatrix();
+		void			handleMouse(float deltaTimeMs);
 
 	private:
 		Camera(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane);
