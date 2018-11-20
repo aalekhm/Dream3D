@@ -1,9 +1,13 @@
+#include "Engine/Image.h"
+#include "Engine/Texture.h"
 #include "Engine/EngineManager.h"
 
 EngineManager::EngineManager() {
 	m_pKeyboardManager = new KeyboardManager();
 	m_pMouseManager = new MouseManager();
 	m_pTimer = new Timer();
+
+	Texture* tex = Texture::create("data/core.tga");
 }
 
 void EngineManager::initTimer() {

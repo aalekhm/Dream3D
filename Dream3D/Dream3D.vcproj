@@ -176,6 +176,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\Engine\Image.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\Engine\KeyboardManager.cpp"
 					>
 				</File>
@@ -184,9 +188,25 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\Engine\Texture.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Engine\TGA.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\Engine\Timer.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\src\Engine\VertexFormat.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Common"
+				>
 			</Filter>
 		</Filter>
 		<Filter
@@ -198,7 +218,19 @@
 				Name="Engine"
 				>
 				<File
+					RelativePath="..\include\Engine\Base.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\Engine\Camera.h"
+					>
+				</File>
+				<File
 					RelativePath="..\include\Engine\EngineManager.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\Engine\Image.h"
 					>
 				</File>
 				<File
@@ -210,9 +242,25 @@
 					>
 				</File>
 				<File
+					RelativePath="..\include\Engine\Texture.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\Engine\TGA.h"
+					>
+				</File>
+				<File
 					RelativePath="..\include\Engine\Timer.h"
 					>
 				</File>
+				<File
+					RelativePath="..\include\Engine\VertexFormat.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Common"
+				>
 			</Filter>
 		</Filter>
 		<Filter
