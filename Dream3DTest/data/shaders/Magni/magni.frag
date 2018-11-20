@@ -89,7 +89,9 @@ void renderMagniMy()
 	//gl_FragColor = swirl(u_sampler0, v_texCoord, 200, 8.0, true);
 	
 	//gl_FragColor = getHeatMap(u_sampler0, v_texCoord);
-	gl_FragColor = getFrostedPixel(u_sampler0, v_texCoord);
+	//gl_FragColor = getFrostedPixel(u_sampler0, v_texCoord);
+	
+	gl_FragColor = magniImg;
 } 
 
 void main()

@@ -32,7 +32,7 @@ varying vec4 	v_color;
 
 vec4 getVertexPosition()
 {
-    return vec4(a_position, 1.0);    
+    return vec4(a_position, 1.0);
 }
 
 vec2 getVertexTexCoord()

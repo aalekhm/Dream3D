@@ -602,19 +602,19 @@ void Dream3DTest::initialize() {
 	magniQuadModelNode = createHearthStoneCoolShaderModelNode("data/box.material#magni");
 	{
 		magniQuadModelNode->setPosition(Vector3(0.0f, 0.0f, -3.0f));
-		//m_pScene->addNode(magniQuadModelNode);
+		m_pScene->addNode(magniQuadModelNode);
 	}
 
 	medivhQuadModelNode = createHearthStoneCoolShaderModelNode("data/box.material#medivh");
 	{
 		medivhQuadModelNode->setPosition(Vector3(0.5f, 0.0f, -3.0f));
-		//m_pScene->addNode(medivhQuadModelNode);
+		m_pScene->addNode(medivhQuadModelNode);
 	}
 
 	testShaderQuadModelNode = createHearthStoneCoolShaderModelNode("data/box.material#testShader");
 	{
 		testShaderQuadModelNode->setPosition(Vector3(-0.5f, 0.0f, -3.0f));
-		//m_pScene->addNode(testShaderQuadModelNode);
+		m_pScene->addNode(testShaderQuadModelNode);
 	}
 
 	g_pGridNode = createGrid(10, 0.25);
@@ -734,10 +734,25 @@ void Dream3DTest::initialize() {
 	}
 
 	//initLights();
-	loadSceneUsingAssimp("data/OBJModels/lamp.obj",		Vector3(0.0f,	0.0f,	-30.0f),	0.09f);
-	loadSceneUsingAssimp("data/OBJModels/lamp.obj",		Vector3(0.0f,	0.0f,	30.0f),		0.09f);
-	loadSceneUsingAssimp("data/OBJModels/lamp.obj",		Vector3(30.0f,	0.0f,	0.0f),		0.09f);
-	loadSceneUsingAssimp("data/OBJModels/lamp.obj",		Vector3(-30.0f, 0.0f,	0.0f),		0.09f);
+	loadSceneUsingAssimp(	"data/MD5Models/doom3/hellknight/hellknight.md5mesh",
+							Vector3(0.0f,	0.0f,	-30.0f),
+							0.005f,
+							"data/box.material#testBumpMap");
+	
+	loadSceneUsingAssimp(	"data/OBJModels/lamp.obj",
+							Vector3(0.0f,	0.0f,	30.0f),
+							0.09f,
+							"data/box.material#box");
+	
+	loadSceneUsingAssimp(	"data/OBJModels/lamp.obj",		
+							Vector3(30.0f,	0.0f,	0.0f),
+							0.09f,
+							"data/box.material#box");
+
+	loadSceneUsingAssimp(	"data/OBJModels/lamp.obj",
+							Vector3(-30.0f, 0.0f,	0.0f),
+							0.09f,
+							"data/box.material#box");
 
 #ifdef TEST_MD5_MODELS
 	initMD5Models(m_pScene);
@@ -772,7 +787,7 @@ struct AssimpTextureData {
 	unsigned int	m_iType;
 };
 
-void Dream3DTest::processScene(aiMesh* pAIMesh, const aiScene* pAIScene, Vector3& vPosition, float fScale) {
+void Dream3DTest::processScene(aiMesh* pAIMesh, const aiScene* pAIScene, Vector3& vPosition, float fScale, const char* sMaterial) {
 
 	std::vector<AssimpVertexData>		vVertexData;
 	std::vector<unsigned int>	vIndices;
@@ -875,10 +890,10 @@ void Dream3DTest::processScene(aiMesh* pAIMesh, const aiScene* pAIScene, Vector3
 	{
 		Model* pModel = Model::create(mesh);
 		pNode->setModel(pModel);
-		pModel->setMaterial("data/box.material#box", 0);
+		pModel->setMaterial(sMaterial, 0);
 
 		Material* pMaterial = pModel->getMaterial(0);
-		Technique* pTechnique = pMaterial->getTechnique("boxTechnique");
+		Technique* pTechnique = pMaterial->getTechnique();
 
 		char sBuf[8];
 
@@ -898,7 +913,7 @@ void Dream3DTest::processScene(aiMesh* pAIMesh, const aiScene* pAIScene, Vector3
 		}
 
 		// Spot Light
-		for (int i = 0; i < POINT_LIGHT_COUNT; i++)
+		for (int i = 0; i < SPOT_LIGHT_COUNT; i++)
 		{
 			itoa(i, sBuf, 10);
 			CCString cStr;
@@ -932,23 +947,23 @@ void Dream3DTest::processScene(aiMesh* pAIMesh, const aiScene* pAIScene, Vector3
 	}
 }
 
-void Dream3DTest::recurseScene(aiNode* pAINode, const aiScene* pAIScene, Vector3& vPosition, float fScale) {
+void Dream3DTest::recurseScene(aiNode* pAINode, const aiScene* pAIScene, Vector3& vPosition, float fScale, const char* sMaterial) {
 
 	// Process
 	for (unsigned int i = 0; i < pAINode->mNumMeshes; i++) {
 
 		aiMesh* pMesh = pAIScene->mMeshes[pAINode->mMeshes[i]];
-		processScene(pMesh, pAIScene, vPosition, fScale);
+		processScene(pMesh, pAIScene, vPosition, fScale, sMaterial);
 	}
 
 	// Recursion
 	for (unsigned int i = 0; i < pAINode->mNumChildren; i++) {
 
-		recurseScene(pAINode->mChildren[i], pAIScene, vPosition, fScale);
+		recurseScene(pAINode->mChildren[i], pAIScene, vPosition, fScale, sMaterial);
 	}
 }
 
-void Dream3DTest::loadSceneUsingAssimp(const char* pFilename, Vector3& vPosition, float fScale)
+void Dream3DTest::loadSceneUsingAssimp(const char* pFilename, Vector3& vPosition, float fScale, const char* sMaterial)
 {
 	Assimp::Importer pAssimpImporter;
 
@@ -985,17 +1000,17 @@ void Dream3DTest::loadSceneUsingAssimp(const char* pFilename, Vector3& vPosition
 																		props);
 	//*/
 	const aiScene* pAIScene = pAssimpImporter.ReadFile(	pFilename,
-														aiProcess_GenSmoothNormals |
-														aiProcess_Triangulate |
-														aiProcess_CalcTangentSpace |
-														aiProcess_FlipUVs
+														aiProcess_GenSmoothNormals
+														| aiProcess_Triangulate
+														| aiProcess_CalcTangentSpace
+														| aiProcess_FlipUVs
 													);
 
 	bool bLoadSucess = (((pAIScene->mFlags | AI_SCENE_FLAGS_INCOMPLETE) == 0) || pAIScene->mRootNode != NULL);
 	GP_ASSERT(bLoadSucess);
 	if (bLoadSucess)
 	{
-		recurseScene(pAIScene->mRootNode, pAIScene, vPosition, fScale);
+		recurseScene(pAIScene->mRootNode, pAIScene, vPosition, fScale, sMaterial);
 	}
 }
 

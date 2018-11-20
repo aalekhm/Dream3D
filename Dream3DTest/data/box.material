@@ -895,5 +895,54 @@ namespace boxMaterial
 			//	}			
 			//}
 		}
-	}	
+	}
+	
+	material testBumpMap
+	{
+		technique
+		{
+			pass 0
+			{
+				// shaders
+				vertexShader = "data/shaders/textured.vert"
+				fragmentShader = "data/shaders/textured.frag"
+				defines = "SPECULAR; POINT_LIGHT_COUNT 1; BUMPED"
+				
+				// uniforms
+				u_worldMatrix = WORLD_MATRIX
+				u_worldViewProjectionMatrix = WORLD_VIEW_PROJECTION_MATRIX
+				u_inverseTransposeWorldMatrix = INVERSE_TRANSPOSE_WORLD_MATRIX
+				u_cameraPosition = CAMERA_WORLD_POSITION
+				u_ambientColor = "1.0, 1.0, 1.0"
+				u_specularExponent = 4
+
+				// samplers
+				sampler u_diffuseTexture
+				{
+					path = "data/MD5Models/doom3/hellknight/a_hk_branded_02b.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_normalmapTexture
+				{
+					path = "data/MD5Models/doom3/hellknight/hellknight_normals.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				
+				// render state
+				renderState
+				{
+					cullFace = false
+					depthTest = true
+				}
+			}
+		}
+	}
 }

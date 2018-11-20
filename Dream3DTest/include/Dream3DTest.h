@@ -56,9 +56,9 @@ class Dream3DTest : EngineManager
 	private:
 		Scene*					m_pScene;
 
-		void					processScene(aiMesh* pAIMesh, const aiScene* pAIScene, Vector3& vPosition, float fScale);
-		void					loadSceneUsingAssimp(const char* pFilename, Vector3& vPosition, float fScale);
-		void					recurseScene(aiNode* pAINode, const aiScene* pAIScene, Vector3& vPosition, float fScale);
+		void					processScene(aiMesh* pAIMesh, const aiScene* pAIScene, Vector3& vPosition, float fScale, const char* sMaterial);
+		void					loadSceneUsingAssimp(const char* pFilename, Vector3& vPosition, float fScale, const char* sMaterial);
+		void					recurseScene(aiNode* pAINode, const aiScene* pAIScene, Vector3& vPosition, float fScale, const char* sMaterial);
 
 		Logger*					m_pLogger;
 		Light*					m_pPointLight[POINT_LIGHT_COUNT];

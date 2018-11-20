@@ -1,40 +1,45 @@
 
-///////////////////////////////////////////////////////////
-// UNIFORMS
-///////////////////////////////////////////////////////////
-uniform vec3 		u_ambientColor;
-uniform float 		u_specularExponent;
+	///////////////////////////////////////////////////////////	
+	// UNIFORMS
+	///////////////////////////////////////////////////////////
+	uniform vec3 		u_ambientColor;	
+	uniform float 		u_specularExponent;
 
-uniform sampler2D 	u_normalmapTexture;
+#if defined(BUMPED)
+	uniform sampler2D 	u_normalmapTexture;
+#endif
 
 #if (POINT_LIGHT_COUNT > 0)
-uniform vec3 		u_pointLightColour[POINT_LIGHT_COUNT];
+	uniform vec3 		u_pointLightColour[POINT_LIGHT_COUNT];
 #endif
 
 #if (SPOT_LIGHT_COUNT > 0)
-uniform vec3 		u_spotLightDirection[SPOT_LIGHT_COUNT];
-uniform vec3 		u_spotLightColour[SPOT_LIGHT_COUNT];
-uniform float 		u_spotLightInnerAngleCos[SPOT_LIGHT_COUNT];
-uniform float 		u_spotLightOuterAngleCos[SPOT_LIGHT_COUNT];
+	uniform vec3 		u_spotLightDirection[SPOT_LIGHT_COUNT];
+	uniform vec3 		u_spotLightColour[SPOT_LIGHT_COUNT];
+	uniform float 		u_spotLightInnerAngleCos[SPOT_LIGHT_COUNT];
+	uniform float 		u_spotLightOuterAngleCos[SPOT_LIGHT_COUNT];
 #endif
 
-///////////////////////////////////////////////////////////
-// VARYINGS
-///////////////////////////////////////////////////////////
-varying vec3 		v_normal;
+	///////////////////////////////////////////////////////////
+	// VARYINGS
+	///////////////////////////////////////////////////////////
+	varying vec3 		v_normal;
 
 #if (POINT_LIGHT_COUNT > 0)
-varying vec3 		v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
-varying vec3 		v_pointLightColour[POINT_LIGHT_COUNT];
+	varying vec3 		v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
+	varying vec3 		v_pointLightColour[POINT_LIGHT_COUNT];
 #endif
 
 #if (SPOT_LIGHT_COUNT > 0)
-varying vec3 		v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
-varying vec3 		v_spotLightColour[SPOT_LIGHT_COUNT];
+	varying vec3 		v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
+	varying vec3 		v_spotLightColour[SPOT_LIGHT_COUNT];
 #endif
 
 #if defined(SPECULAR)
-varying vec3		v_cameraDirection;
+	varying vec3		v_cameraDirection;
+#endif
+#if defined(BUMPED)
+	varying mat3 		mat3_tbnMatrix;
 #endif
 ///////////////////////////////////////////////////////////
 
@@ -94,8 +99,14 @@ vec3 computeLighting(vec3 vNormal, vec3 vLightDirection, vec3 vlightColour, floa
 
 vec3 getLitPixel()
 {
-	vec3 vNormal = normalize(v_normal);
 	vec3 vFinalLitRGB;
+	vec3 vNormal = normalize(v_normal);
+	
+	////////////// BUMPED //////////////
+	#if  defined(BUMPED)
+		vNormal = normalize(mat3_tbnMatrix * (255.0/128.0 * texture2D(u_normalmapTexture, v_texCoord.xy).xyz - 1));
+	#endif
+	////////////////////////////////////
 	
 	// Ambient component
 	{
