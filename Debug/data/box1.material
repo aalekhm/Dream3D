@@ -7,8 +7,8 @@ namespace boxMaterial1
 			pass 0
 			{
 				// shaders
-				vertexShader = "data/shaders/textured.vert"
-				fragmentShader = "data/shaders/textured.frag"
+				vertexShader = "res/shaders/textured.vert"
+				fragmentShader = "res/shaders/textured.frag"
 				defines = SPECULAR
 				
 				// uniforms
