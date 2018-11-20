@@ -6,8 +6,8 @@ namespace boxMaterial
 		{
 			pass
 			{
-				vertexShader = "res/shaders/textured.vert"
-				fragmentShader = "res/shaders/textured.frag"
+				vertexShader = "data/shaders/textured.vert"
+				fragmentShader = "data/shaders/textured.frag"
 
 				u_worldViewProjectionMatrix = WORLD_VIEW_PROJECTION_MATRIX
 				
@@ -35,8 +35,8 @@ namespace boxMaterial
 		{
 			pass
 			{
-				vertexShader = "res/shaders/textured.vert"
-				fragmentShader = "res/shaders/textured.frag"
+				vertexShader = "data/shaders/textured.vert"
+				fragmentShader = "data/shaders/textured.frag"
 				defines = "SPECULAR;DIRECTIONAL_LIGHT_COUNT 1"
 
 				u_worldViewProjectionMatrix = WORLD_VIEW_PROJECTION_MATRIX
@@ -70,8 +70,8 @@ namespace boxMaterial
 		{
 			pass
 			{
-				vertexShader = "res/shaders/textured.vert"
-				fragmentShader = "res/shaders/textured.frag"
+				vertexShader = "data/shaders/textured.vert"
+				fragmentShader = "data/shaders/textured.frag"
 				defines = "DIRECTIONAL_LIGHT_COUNT 1"
 
 				u_worldViewProjectionMatrix = WORLD_VIEW_PROJECTION_MATRIX
@@ -104,8 +104,8 @@ namespace boxMaterial
 		{
 			pass
 			{
-				vertexShader = "res/shaders/colored.vert"
-				fragmentShader = "res/shaders/colored.frag"
+				vertexShader = "data/shaders/colored.vert"
+				fragmentShader = "data/shaders/colored.frag"
 				defines = "DIRECTIONAL_LIGHT_COUNT 1"
 
 				u_worldViewProjectionMatrix = WORLD_VIEW_PROJECTION_MATRIX
@@ -514,15 +514,330 @@ namespace boxMaterial
 		}
 	}
 	
-	material box
+	material magni
 	{
 		technique
 		{
 			pass 0
 			{
 				// shaders
-				vertexShader = "res/shaders/textured.vert"
-				fragmentShader = "res/shaders/textured.frag"
+				vertexShader = "data/shaders/Magni/magni.vert"
+				fragmentShader = "data/shaders/Magni/magni.frag"
+				
+				// uniforms
+				u_worldViewProjectionMatrix = WORLD_VIEW_PROJECTION_MATRIX
+				
+				// samplers
+				sampler u_sampler0
+				{
+					path = "data/shaders/Magni/Magni_1.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler1
+				{
+					path = "data/shaders/Magni/Magni_2.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler2
+				{
+					path = "data/shaders/Magni/Magni_3.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler3
+				{
+					path = "data/shaders/Magni/Magni_4.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler4
+				{
+					path = "data/shaders/Magni/Magni_5.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler5
+				{
+					path = "data/shaders/Magni/Magni_6.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				
+				// render state
+				renderState
+				{
+					cullFace = false
+					depthTest = true
+				}
+			}
+		}
+	}
+	
+	material medivh
+	{
+		technique
+		{
+			pass 0
+			{
+				// shaders
+				vertexShader = "data/shaders/Medivh/medivh.vert"
+				fragmentShader = "data/shaders/Medivh/medivh.frag"
+				
+				// uniforms
+				u_worldViewProjectionMatrix = WORLD_VIEW_PROJECTION_MATRIX
+				
+				// samplers
+				sampler u_sampler0
+				{
+					path = "data/shaders/Medivh/Medivh_1.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler1
+				{
+					path = "data/shaders/Medivh/Medivh_2.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler2
+				{
+					path = "data/shaders/Medivh/Medivh_3.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler3
+				{
+					path = "data/shaders/Medivh/Medivh_4.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler4
+				{
+					path = "data/shaders/Medivh/Medivh_5.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler5
+				{
+					path = "data/shaders/Medivh/Medivh_6.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				
+				// render state
+				renderState
+				{
+					cullFace = false
+					depthTest = true
+				}
+			}
+		}
+	}
+	
+	material testShader
+	{
+		technique
+		{
+			pass 0
+			{
+				// shaders
+				vertexShader = "data/shaders/TestShader/testShader.vert"
+				fragmentShader = "data/shaders/TestShader/testShader.frag"
+				
+				// uniforms
+				u_worldViewProjectionMatrix = WORLD_VIEW_PROJECTION_MATRIX
+				
+				// samplers
+				sampler u_sampler0
+				{
+					path = "data/shaders/TestShader/Lightning_Middle.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler1
+				{
+					path = "data/shaders/TestShader/Magni_2.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler2
+				{
+					path = "data/shaders/TestShader/Magni_3.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler3
+				{
+					path = "data/shaders/TestShader/Magni_4.tga"
+					mipmap = true
+					wrapS = CLAMP
+					wrapT = CLAMP
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler4
+				{
+					path = "data/shaders/TestShader/NewBack_03.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler5
+				{
+					path = "data/shaders/TestShader/NewBack_04.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler6
+				{
+					path = "data/shaders/TestShader/Shockwave_Watercolor.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler7
+				{
+					path = "data/shaders/TestShader/vortex_flare1.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				sampler u_sampler8
+				{
+					path = "data/shaders/TestShader/vortex_flare2.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+				
+				// render state
+				renderState
+				{
+					cullFace = false
+					depthTest = true
+				}
+			}
+		}
+	}
+
+	material box
+	{
+		technique boxTechnique
+		{
+			pass 0
+			{
+				// shaders
+				vertexShader = "data/shaders/textured.vert"
+				fragmentShader = "data/shaders/textured.frag"
+				defines = "SPECULAR; POINT_LIGHT_COUNT 1"
+				
+				// uniforms
+				u_worldMatrix = WORLD_MATRIX
+				u_worldViewProjectionMatrix = WORLD_VIEW_PROJECTION_MATRIX
+				u_inverseTransposeWorldMatrix = INVERSE_TRANSPOSE_WORLD_MATRIX
+				u_cameraPosition = CAMERA_WORLD_POSITION
+								
+				u_ambientColor = "0.2, 0.2, 0.2"
+				u_specularExponent = 4
+				
+				// samplers
+				sampler u_diffuseTexture
+				{
+					path = "data/ColorFul_2048x1300.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = LINEAR
+					magFilter = LINEAR
+				}
+
+				sampler u_normalmapTexture
+				{
+					path = "data/cartoon.tga"
+					mipmap = true
+					wrapS = REPEAT
+					wrapT = REPEAT
+					minFilter = NEAREST_MIPMAP_LINEAR
+					magFilter = LINEAR
+				}
+
+				// render state
+				renderState
+				{
+					cullFace = false
+					depthTest = true
+				}
+			}
+		}
+	}
+	
+	material box1
+	{
+		technique
+		{
+			pass 0
+			{
+				// shaders
+				vertexShader = "data/shaders/textured.vert"
+				fragmentShader = "data/shaders/textured.frag"
 				defines = "SPECULAR;DIRECTIONAL_LIGHT_COUNT 1"
 				
 				// uniforms
@@ -536,7 +851,7 @@ namespace boxMaterial
 				// samplers
 				sampler u_diffuseTexture
 				{
-					path = "data/cartoon.tga"
+					path = "data/ColorFul_2048x1300.tga"
 					mipmap = true
 					wrapS = CLAMP
 					wrapT = CLAMP
@@ -551,6 +866,34 @@ namespace boxMaterial
 					depthTest = true
 				}
 			}
+			
+			//pass 1
+			//{
+			//	// shaders
+			//	vertexShader = "data/shaders/textured.vert"
+			//	fragmentShader = "data/shaders/textured.frag"
+			//
+			//	// uniforms
+			//	u_worldViewProjectionMatrix = WORLD_VIEW_PROJECTION_MATRIX
+            //
+			//	// samplers
+			//	sampler u_diffuseTexture
+			//	{
+			//		path = "data/bone.tga"
+			//		mipmap = true
+			//		wrapS = CLAMP
+			//		wrapT = CLAMP
+			//		minFilter = NEAREST_MIPMAP_LINEAR
+			//		magFilter = LINEAR
+			//	}		
+            //
+			//	// render state
+			//	renderState
+			//	{
+			//		cullFace = true
+			//		depthTest = true
+			//	}			
+			//}
 		}
-	}
+	}	
 }
