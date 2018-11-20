@@ -1,4 +1,5 @@
 #include "ENGINE/TGA.h"
+#include "Common/RandomAccessFile.h"
 
 TGAImg::TGAImg() {
 	pImage = pPalette = pData = NULL;
@@ -31,9 +32,7 @@ TGAImg::~TGAImg()
 
 int TGAImg::Load(char* szFilename)
 {
-	char* ss = new char[255];
-	using namespace std;
-	ifstream fIn;
+	RandomAccessFile* pRafIN = new RandomAccessFile();
 	unsigned long ulSize;
 	int iRet;
 
@@ -51,15 +50,13 @@ int TGAImg::Load(char* szFilename)
 	}
 
 	// Open the specified file
-	fIn.open(szFilename,ios::binary);
+	bool bCanOpen = pRafIN->openForRead(szFilename);
 
-	if(fIn==NULL)
+	if (!bCanOpen)
 		return IMG_ERR_NO_FILE;
 
 	// Get file size
-	fIn.seekg(0,ios_base::end);
-	ulSize = (unsigned long)fIn.tellg();
-	fIn.seekg(0,ios_base::beg);
+	ulSize = pRafIN->getFileLength();
 
 	// Allocate some space
 	// Check and clear pDat, just in case
@@ -67,17 +64,19 @@ int TGAImg::Load(char* szFilename)
 		delete [] pData; 
 
 	pData=new unsigned char[ulSize];
+	memset(pData, '.', ulSize);
 
 	if(pData==NULL)
 	{
-		fIn.close();
+		pRafIN->close();
 		return IMG_ERR_MEM_FAIL;
 	}
 
 	// Read the file into memory
-	fIn.read((char*)pData,ulSize);
+	pRafIN->read((char*)pData, 0, ulSize);
 
-	fIn.close();
+	pRafIN->close();
+	SAFE_DELETE(pRafIN);
 
 	// Process the header
 	iRet=ReadHeader();

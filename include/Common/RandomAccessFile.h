@@ -44,7 +44,7 @@
 #include <io.h>
 #include <sys\stat.h>
 #include <string.h>
-#include "Common/CCString.h"
+#include "CCString.h"
 
 #define SAFE_DELETE(p) { if(p) { delete p; p = NULL; } }
 #define SAFE_DELETE_ARRAY(p) { if(p) { delete[] p; p = NULL; } }
@@ -52,78 +52,78 @@
 //*/
 extern "C" {
 	class _declspec(dllexport) RandomAccessFile {
-			FILE*				m_pFileObj;
-			unsigned long long	filePointer;
+			FILE*					m_pFileObj;
+			unsigned long long		m_lFilePointer;
 			CCString				m_sFileName;
-			CCString				m_sLine;
+			CCString				m_sStringValue;
 		public:
 			RandomAccessFile();
 			~RandomAccessFile();
 			
-			void close();
-			
-			//int readByte();
-			
-			bool				readBoolean();
-			
-			//char *readShort();
-			
-			int					readByte();
-			int					readShort();
-			unsigned long		readInt();
-			unsigned long long	readLong();
-			
-			const char*			readBooleanS();
-			const char*			readCharS();
-			char				readChar();
-			const char*			readByteS();
-			const char*			readShortS();
-			const char*			readIntS();
-			const char*			readLongS();
-			const char*			readLine();
-			const char*			getFilePointer();		
-			
-			int					read(char* buf);
-			int					read(char* buf, int offset, int len);
-			void				write(char* buf);
-			void				write(char* buf, int offset, int len);
+			void					close();
+						
+			bool					readBoolean();
+			const char*				readBooleanS();
 
-			void				writeByte(const char *);		//ok
-			void				writeByte(int);				
-			void				writeShort(const char *);
-			void				writeShort(int);
-			void				writeBoolean(const char *);
-			void				writeBoolean(int);
-			void				writeChar(const char*);
-			void				writeLine(const char*);
-			void				writeIntS(const char*);
-			void				writeInt(unsigned long);
-			void				writeLong(const char*);
-			void				writeLong(unsigned long long);
-			void				writeChars(const char*);
-			void				writeBytes(const char*);
-			void				skipBytes(unsigned long long numOfBytesToSkip);	//ok
-			void				seek(unsigned long long pos);						//ok
-			const char*			lengthS();							//ok
-			unsigned long long	length();							//ok
-			long				getFileLength();							//ok
-			unsigned long long	getFilePointerLong();
-			const char*			getFileDescriptor();				//ok
-			int					getFD();									//ok
-			void				setLength(const char*);					//ok
-			int					isEOF();							//ok
-			const char*			isEOFS();							//ok
-			int					touch(const char*);
+			char					readChar();
+			const char*				readCharS();
+
+			int						readByte();
+			const char*				readByteS();
+
+			int						readShort();
+			const char*				readShortS(); 
+			
+			unsigned long			readInt();
+			const char*				readIntS(); 
+			
+			unsigned long long		readLong();
+			const char*				readLongS();
+			
+			const char*				readLine();
+			const char*				getFilePointer();		
+			
+			int						read(char* buf);
+			int						read(char* buf, int offset, int len);
+			void					write(char* buf);
+			void					write(char* buf, int offset, int len);
+
+			void					writeByte(const char *);		//ok
+			void					writeByte(int);				
+			void					writeShort(const char *);
+			void					writeShort(int);
+			void					writeBoolean(const char *);
+			void					writeBoolean(int);
+			void					writeChar(const char*);
+			void					writeLine(const char*);
+			void					writeIntS(const char*);
+			void					writeInt(unsigned long);
+			void					writeLong(const char*);
+			void					writeLong(unsigned long long);
+			void					writeChars(const char*);
+			void					writeBytes(const char*);
+			void					skipBytes(unsigned long long numOfBytesToSkip);	//ok
+			void					seek(unsigned long long pos);					//ok
+			const char*				lengthS();										//ok
+			unsigned long long		length();										//ok
+			long					getFileLength();								//ok
+			unsigned long long		getFilePointerLong();
+			const char*				getFileDescriptor();							//ok
+			int						getFD();										//ok
+			void					setLength(const char*);							//ok
+			int						isEOF();										//ok
+			const char*				isEOFS();										//ok
+			int						touch(const char*);
 			
 			//File is opened in different modes since a READ_ONLY file cannot be opened in RW/Update mode ie "r+"
-			bool				openForRead(const char *);
-			bool				openForWrite(const char*);
-			const char*			openForAppend(const char*);
-			bool				openForRW(const char*);
+			bool					openForRead(const char *);
+			bool					openForWrite(const char*);
+			const char*				openForAppend(const char*);
+			bool					openForRW(const char*);
 
 
-			void				renameFile(const char*);
-			static void			deleteFile(const char*);
+			void					renameFile(const char*);
+			static void				deleteFile(const char*);
 	};
 
 	//__int8 nSmall;      // Declares 8-bit integer
