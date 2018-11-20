@@ -64,21 +64,23 @@ void Model::draw(bool bWireframe) {
 	m_pVertexAttributeBinding->unbind();
 	unbindTexture();
 #else
-	if(m_iPartCount == 0) {
+	if(getMeshPartCount() == 0) {
 		bindTexture();
 		m_pVertexAttributeBinding->bind();
 		
 		GL_ASSERT( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
 		
-
-		if(bWireframe && (getPrimitiveType() == Mesh::TRIANGLES || getPrimitiveType() == Mesh::TRIANGLE_STRIP)) {
-			unsigned int vertexCount = getVertexCount();
+		if(	bWireframe 
+			&& 
+			(m_pMesh->getPrimitiveType() == Mesh::TRIANGLES || m_pMesh->getPrimitiveType() == Mesh::TRIANGLE_STRIP)
+		) {
+			unsigned int vertexCount = m_pMesh->getVertexCount();
 			for(unsigned int i = 0; i < vertexCount; i += 3) {
 				GL_ASSERT( glDrawArrays(GL_LINE_LOOP, i, 3) );
 			}
 		}
 		else {
-			GL_ASSERT( glDrawArrays(getPrimitiveType(), 0, getVertexCount()) );
+			GL_ASSERT( glDrawArrays(m_pMesh->getPrimitiveType(), 0, m_pMesh->getVertexCount()) );
 		}
 
 		m_pVertexAttributeBinding->unbind();
@@ -94,7 +96,7 @@ void Model::draw(bool bWireframe) {
 			
 			GL_ASSERT( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshPart->getIndexBuffer()) );
 
-			if(bWireframe && (getPrimitiveType() == Mesh::TRIANGLES || getPrimitiveType() == Mesh::TRIANGLE_STRIP)) {
+			if(bWireframe && (m_pMesh->getPrimitiveType() == Mesh::TRIANGLES || m_pMesh->getPrimitiveType() == Mesh::TRIANGLE_STRIP)) {
 				unsigned int indexCount = meshPart->getIndexCount();
 				unsigned int indexSize = 0;
 				switch(meshPart->getIndexFormat()) {

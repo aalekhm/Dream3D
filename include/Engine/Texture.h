@@ -4,6 +4,7 @@
 class Image;
 
 class Texture {
+	friend class Sampler;
 
 	public:
 		/**
@@ -67,6 +68,35 @@ class Texture {
 		void bind();
 		void unbind();
 		GLuint			m_hTexture;
+
+		/**
+		 * Defines a texture sampler.
+		 *
+		 * A texture sampler is basically an instance of a texture that can be
+		 * used to sample a texture from a material. In addition to the texture
+		 * itself, a sampler stores per-instance texture state information, such
+		 * as wrap and filter modes.
+		 */
+		class Sampler {
+			friend class Texture;
+
+			public:
+				virtual ~Sampler();
+				static Sampler* create(Texture* texture);
+				static Sampler* create(const char* sPath, bool bGenerateMipmaps = false);
+				void			setWrapMode(Wrap wrapS, Wrap wrapT);
+				void			setFilterMode(Filter minificationFilter, Filter magnificationFilter);
+				Texture*		getTexture() const;
+				void			bind();
+			private:
+				Sampler(Texture* texture);
+
+				Texture*	m_pTexture;
+				Wrap		m_WrapS;
+				Wrap		m_WrapT;
+				Filter		m_minFilter;
+				Filter		m_magFilter;
+		};
 	private:
 		/**
 		* Constructor.

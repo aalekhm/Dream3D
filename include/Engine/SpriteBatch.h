@@ -37,6 +37,8 @@ class SpriteBatch {
 
 		void setClip(int x, int y, int width, int height);
 		void resetClip();
+
+		Texture*	getTexture();
 	private:
 		struct SpriteVertex {
 			float X;

@@ -151,6 +151,15 @@ void MeshBatch::setTexture(Texture* pTexture, bool generateMipmaps) {
 	m_pTexture = pTexture;
 }
 
+Texture* MeshBatch::getTexture() {
+	GP_ASSERT( m_pTexture );
+
+	if(m_pTexture)
+		return m_pTexture;
+
+	return NULL;
+}
+
 void MeshBatch::bindTexture() {
 	if(m_pTexture != NULL) {
 		m_pTexture->bind();

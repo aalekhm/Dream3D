@@ -30,6 +30,12 @@ class VertexFormat {
 			TEXCOORD7 = 15
 		};
 
+		enum SIZE {
+			TWO = 2,
+			THREE = 3,
+			FOUR = 4
+		};
+
 		/**
 		 * Defines a single element within a vertex format.
 		 *

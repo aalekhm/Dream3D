@@ -14,9 +14,11 @@ VertexAttributeBinding::VertexAttributeBinding()
 VertexAttributeBinding::~VertexAttributeBinding() {
 
 	// Delete from the vertex attribute binding cache.
-	std::vector<VertexAttributeBinding*>::iterator itr = std::find(__vertexAttributeBindingCache.begin(), __vertexAttributeBindingCache.end(), this);
-	if(itr != __vertexAttributeBindingCache.end()) {
-		__vertexAttributeBindingCache.erase(itr);
+	if(__vertexAttributeBindingCache.size() > 0) {
+		std::vector<VertexAttributeBinding*>::iterator itr = std::find(__vertexAttributeBindingCache.begin(), __vertexAttributeBindingCache.end(), this);
+		if(itr != __vertexAttributeBindingCache.end()) {
+			__vertexAttributeBindingCache.erase(itr);
+		}
 	}
 
 	SAFE_DELETE(m_pMesh);//SAFE_RELEASE(m_pMesh);
@@ -186,13 +188,15 @@ VertexAttributeBinding*	VertexAttributeBinding::create(Mesh* mesh, const VertexF
 void VertexAttributeBinding::setVertexAttributeBinding(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid* pointer) {
 
 	GP_ASSERT( index < (GLuint)__maxVertexAttributes);
-
+#ifdef USE_VAO
 	if(m_hVAO) {
 		//Hardware mode
 		GL_ASSERT( glVertexAttribPointer(index, size, type, normalized, stride, pointer) );
 		GL_ASSERT( glEnableVertexAttribArray(index) );
 	}
-	else {
+	else 
+#endif
+	{
 		//Software mode
 		GP_ASSERT(m_pAttributes);
 		m_pAttributes[index].m_bEnabled = true;
@@ -205,11 +209,14 @@ void VertexAttributeBinding::setVertexAttributeBinding(GLuint index, GLint size,
 }
 
 void VertexAttributeBinding::bind() {
+#ifdef USE_VAO
 	if(m_hVAO) {
 		//Hardware mode
 		GL_ASSERT( glBindVertexArray(m_hVAO) );
 	}
-	else {
+	else 
+#endif
+	{
 		//Software mode
 		if(m_pMesh) {
 			GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, m_pMesh->getVertexBuffer()) );
@@ -231,6 +238,8 @@ void VertexAttributeBinding::bind() {
 						GL_ASSERT( glVertexPointer(element.size, GL_FLOAT, vertexFormat.getVertexSize(), (void*)(sizeof(float) * offset)) );
 						break;
 					case VertexFormat::NORMAL:
+						GL_ASSERT( glEnableClientState(GL_NORMAL_ARRAY) );
+						GL_ASSERT( glNormalPointer(GL_FLOAT, vertexFormat.getVertexSize(), (void*)(sizeof(float) * offset)) );
 						break;
 					case VertexFormat::COLOR:
 						GL_ASSERT( glEnableClientState(GL_COLOR_ARRAY) );
@@ -291,11 +300,14 @@ void VertexAttributeBinding::bind() {
 }
 
 void VertexAttributeBinding::unbind() {
+#ifdef USE_VAO
 	if(m_hVAO) {
 		//Hardware mode
 		GL_ASSERT( glBindVertexArray(0) );
 	}
-	else {
+	else 
+#endif
+	{
 		//Software mode
 		if(m_pMesh) {
 			GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, 0) );

@@ -18,10 +18,15 @@
 #include "Engine/VertexAttributeBinding.h"
 #include "Engine/Texture.h"
 #include "Engine/TGA.h"
+#include "Engine/MeshObjLoader.h"
+
+#include "Engine/MaterialReader.h"
+#include "Engine/Properties.h"
 
 // Declare our game instance
 Dream3DTest game;
 
+void initLights();
 void drawTriangle(const Vector3& p1, const Vector3& p2, const Vector3& p3);
 void drawGrid(int iSize, float fStep);
 void drawLine(const Vector3& p1, const Vector3& p2);
@@ -43,6 +48,9 @@ Node* cubeModelNode;
 
 Node* createQuadIndexedNode();
 Node* quadModelNode;
+
+Node* createObjNode();
+Node* objModelNode;
 
 SpriteBatch* createSpriteBatch();
 SpriteBatch* spriteBatch;
@@ -112,7 +120,7 @@ Dream3DTest::Dream3DTest() {
 }
 
 Dream3DTest::~Dream3DTest() {
-	
+	//SAFE_DELETE( m_pScene );
 }
 
 void Dream3DTest::initialize() {
@@ -138,7 +146,7 @@ void Dream3DTest::initialize() {
 	m_pScene->addNode(lineModelNode);
 
 	quadModelNode = createQuadIndexedNode();
-
+	
 	cubeModelNode = createCubeModelIndexedNode(0.25f);
 	cubeModelNode->rotateY(0.0f);
 	cubeModelNode->setPosition(Vector3(2.0f, 0.0f, -1.0f));
@@ -147,11 +155,41 @@ void Dream3DTest::initialize() {
 		quadModelNode->rotateY(45.0f);
 	cubeModelNode->addChild(quadModelNode);
 
+	objModelNode = createObjNode();
+	objModelNode->scale(0.1f);
+	m_pScene->addNode(objModelNode);
+
 	meshBatch = createMeshBatch();
 	spriteBatch = createSpriteBatch();
 
 	loadTexture("data/ColorFul_2048x1300.tga", texID[0], textureWH[0]);
 	loadTexture("data/core.tga", texID[1], textureWH[1]);
+
+
+	MaterialReader* matReader = new MaterialReader();
+	Properties* prop = matReader->read("data/test.mat");
+	if(prop != NULL)
+		prop->print(0);
+
+	//initLights();
+}
+
+void initLights() {
+	glEnable(GL_LIGHTING);
+
+	// set up light colors (ambient, diffuse, specular)
+	GLfloat lightKa[] = {1.0f, 1.0f, 1.0f, 1.0f};      // ambient light
+	GLfloat lightKd[] = {.9f, .9f, .9f, 1.0f};      // diffuse light
+	GLfloat lightKs[] = {1, 1, 1, 1};               // specular light
+	glLightfv(GL_LIGHT0, GL_AMBIENT, lightKa);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightKd);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, lightKs);
+
+	// position the light in eye space
+	float lightPos[4] = {0, 1, 1, 0};               // directional light
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+
+	glEnable(GL_LIGHT0);                            // MUST enable each light source after configuration
 }
 
 void drawGrid(int iSize, float fStep) {
@@ -215,9 +253,9 @@ Node* createTriangleModelNode()
 	unsigned int vertexCount = 3;
 	VertexFormat::Element elements[] =
 	{
-		VertexFormat::Element(VertexFormat::POSITION, 3),
-		VertexFormat::Element(VertexFormat::COLOR, 3),
-		VertexFormat::Element(VertexFormat::TEXCOORD0, 2),
+		VertexFormat::Element(VertexFormat::POSITION, VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::COLOR, VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::TEXCOORD0, VertexFormat::TWO),
 	};
 	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
 	Mesh* mesh = Mesh::createMesh(VertexFormat(elements, elementCount), vertexCount, false);
@@ -283,9 +321,9 @@ Node* createTriangleStripModelNode() {
 	unsigned int vertexCount = 6;
 	VertexFormat::Element elements[] =
 	{
-		VertexFormat::Element(VertexFormat::POSITION, 3),
-		VertexFormat::Element(VertexFormat::COLOR, 3),
-		VertexFormat::Element(VertexFormat::TEXCOORD0, 2),
+		VertexFormat::Element(VertexFormat::POSITION, VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::COLOR, VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::TEXCOORD0, VertexFormat::TWO),
 	};
 	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
 	Mesh* mesh = Mesh::createMesh(VertexFormat(elements, elementCount), vertexCount, false);
@@ -320,8 +358,8 @@ Node* createLineStripModelNode() {
 	
 	VertexFormat::Element elements[] = 
 	{
-		VertexFormat::Element(VertexFormat::POSITION, 3),
-		VertexFormat::Element(VertexFormat::COLOR, 3)
+		VertexFormat::Element(VertexFormat::POSITION, VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::COLOR, VertexFormat::THREE)
 	};
 	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
 
@@ -355,8 +393,8 @@ Node* createLineModelNode() {
 
 	VertexFormat::Element elements[] = 
 	{
-		VertexFormat::Element(VertexFormat::POSITION, 3),
-		VertexFormat::Element(VertexFormat::COLOR, 3)
+		VertexFormat::Element(VertexFormat::POSITION, VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::COLOR, VertexFormat::THREE)
 	};
 	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
 
@@ -412,10 +450,10 @@ Node* createCubeModelIndexedNode(float size = 1.0f) {
 	unsigned int indexCount = sizeof(indices) / sizeof(short);
 	VertexFormat::Element elements[] = 
 	{
-		VertexFormat::Element(VertexFormat::POSITION, 3),
-		//VertexFormat::Element(VertexFormat::NORMAL, 3),
-		VertexFormat::Element(VertexFormat::COLOR, 3),
-		VertexFormat::Element(VertexFormat::TEXCOORD0, 2)
+		VertexFormat::Element(VertexFormat::POSITION, VertexFormat::THREE),
+		//VertexFormat::Element(VertexFormat::NORMAL, VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::COLOR, VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::TEXCOORD0, VertexFormat::TWO)
 	};
 	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
 
@@ -457,8 +495,8 @@ Node* createQuadIndexedNode() {
 	unsigned int indexCount = sizeof(indices) / sizeof(short);
 	VertexFormat::Element elements[] = 
 	{
-		VertexFormat::Element(VertexFormat::POSITION, 3),
-		VertexFormat::Element(VertexFormat::TEXCOORD0, 2)
+		VertexFormat::Element(VertexFormat::POSITION, VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::TEXCOORD0, VertexFormat::TWO)
 	};
 	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
 
@@ -482,12 +520,26 @@ Node* createQuadIndexedNode() {
 	return pNode;
 }
 
+Node* createObjNode() {
+
+	MeshObjLoader* objLoader = new MeshObjLoader();
+	objLoader->loadObject("data/foot.obj");
+
+	Node* pNode = Node::create("ObjModel");
+	Model* objModel = objLoader->createModel();
+	objModel->setTexture("data/cartoon.tga");
+
+	pNode->setModel(objModel);
+
+	return pNode;
+}
+
 MeshBatch* createMeshBatch() {
 	VertexFormat::Element elements[] = 
 	{
-		VertexFormat::Element(VertexFormat::POSITION, 3),
-		VertexFormat::Element(VertexFormat::COLOR, 3),
-		VertexFormat::Element(VertexFormat::TEXCOORD0, 2)
+		VertexFormat::Element(VertexFormat::POSITION, VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::COLOR, VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::TEXCOORD0, VertexFormat::TWO)
 	};
 	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
 	VertexFormat* vf = new VertexFormat(elements, elementCount);
@@ -581,10 +633,10 @@ void Dream3DTest::render2D(float deltaTimeMs) {
 	Camera* pCamera = m_pScene->getActiveCamera();
 	pCamera->setType(Camera::ORTHOGRAPHIC);
 
-	Vector4 src(0, 0, 900.0f, 695.0f);
 	spriteBatch->setClip(0, 0, getWidth(), getHeight());
 	spriteBatch->start();
 		spriteBatch->setClip(0, 0, 100, 100);
+		Vector4 src(0, 0, spriteBatch->getTexture()->getWidth(), spriteBatch->getTexture()->getHeight());
 		//spriteBatch->draw(Rectangle(0, 0, 200.0f, 200.0f), Rectangle(0, 0, 900.0f, 695.0f), Vector4::fromColor(0xFFFFFF80));
 		spriteBatch->draw(Vector4(0, 0, 200.0f, 200.0f), src, Vector4::fromColor(0xFFFFFF80));
 		spriteBatch->setClip(0, 0, getWidth(), getHeight());

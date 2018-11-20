@@ -75,8 +75,11 @@ Camera* Camera::createOrthographic(int x, int y, int w, int h, float fNearPlane,
 }
 
 void Camera::setType(Camera::Type camType) {
-	m_iCameraType = camType;
-	setDirty(CAMERA_DIRTY_PROJ);
+	
+	if(m_iCameraType != camType) {
+		setDirty(CAMERA_DIRTY_PROJ);
+		m_iCameraType = camType;
+	}
 
 	if(m_iDirty & CAMERA_DIRTY_PROJ) {
 		if(m_iCameraType == PERSPECTIVE) {
@@ -141,7 +144,7 @@ void Camera::setPerspective(int x, int y, int w, int h, float iFieldOfView, floa
 
 	// set perspective viewing frustum
 	setFrustum(iFieldOfView, (float)(w)/h, fNearPlane, fFarPlane); // FOV, AspectRatio, NearClip, FarClip
-
+	
 	// copy projection matrix to OpenGL
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixf(m_MatrixProjection.getTranspose());

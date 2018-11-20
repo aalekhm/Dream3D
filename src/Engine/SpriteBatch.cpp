@@ -17,7 +17,8 @@
 SpriteBatch::SpriteBatch() 
 	:	m_pMeshBatch(NULL),
 		m_fTextureWidthRatio(0.0f),
-		m_fTextureHeightRatio(0.0f)
+		m_fTextureHeightRatio(0.0f),
+		m_ClipRect()
 {
 
 }
@@ -61,22 +62,25 @@ SpriteBatch* SpriteBatch::create(Texture* pTexture, /*Effect* pEffect = NULL, */
 }
 
 void SpriteBatch::start() {
-	m_pMeshBatch->start();
+	if(m_pMeshBatch != NULL) {
+		m_pMeshBatch->start();
 
-	// Enable & Set the type of Blending.
-	GL_ASSERT( glEnable(GL_BLEND) );
-	GL_ASSERT( glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) );
-	//GL_ASSERT( glBlendFunc(GL_ONE, GL_ONE) );
+		// Enable & Set the type of Blending.
+		GL_ASSERT( glEnable(GL_BLEND) );
+		GL_ASSERT( glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) );
+		//GL_ASSERT( glBlendFunc(GL_ONE, GL_ONE) );
+	}
 }
 
 void SpriteBatch::stop() {
-	
-	// Finish and draw the batch
-	m_pMeshBatch->stop();
-	m_pMeshBatch->render();
+	if(m_pMeshBatch != NULL) {
+		// Finish and draw the batch
+		m_pMeshBatch->stop();
+		m_pMeshBatch->render();
 
-	// Disable Blending
-	GL_ASSERT( glDisable(GL_BLEND) );
+		// Disable Blending
+		GL_ASSERT( glDisable(GL_BLEND) );
+	}
 }
 
 //void SpriteBatch::draw(const Rectangle& dest, const Rectangle& src, const Vector4& color) {
@@ -141,7 +145,8 @@ void SpriteBatch::draw(float x, float y, float z, float width, float height, flo
 
 	static unsigned short indices[4] = { 0, 1, 2, 3 };
 
-	m_pMeshBatch->add(vtx, 4, indices, 4);
+	if(m_pMeshBatch != NULL)
+		m_pMeshBatch->add(vtx, 4, indices, 4);
 }
 
 void SpriteBatch::draw(Vector3& dst, const Vector4& src, Vector2& scale, const Vector4& color, const Vector2& rotationPoint, float rotationAngle) {
@@ -199,7 +204,8 @@ void SpriteBatch::draw(float x, float y, float z, float width, float height, flo
 
 	static unsigned short indices[4] = { 0, 1, 2, 3 };
 
-	m_pMeshBatch->add(vtx, 4, indices, 4);
+	if(m_pMeshBatch != NULL)
+		m_pMeshBatch->add(vtx, 4, indices, 4);
 }
 
 void SpriteBatch::draw(float x, float y, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color, const Vector4& clip) {
@@ -296,7 +302,8 @@ void SpriteBatch::draw(SpriteBatch::SpriteVertex* pVertices, unsigned int iVerte
     GP_ASSERT(pVertices);
     GP_ASSERT(pIndices);
 
-    m_pMeshBatch->add(pVertices, iVertexCount, pIndices, iIndexCount);
+	if(m_pMeshBatch != NULL)
+		m_pMeshBatch->add(pVertices, iVertexCount, pIndices, iIndexCount);
 }
 
 void SpriteBatch::draw(const Vector3& position, const Vector3& right, const Vector3& forward, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color, const Vector2& rotationPoint, float rotationAngle) {
@@ -360,7 +367,8 @@ void SpriteBatch::draw(const Vector3& position, const Vector3& right, const Vect
     SPRITE_ADD_VERTEX(v[3], p3.x, p3.y, p3.z, u2, v2, color.x, color.y, color.z, color.w);
     
     static const unsigned short indices[4] = { 0, 1, 2, 3 };
-    m_pMeshBatch->add(v, 4, const_cast<unsigned short*>(indices), 4);
+	if(m_pMeshBatch != NULL)
+		m_pMeshBatch->add(v, 4, const_cast<unsigned short*>(indices), 4);
 }
 
 void SpriteBatch::setClip(int x, int y, int width, int height) {
@@ -371,4 +379,13 @@ void SpriteBatch::setClip(int x, int y, int width, int height) {
 	m_ClipRect.y = (float)y;
 	m_ClipRect.z = (float)width;
 	m_ClipRect.w = (float)height;
+}
+
+Texture* SpriteBatch::getTexture() {
+
+	GP_ASSERT( m_pMeshBatch );
+	if(m_pMeshBatch != NULL)
+		return m_pMeshBatch->getTexture();
+
+	return NULL;
 }

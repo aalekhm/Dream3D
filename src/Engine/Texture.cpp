@@ -23,9 +23,11 @@ Texture::~Texture() {
 
 	// Remove ourself from the texture cache.
 	if(m_bCached) {
-		std::vector<Texture*>::iterator itr = std::find(__textureCache.begin(), __textureCache.end(), this);
-		if(itr != __textureCache.end()) {
-			__textureCache.erase(itr);
+		if(__textureCache.size() > 0) {
+			std::vector<Texture*>::iterator itr = std::find(__textureCache.begin(), __textureCache.end(), this);		
+			if(itr != __textureCache.end()) {
+				__textureCache.erase(itr);
+			}
 		}
 	}
 }
@@ -284,7 +286,12 @@ unsigned int Texture::getHeight() const {
 }
 
 void Texture::generateMipmaps() {
-	
+	if(!m_bMipmapped) {
+		GL_ASSERT( glBindTexture(GL_TEXTURE_2D, m_hTexture) );
+		GL_ASSERT( glGenerateMipmap(GL_TEXTURE_2D) );
+
+		m_bMipmapped = true;
+	}
 }
 
 bool Texture::isMipmapped() const {
@@ -323,4 +330,55 @@ void Texture::bind() {
 void Texture::unbind() {
 	GL_ASSERT( glBindTexture(GL_TEXTURE_2D, 0) );
 	GL_ASSERT( glDisable(GL_TEXTURE_2D) );
+}
+
+Texture::Sampler::Sampler(Texture* pTexture) 
+	:	m_pTexture(pTexture),
+		m_WrapS(Texture::REPEAT),
+		m_WrapT(Texture::REPEAT),
+		m_magFilter(Texture::LINEAR)
+{
+	GP_ASSERT( pTexture );
+	m_minFilter = pTexture->isMipmapped() ? Texture::NEAREST_MIPMAP_LINEAR : Texture::LINEAR;
+}
+
+Texture::Sampler::~Sampler() {
+	SAFE_DELETE( m_pTexture );
+}
+
+Texture::Sampler* Texture::Sampler::create(Texture* pTexture) {
+
+	GP_ASSERT( pTexture );
+	return new Sampler(pTexture);
+}
+
+Texture::Sampler* Texture::Sampler::create(const char* sPath, bool bGenerateMipmaps) {
+
+	Texture* pTexture = Texture::create(sPath, bGenerateMipmaps);
+	return pTexture ? new Sampler(pTexture) : NULL;
+}
+
+void Texture::Sampler::setWrapMode(Wrap wrapS, Wrap wrapT) {
+	m_WrapS = wrapS;
+	m_WrapT = wrapT;
+}
+
+void Texture::Sampler::setFilterMode(Filter minificationFilter, Filter magnificationFilter) {
+	m_minFilter = minificationFilter;
+	m_magFilter = magnificationFilter;
+}
+
+Texture* Texture::Sampler::getTexture() const {
+	return m_pTexture;
+}
+
+void Texture::Sampler::bind() {
+
+	GP_ASSERT( m_pTexture );
+
+	GL_ASSERT( glBindTexture(GL_TEXTURE_2D, m_pTexture->m_hTexture) );
+	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (GLenum)m_WrapS) );
+	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (GLenum)m_WrapT) );
+	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (GLenum)m_minFilter) );
+	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (GLenum)m_magFilter) );
 }

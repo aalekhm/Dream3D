@@ -136,7 +136,7 @@ void Scene::render() {
 
 	for(Node* node = m_pFirstNode; node != NULL; node = node->getNextSibling()) {
 		node->render(!true);
-	}
+ 	}
 }
 
 Scene::~Scene() {

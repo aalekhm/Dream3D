@@ -12,9 +12,9 @@ class Dream3DTest : EngineManager
 		Dream3DTest();
 		virtual ~Dream3DTest();
 		
-		void initialize();
-		void update(float elapsedTime);
-		void render(float elapsedTime);
+		virtual void initialize();
+		virtual void update(float elapsedTime);
+		virtual void render(float elapsedTime);
 
 		void render3D(float deltaTimeMs);
 		void render2D(float deltaTimeMs);

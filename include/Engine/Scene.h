@@ -10,6 +10,8 @@ class Camera;
 class Scene {
 
 	public:
+		virtual ~Scene();
+
 		static Scene*	create();
 
 		const char*		getID();
@@ -28,8 +30,7 @@ class Scene {
 		void			render();
 	private:
 		Scene();
-		virtual ~Scene();
-
+		
 		CCString		m_sID;
 		Camera*			m_pActiveCamera;
 		Node*			m_pFirstNode;

@@ -124,7 +124,7 @@ GLvoid killGLWindow() {
 		m_pHWnd = NULL;
 	}
 
-	if(!UnregisterClass("OpenGL", m_pHInstance)) {
+	if(!UnregisterClass("Dream3D", m_pHInstance)) {
 		MessageBox(NULL, "UnRegisterClass failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
 		m_pHInstance = NULL;
 	}
@@ -153,7 +153,7 @@ bool createGLWindow(char* title, int width, int height, int bits, bool isFullScr
 	wc.hIcon			= LoadIcon(NULL, IDI_WINLOGO);
 	wc.hInstance		= m_pHInstance;
 	wc.lpfnWndProc		= (WNDPROC) WndProc;
-	wc.lpszClassName	= "OpenGL";
+	wc.lpszClassName	= "Dream3D";
 	wc.lpszMenuName		= NULL;
 	wc.style			= CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 
@@ -194,19 +194,19 @@ bool createGLWindow(char* title, int width, int height, int bits, bool isFullScr
 	AdjustWindowRectEx(&windowRect, dwStyle, false, dwExStyle);
 
 	if(!(m_pHWnd = CreateWindowEx(	dwExStyle,
-		"OpenGL",
-		title,
-		dwStyle | 
-		WS_CLIPSIBLINGS |
-		WS_CLIPCHILDREN,
-		0, 0,
-		windowRect.right - windowRect.left,
-		windowRect.bottom - windowRect.top,
-		NULL,
-		NULL,
-		m_pHInstance,
-		NULL))
-		) {
+									"Dream3D",
+									title,
+									dwStyle | 
+									WS_CLIPSIBLINGS |
+									WS_CLIPCHILDREN,
+									0, 0,
+									windowRect.right - windowRect.left,
+									windowRect.bottom - windowRect.top,
+									NULL,
+									NULL,
+									m_pHInstance,
+									NULL)
+	)) {
 			killGLWindow();								// Reset The Display
 			MessageBox(NULL,"Window Creation Error.","ERROR",MB_OK|MB_ICONEXCLAMATION);
 			return false;								// Return FALSE
@@ -218,7 +218,7 @@ bool createGLWindow(char* title, int width, int height, int bits, bool isFullScr
 		return false;								// Return FALSE
 	}
 
-	static PIXELFORMATDESCRIPTOR pfd = 
+	PIXELFORMATDESCRIPTOR pfd = 
 	{
 		sizeof(PIXELFORMATDESCRIPTOR),
 		1,
@@ -265,7 +265,7 @@ bool createGLWindow(char* title, int width, int height, int bits, bool isFullScr
 	}
 
 	// Initialize GLEW
-	if (GLEW_OK != glewInit()) {
+	if (glewInit() != GLEW_OK) {
 		wglDeleteContext(m_pHRC);
 		killGLWindow();								// Reset The Display
 		MessageBox(NULL,"Unable to init glewinit","ERROR",MB_OK|MB_ICONEXCLAMATION);
@@ -279,15 +279,8 @@ bool createGLWindow(char* title, int width, int height, int bits, bool isFullScr
 	return true;
 }
 
-extern "C" int APIENTRY WinMain(	HINSTANCE	hInstance, 
-					HINSTANCE	hPrevInstance,
-					LPSTR		lpCmdLine,
-					int			nCmdShow
-) {
-	MSG		msg;
-	bool	done = false;
-
-	//if(MessageBox(NULL, "Would you like to run in FULLSCREEN mode?", "Start FullScreen", MB_YESNO) == IDNO)
+int winMainLoop() {
+	if(MessageBox(NULL, "Would you like to run in FULLSCREEN mode?", "Start FullScreen", MB_YESNO) == IDNO)
 		m_bFULLSCREEN = false;
 
 	if(!createGLWindow("Dream3D!!!", SCREEN_WIDTH, SCREEN_HEIGHT, 16, m_bFULLSCREEN))
@@ -296,7 +289,10 @@ extern "C" int APIENTRY WinMain(	HINSTANCE	hInstance,
 	m_pEngineManager = EngineManager::getInstance();
 	m_pEngineManager->startup();
 	m_pEngineManager->setViewport(SCREEN_WIDTH, SCREEN_HEIGHT);
-	
+
+	MSG		msg;
+	bool	done = false;
+
 	while(true) {
 		if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);
@@ -324,7 +320,17 @@ extern "C" int APIENTRY WinMain(	HINSTANCE	hInstance,
 			}
 		}
 	}
-	
-	killGLWindow();
-	return msg.wParam;
+
+	return 0;
+}
+
+extern "C" int APIENTRY WinMain(	HINSTANCE	hInstance, 
+									HINSTANCE	hPrevInstance,
+									LPSTR		lpCmdLine,
+									int			nCmdShow
+) {
+	if(winMainLoop() == 0)
+		killGLWindow();
+
+	return 0;
 }

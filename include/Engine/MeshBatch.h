@@ -29,6 +29,7 @@ class MeshBatch {
 		void					setTexture(Texture* pTexture, bool generateMipmaps = false);
 		void					bindTexture();
 		void					unbindTexture();
+		Texture*				getTexture();
 
 		~MeshBatch();
 	private:
