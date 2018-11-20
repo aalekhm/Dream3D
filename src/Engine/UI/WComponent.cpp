@@ -77,7 +77,7 @@ H_WND WComponent::Create(		const char* lpClassName,
 			((WContainer*)m_pParent)->addComponent(this);
 
 		onCreateEx(lParam);
-		WWidgetManager::onEvent((H_WND)this , WM__CREATE, getComponentID(), 0);
+		WWidgetManager::onEvent((H_WND)this , WN__CREATE, getComponentID(), 0);
 
 		return this;
 }
@@ -141,6 +141,28 @@ void WComponent::updateComponentPosition() {
 	m_iRight = m_iLeft + w;
 	m_iBottom = m_iTop + h;
 	////////////////////////////////////////////////////////////
+}
+
+void WComponent::setLeft(int x) {
+	m_iLeft += x; m_iRight += x;
+}
+
+void WComponent::setTop(int y) {
+	m_iTop += y; m_iBottom += y;
+}
+
+void WComponent::setPosition(int newOffsetX, int newOffsetY) { 
+	m_iOffsetX = newOffsetX;
+	m_iOffsetY = newOffsetY;
+
+	WWidgetManager::onEvent((H_WND)this , WN__MOVE, getComponentID(), 0);
+}
+
+void WComponent::setSize(int w, int h) { 
+	m_iRight = m_iLeft + w;
+	m_iBottom = m_iTop + h; 
+
+	WWidgetManager::onEvent((H_WND)this , WN__SIZE, getComponentID(), 0);
 }
 
 void WComponent::onRender() {

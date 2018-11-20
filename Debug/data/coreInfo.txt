@@ -1262,11 +1262,11 @@ WIDGET ListBox {
 		posOffset	"2 7 8 15"
 		align		HStretch Bottom
 	}
-	//ClientArea {
-		//skin		EditClient
-		//posOffset	"2 2 25 22"
-		//align		HStretch VStretch
-	//}
+	ClientArea {
+		skin		EditClient
+		posOffset	"2 2 10 12"
+		align		HStretch VStretch
+	}
 }
 
 WIDGET ComboBox {

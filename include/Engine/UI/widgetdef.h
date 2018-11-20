@@ -22,6 +22,11 @@ typedef int		L_RESULT;
 #define IDC__NO              		0x0C
 
 
+#define WN__CREATE			0x000
+#define WN__PAINT				0x001
+#define WN__MOVE				0x002
+#define WN__SIZE					0x003
+
 //WButton
 #define WM_BTN_LBUTTONDOWN	1000
 #define WM_BTN_LBUTTONUP			WM_BTN_LBUTTONDOWN + 1
@@ -53,8 +58,6 @@ typedef int		L_RESULT;
 #define WM__GETSIZE									0x008
 #define WM__SETSIZE									0x009
 #define WM__SETRECT									0x00A
-#define WM__CREATE									0x00B
-#define WM__PAINT										0x00C
 
 #define WM__ERR											-1
 #define WM__OKAY										1

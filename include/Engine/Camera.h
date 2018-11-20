@@ -22,36 +22,40 @@
 class Camera {
 	public:
 		enum Type {
+			NONE = 0,
 			PERSPECTIVE = 1,
 			ORTHOGRAPHIC = 2
 		};
 
 		~Camera();
 
-		void			setCamera(float posX, float posY, float posZ, float targetX, float targetY, float targetZ);
-		void			update(float deltaTimeMs);
+		void					setCamera(float posX, float posY, float posZ, float targetX, float targetY, float targetZ);
+		void					update(float deltaTimeMs);
 
-		void			setType(Camera::Type camType);
+		void					setType(Camera::Type camType);
+		void					forceType(Camera::Type camType);
 
 		static Camera*	createPerspective(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane);
-		void			setPerspective(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane);
-		void			setFrustum(float fovY, float aspectRatio, float front, float back);
-		void			setPerspectiveFrustum(float l, float r, float b, float t, float n, float f);
+		void					setPerspective(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane);
+		void					setFrustum(float fovY, float aspectRatio, float front, float back);
+		void					setPerspectiveFrustum(float l, float r, float b, float t, float n, float f);
 
 		static Camera*	createOrthographic(int x, int y, int w, int h, float fNearPlane, float fFarPlane);
-		void			setOrthographic(int x, int y, int w, int h, float fNearPlane, float fFarPlane);
-		void			setOrthogonalFrustum(float l, float r, float b, float t, float n, float f);
+		void					setOrthographic(int x, int y, int w, int h, float fNearPlane, float fFarPlane);
+		void					setOrthogonalFrustum(float l, float r, float b, float t, float n, float f);
 
-		Matrix4&		getProjectionMatrix();
-		Matrix4&		getViewProjectionMatrix();
-		Matrix4&		getViewMatrix();
+		void					setCameraValues(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane);
 
-		void			handleKeyboard(float deltaTimeMs);
-		void			handleMouse(float deltaTimeMs);
+		Matrix4&			getProjectionMatrix();
+		Matrix4&			getViewProjectionMatrix();
+		Matrix4&			getViewMatrix();
 
-		Node*			getNode() const;
-		void			setNode(Node* node);
-		void			setDirty(int iDirty);
+		void					handleKeyboard(float deltaTimeMs);
+		void					handleMouse(float deltaTimeMs);
+
+		Node*				getNode() const;
+		void					setNode(Node* node);
+		void					setDirty(int iDirty);
 	private:
 		Camera(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane);
 		Camera(int x, int y, int w, int h, float fNearPlane, float fFarPlane);

@@ -39,15 +39,12 @@ struct WComponent {
 		int			getOffsetX() { return m_iOffsetX; }
 		int			getOffsetY() { return m_iOffsetY; }
 
-		void		setPosition(int newOffsetX, int newOffsetY) { 
-						m_iOffsetX = newOffsetX;
-						m_iOffsetY = newOffsetY;
-					}
+		void		setPosition(int newOffsetX, int newOffsetY);
 		void		setPositionX(int x) { setPosition(x, getOffsetY()); }
-		void		setLeft(int x)	{ m_iLeft += x; m_iRight += x; }
-		void		setTop(int y)	{ m_iTop += y; m_iBottom += y; }
+		void		setLeft(int x);
+		void		setTop(int y);
 		void		setPositionY(int y) { setPosition(getOffsetX(), y); }
-		void		setSize(int w, int h) { m_iRight = m_iLeft + w; m_iBottom = m_iTop + h; }
+		void		setSize(int w, int h);
 		void		setWidth(int w) { 
 						setSize(w, getHeight()); 
 						onMessage((H_WND)this, WIDTH_CHANGED, getWidth(), w);

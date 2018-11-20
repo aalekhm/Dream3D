@@ -75,7 +75,13 @@ void WContainer::frameRender() {
 	WWidgetManager::GetClipBounds(&reclaimRect);
 
 	// Render the container itself
-	onRender();
+	if(WWidgetManager::onEvent((H_WND)this , WN__PAINT, getComponentID(), 0) <= 0) 
+	{
+		onRender();
+	}
+	else {
+		WWidgetManager::getInstance()->setGLStates();
+	}
 
 	///////////////////////////////////////////////////
 	bool bRenderChilds = true;

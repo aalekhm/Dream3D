@@ -64,288 +64,372 @@ SpriteBatch* spriteBatch;
 Texture*  gTexture0;
 Texture*  gTexture1;
 
+Node* gCanvasCameraNode;
+
 L_RESULT CALLBACK UICallback(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	switch(msg) {
-		case WM__CREATE:
+		case WN__CREATE:
 			{
 				int WINDOW_ID = wParam;
 				switch(WINDOW_ID) {
+					case 1103:
+					{
+						Rect YAGUIRect;
+						H_WND hYAGUIWnd = GetWindowQ(0);
+						int iRet = SendMessageQ(hYAGUIWnd, WM__GETRECT, (WPARAM)NULL, (LPARAM)&YAGUIRect);
+
+						Rect boundsRect;
+						iRet = SendMessageQ(hWnd, WM__GETRECT, (WPARAM)NULL, (LPARAM)&boundsRect);
+						
+						Camera* pCanvasCamera = Camera::createPerspective(boundsRect.X, boundsRect.Y, boundsRect.Width, boundsRect.Height, 45.0f, 0.01f, 10.0f);
+						gCanvasCameraNode = Node::create("Canvas Camera");
+						gCanvasCameraNode->setCamera(pCanvasCamera);
+
+						return WM__OKAY;
+					}
+					break;
 				}
 			}
 			break;
-		case WM__PAINT:
+		case WN__PAINT:
 			{
 				int WINDOW_ID = wParam;
 				switch(WINDOW_ID) {
+					case 1103:
+					{
+						Rect boundsRect;
+						int iRet = SendMessageQ(hWnd, WM__GETRECT, (WPARAM)NULL, (LPARAM)&boundsRect);
+
+						//////////////////////////// 3D SCENE
+						Camera* pCamera = gCanvasCameraNode->getCamera();
+						pCamera->setType(Camera::PERSPECTIVE);
+						{
+							glClear(GL_DEPTH_BUFFER_BIT);
+							glClearColor(0.1f, 0.1f, 0.1f, 1);
+							glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
+							glDisable(GL_SCISSOR_TEST);
+							
+							pCamera->getNode()->getViewMatrix().getTranspose();
+							drawTriangle(Vector3(0, 0.5f, -1.5f), Vector3(-0.5f, 0, -1.5f), Vector3(0.5f, 0, -1.5f));
+						}
+						//////////////////////////////////////////////////
+
+						//////////////////////////// 2D SCENE
+						pCamera->setType(Camera::ORTHOGRAPHIC);
+						{
+							//FillRect(&boundsRect, 255.0f, 255.0f, 255.0f, 255.0f);
+							DrawRect(&boundsRect, 0.0f, 0.0f, 0.0f, 255.0f);
+
+							SetColorQ(255, 0, 0, 255);
+							DrawString("Hi There !!!", boundsRect.X + 10, boundsRect.Y + 10, 0);
+							ResetColorQ();
+						}
+						//////////////////////////////////////////////////
+
+						return WM__OKAY;
+					}
+					break;
+				}
+			}
+			break;
+		case WN__MOVE:
+			{
+				int WINDOW_ID = wParam;
+				switch(WINDOW_ID) {
+					case 1103:
+					{
+						Rect boundsRect;
+						int iRet = SendMessageQ(hWnd, WM__GETRECT, (WPARAM)NULL, (LPARAM)&boundsRect);
+
+						Camera* pCamera = gCanvasCameraNode->getCamera();
+						pCamera->setCameraValues(boundsRect.X, boundsRect.Y, boundsRect.Width, boundsRect.Height, 45.0f, 0.01f, 10.0f);
+					}
+					break;
+				}
+			}
+			break;
+		case WN__SIZE:
+			{
+				int WINDOW_ID = wParam;
+				switch(WINDOW_ID) {
+				case 1103:
+					{
+						Rect boundsRect;
+						int iRet = SendMessageQ(hWnd, WM__GETRECT, (WPARAM)NULL, (LPARAM)&boundsRect);
+
+						Camera* pCamera = gCanvasCameraNode->getCamera();
+						pCamera->setCameraValues(boundsRect.X, boundsRect.Y, boundsRect.Width, boundsRect.Height, 45.0f, 0.01f, 10.0f);
+					}
+					break;
 				}
 			}
 			break;
 		//WButton
-	case WM_BTN_LBUTTONDOWN:
-		{
-			int WINDOW_ID = wParam;
-			switch(WINDOW_ID) {
+		case WM_BTN_LBUTTONDOWN:
+			{
+				int WINDOW_ID = wParam;
+				switch(WINDOW_ID) {
 
+				}
 			}
-		}
-		break;
-	case WM_BTN_MBUTTONDOWN:
-		{
-			int WINDOW_ID = wParam;
-			switch(WINDOW_ID) {
+			break;
+		case WM_BTN_MBUTTONDOWN:
+			{
+				int WINDOW_ID = wParam;
+				switch(WINDOW_ID) {
 
+				}
 			}
-		}
-		break;
-	case WM_BTN_RBUTTONDOWN:
-		{
-			int WINDOW_ID = wParam;
-			switch(WINDOW_ID) {
+			break;
+		case WM_BTN_RBUTTONDOWN:
+			{
+				int WINDOW_ID = wParam;
+				switch(WINDOW_ID) {
 
+				}
 			}
-		}
-		break;
-	case WM_BTN_LBUTTONUP:
-		{
-			int WINDOW_ID = wParam;
-			switch(WINDOW_ID) {
-			case 1101:
-				{
-					////////////// WM__GETTEXTLENGTH
-					H_WND hwnd = GetWindowQ(1966);
-					if(hwnd != NULL) {
-						//int len = SendMessageQ(hwnd, WM__GETTEXTLENGTH, (WPARAM)NULL, (LPARAM)NULL);
+			break;
+		case WM_BTN_LBUTTONUP:
+			{
+				int WINDOW_ID = wParam;
+				switch(WINDOW_ID) {
+				case 1101:
+					{
+						////////////// WM__GETTEXTLENGTH
+						H_WND hwnd = GetWindowQ(1966);
+						if(hwnd != NULL) {
+							//int len = SendMessageQ(hwnd, WM__GETTEXTLENGTH, (WPARAM)NULL, (LPARAM)NULL);
 
-						////////////////// WM__GETTEXT
-						//char* str = new char[len + 1];
-						//memset(str, 0, len + 1);
+							////////////////// WM__GETTEXT
+							//char* str = new char[len + 1];
+							//memset(str, 0, len + 1);
 
-						//int iRet = SendMessageQ(hwnd, WM__GETTEXT, (WPARAM)(len + 1), (LPARAM)str);
-						//printf("str = %s", str);
+							//int iRet = SendMessageQ(hwnd, WM__GETTEXT, (WPARAM)(len + 1), (LPARAM)str);
+							//printf("str = %s", str);
 
-						//////////////////// WM__SETTEXT
-						//str = "Static Text Changed...";
-						//iRet = SendMessageQ(hwnd, WM__SETTEXT, (WPARAM)NULL, (LPARAM)str);
-						//
-						//Rect boundsRect;
-						//H_WND hwndButton = GetWindowQ(121);
-						//iRet = SendMessageQ(hwndButton, WM__GETRECT, (WPARAM)NULL, (LPARAM)&boundsRect);
-						//iRet = SendMessageQ(hwndButton, BM__CLICK, (WPARAM)NULL, (LPARAM)&boundsRect);
-						//iRet = SendMessageQ(hwndButton, BM__DISABLE, (WPARAM)NULL, (LPARAM)NULL);
-						//iRet = SendMessageQ(hwndButton, BM__GET_STATE, (WPARAM)NULL, (LPARAM)NULL);
-						//DWORD dwPos = 0;
-						//iRet = SendMessageQ(hwndButton, WM__GETPOS, (WPARAM)NULL, (LPARAM)&dwPos);
-						//boundsRect.X = (dwPos & 0xffff);
-						//boundsRect.Y = (dwPos >> 16) & 0xffff;
-						//boundsRect.X += 10;
-						//boundsRect.Y += 10;
-						//dwPos = 0;
-						//dwPos |= (boundsRect.X & 0xffff);
-						//dwPos |= ((boundsRect.Y & 0xffff) << 16);
-						//iRet = SendMessageQ(hwndButton, WM__SETPOS, (WPARAM)NULL, (LPARAM)dwPos);
+							//////////////////// WM__SETTEXT
+							//str = "Static Text Changed...";
+							//iRet = SendMessageQ(hwnd, WM__SETTEXT, (WPARAM)NULL, (LPARAM)str);
+							//
+							//Rect boundsRect;
+							//H_WND hwndButton = GetWindowQ(121);
+							//iRet = SendMessageQ(hwndButton, WM__GETRECT, (WPARAM)NULL, (LPARAM)&boundsRect);
+							//iRet = SendMessageQ(hwndButton, BM__CLICK, (WPARAM)NULL, (LPARAM)&boundsRect);
+							//iRet = SendMessageQ(hwndButton, BM__DISABLE, (WPARAM)NULL, (LPARAM)NULL);
+							//iRet = SendMessageQ(hwndButton, BM__GET_STATE, (WPARAM)NULL, (LPARAM)NULL);
+							//DWORD dwPos = 0;
+							//iRet = SendMessageQ(hwndButton, WM__GETPOS, (WPARAM)NULL, (LPARAM)&dwPos);
+							//boundsRect.X = (dwPos & 0xffff);
+							//boundsRect.Y = (dwPos >> 16) & 0xffff;
+							//boundsRect.X += 10;
+							//boundsRect.Y += 10;
+							//dwPos = 0;
+							//dwPos |= (boundsRect.X & 0xffff);
+							//dwPos |= ((boundsRect.Y & 0xffff) << 16);
+							//iRet = SendMessageQ(hwndButton, WM__SETPOS, (WPARAM)NULL, (LPARAM)dwPos);
 
-						//H_WND hwndCheckBox = GetWindowQ(1102);
-						//iRet = SendMessageQ(hwndCheckBox, WM__GETRECT, (WPARAM)NULL, (LPARAM)&boundsRect);
-						//iRet = SendMessageQ(hwndCheckBox, BM__CLICK, (WPARAM)NULL, (LPARAM)&boundsRect);
-						//iRet = SendMessageQ(hwndCheckBox, BM__DISABLE, (WPARAM)NULL, (LPARAM)NULL);
-						//iRet = SendMessageQ(hwndCheckBox, BM__GET_STATE, (WPARAM)NULL, (LPARAM)NULL);
+							//H_WND hwndCheckBox = GetWindowQ(1102);
+							//iRet = SendMessageQ(hwndCheckBox, WM__GETRECT, (WPARAM)NULL, (LPARAM)&boundsRect);
+							//iRet = SendMessageQ(hwndCheckBox, BM__CLICK, (WPARAM)NULL, (LPARAM)&boundsRect);
+							//iRet = SendMessageQ(hwndCheckBox, BM__DISABLE, (WPARAM)NULL, (LPARAM)NULL);
+							//iRet = SendMessageQ(hwndCheckBox, BM__GET_STATE, (WPARAM)NULL, (LPARAM)NULL);
 
 
-						/////////WFRAME - WWINDOW//////
-						//H_WND hwndWFrame = GetWindowQ(1212);
-						//DWORD dwSize = 0;
-						//iRet = SendMessageQ(hwndWFrame, WM__GETSIZE, (WPARAM)NULL, (LPARAM)&dwSize);
-						//int width = (dwSize & 0xffff);
-						//int height = (dwSize >> 16) & 0xffff;
-						//width -= 200;
-						//height += 200;
-						//dwSize = 0;
-						//dwSize |= (width & 0xffff);
-						//dwSize |= ((height & 0xffff) << 16);
-						//iRet = SendMessageQ(hwndWFrame, WM__SETSIZE, (WPARAM)NULL, (LPARAM)dwSize);
+							/////////WFRAME - WWINDOW//////
+							//H_WND hwndWFrame = GetWindowQ(1212);
+							//DWORD dwSize = 0;
+							//iRet = SendMessageQ(hwndWFrame, WM__GETSIZE, (WPARAM)NULL, (LPARAM)&dwSize);
+							//int width = (dwSize & 0xffff);
+							//int height = (dwSize >> 16) & 0xffff;
+							//width -= 200;
+							//height += 200;
+							//dwSize = 0;
+							//dwSize |= (width & 0xffff);
+							//dwSize |= ((height & 0xffff) << 16);
+							//iRet = SendMessageQ(hwndWFrame, WM__SETSIZE, (WPARAM)NULL, (LPARAM)dwSize);
 
-						///////COMBO BOX //////
-						//int iListSize = SendMessageQ(hwnd, CBM__ADDSTRING, NULL, (LPARAM)"Appended ComboBox Item... !!!");
-						//iListSize = SendMessageQ(hwnd, CBM__DELETESTRING, (WPARAM)2, (LPARAM)NULL);
-						//int iIndex = SendMessageQ(hwnd, CBM__FINDSTRING, (WPARAM)-1, (LPARAM)"Inspy");
-						//iIndex = SendMessageQ(hwnd, CBM__FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)"crisp");
-						//iListSize = SendMessageQ(hwnd, CBM__GETCOUNT, (WPARAM)NULL, (LPARAM)NULL);
-						//iIndex = SendMessageQ(hwnd, CBM__SETCURSEL, (WPARAM)3, (LPARAM)NULL);
-						//iIndex = SendMessageQ(hwnd, CBM__GETCURSEL, (WPARAM)NULL, (LPARAM)NULL);
+							///////COMBO BOX //////
+							//int iListSize = SendMessageQ(hwnd, CBM__ADDSTRING, NULL, (LPARAM)"Appended ComboBox Item... !!!");
+							//iListSize = SendMessageQ(hwnd, CBM__DELETESTRING, (WPARAM)2, (LPARAM)NULL);
+							//int iIndex = SendMessageQ(hwnd, CBM__FINDSTRING, (WPARAM)-1, (LPARAM)"Inspy");
+							//iIndex = SendMessageQ(hwnd, CBM__FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)"crisp");
+							//iListSize = SendMessageQ(hwnd, CBM__GETCOUNT, (WPARAM)NULL, (LPARAM)NULL);
+							//iIndex = SendMessageQ(hwnd, CBM__SETCURSEL, (WPARAM)3, (LPARAM)NULL);
+							//iIndex = SendMessageQ(hwnd, CBM__GETCURSEL, (WPARAM)NULL, (LPARAM)NULL);
 
-						//Rect listRect;
-						//int iValue = SendMessageQ(hwnd, CB__GETDROPPEDCONTROLRECT, (WPARAM)NULL, (LPARAM)&listRect);
-						//iValue = SendMessageQ(hwnd, CB__GETDROPPEDSTATE, (WPARAM)NULL, (LPARAM)NULL);
-						//iValue = SendMessageQ(hwnd, CB__GETDROPPEDWIDTH, (WPARAM)NULL, (LPARAM)NULL);
+							//Rect listRect;
+							//int iValue = SendMessageQ(hwnd, CB__GETDROPPEDCONTROLRECT, (WPARAM)NULL, (LPARAM)&listRect);
+							//iValue = SendMessageQ(hwnd, CB__GETDROPPEDSTATE, (WPARAM)NULL, (LPARAM)NULL);
+							//iValue = SendMessageQ(hwnd, CB__GETDROPPEDWIDTH, (WPARAM)NULL, (LPARAM)NULL);
 
-						//DWORD dwRange = SendMessageQ(hwnd, CB__GETEDITSEL, (WPARAM)NULL, (LPARAM)NULL);
-						//dwRange = 0
-						//dwRange |= (1 & 0xffff);
-						//dwRange |= ((3 & 0xffff) << 16);
-						//iValue = SendMessageQ(hwnd, CB__SETEDITSEL, (WPARAM)NULL, (LPARAM)dwRange);
-						//
-						/////////
-						//int iLength = SendMessageQ(hwnd, CB__GETLBTEXTLEN, (WPARAM)4, (LPARAM)NULL);
+							//DWORD dwRange = SendMessageQ(hwnd, CB__GETEDITSEL, (WPARAM)NULL, (LPARAM)NULL);
+							//dwRange = 0
+							//dwRange |= (1 & 0xffff);
+							//dwRange |= ((3 & 0xffff) << 16);
+							//iValue = SendMessageQ(hwnd, CB__SETEDITSEL, (WPARAM)NULL, (LPARAM)dwRange);
+							//
+							/////////
+							//int iLength = SendMessageQ(hwnd, CB__GETLBTEXTLEN, (WPARAM)4, (LPARAM)NULL);
 
-						//char* str = new char[iLength + 1];
-						//memset(str, 0, iLength + 1);
-						//iValue = SendMessageQ(hwnd, CB__GETLBTEXT, (WPARAM)4, (LPARAM)str);
-						////////////////
+							//char* str = new char[iLength + 1];
+							//memset(str, 0, iLength + 1);
+							//iValue = SendMessageQ(hwnd, CB__GETLBTEXT, (WPARAM)4, (LPARAM)str);
+							////////////////
 
-						//iValue = SendMessageQ(hwnd, CB__SETITEMDATA, (WPARAM)1, (LPARAM)"Replaced Data !!!");
+							//iValue = SendMessageQ(hwnd, CB__SETITEMDATA, (WPARAM)1, (LPARAM)"Replaced Data !!!");
 
-						//iValue = SendMessageQ(hwnd, CB__INSERTSTRING, (WPARAM)1, (LPARAM)"Inserted Data !!!");
-						//iValue = SendMessageQ(hwnd, CB__SHOWDROPDOWN, (WPARAM)NULL, (LPARAM)NULL);
+							//iValue = SendMessageQ(hwnd, CB__INSERTSTRING, (WPARAM)1, (LPARAM)"Inserted Data !!!");
+							//iValue = SendMessageQ(hwnd, CB__SHOWDROPDOWN, (WPARAM)NULL, (LPARAM)NULL);
 
-						//iIndex = SendMessageQ(hwnd, CB__SELECTSTRING, (WPARAM)-1, (LPARAM)"Insp");
+							//iIndex = SendMessageQ(hwnd, CB__SELECTSTRING, (WPARAM)-1, (LPARAM)"Insp");
 
-						//iValue = SendMessageQ(hwnd, CB__RESETCONTENT, (WPARAM)NULL, (LPARAM)NULL);
-						///////COMBO BOX //////
+							//iValue = SendMessageQ(hwnd, CB__RESETCONTENT, (WPARAM)NULL, (LPARAM)NULL);
+							///////COMBO BOX //////
 
-						///////TABBED PANE //////
-						int iValue = SendMessageQ(hwnd, TAB__GETCURSEL, (WPARAM)NULL, (LPARAM)NULL);
-						iValue = SendMessageQ(hwnd, TAB__SETCURSEL, (WPARAM)0, (LPARAM)NULL);
-						iValue = SendMessageQ(hwnd, TAB__GETITEMCOUNT, (WPARAM)0, (LPARAM)NULL);
+							///////TABBED PANE //////
+							int iValue = SendMessageQ(hwnd, TAB__GETCURSEL, (WPARAM)NULL, (LPARAM)NULL);
+							iValue = SendMessageQ(hwnd, TAB__SETCURSEL, (WPARAM)0, (LPARAM)NULL);
+							iValue = SendMessageQ(hwnd, TAB__GETITEMCOUNT, (WPARAM)0, (LPARAM)NULL);
 
-						TCIM_ tcim;
-						iValue = SendMessageQ(hwnd, TAB__GETITEM, (WPARAM)0, (LPARAM)&tcim);
-						if(iValue == WM__OKAY) {
-							HWND hTabWnd = (HWND)tcim.lParam;
-							iValue = SendMessageQ(hTabWnd, WM__GETTEXTLENGTH, (WPARAM)NULL, (LPARAM)NULL);
-							char* str = new char[iValue + 1];
-							memset(str, 0, iValue + 1);
-							iValue = SendMessageQ(hTabWnd, WM__GETTEXT, (WPARAM)(iValue + 1), (LPARAM)str);
+							TCIM_ tcim;
+							iValue = SendMessageQ(hwnd, TAB__GETITEM, (WPARAM)0, (LPARAM)&tcim);
+							if(iValue == WM__OKAY) {
+								HWND hTabWnd = (HWND)tcim.lParam;
+								iValue = SendMessageQ(hTabWnd, WM__GETTEXTLENGTH, (WPARAM)NULL, (LPARAM)NULL);
+								char* str = new char[iValue + 1];
+								memset(str, 0, iValue + 1);
+								iValue = SendMessageQ(hTabWnd, WM__GETTEXT, (WPARAM)(iValue + 1), (LPARAM)str);
+								bool b = true;
+							}
+
+							iValue = SendMessageQ(hwnd, TAB__DELETEITEM, (WPARAM)2, (LPARAM)NULL);
+
+							char str[255];
+							sprintf(str, "%s", "ADDED TAB !!!");
+							tcim.lpzText = str;
+							tcim.cchTextMax = strlen(str);
+							iValue = SendMessageQ(hwnd, TAB__INSERTITEM, (WPARAM)1, (LPARAM)&tcim);
+							if(iValue == WM__OKAY) {
+								H_WND pTab = (H_WND)tcim.lParam;
+
+								H_WND hWnd = 
+									CreateComponent(	"WTextField", 
+									"I'm just messing around with thread hooks. I've got one now that displays the clipboard, if it is in CF_TEXT format, whenever the user pastes in my application. The problem I've run into is that it can get the clipboard data fine if I've copied it from another application, but if I copy it from my own, it pastes just fine on the screen, but when I retrieve the clipboard data, its garbled. Heres the code.", 
+									0, 
+									20,
+									20, 
+									200, 
+									23,
+									pTab, 
+									HMENU(99), 
+									NULL);
+								((WTextField*)hWnd)->setComponentAsChild(true);
+							}
+
+							sprintf(str, "%s", "TAB RENAMED !!!");
+							tcim.lpzText = str;
+							tcim.cchTextMax = strlen(str);
+							iValue = SendMessageQ(hwnd, TAB__SETITEMTITLE, (WPARAM)0, (LPARAM)&tcim);
+
+							iValue = SendMessageQ(hwnd, WM__GETTEXT, (WPARAM)1, (LPARAM)&tcim);
+
+							sprintf(str, "%s", "TAB SETTED !!!");
+							tcim.lpzText = str;
+							tcim.cchTextMax = strlen(str);
+							iValue = SendMessageQ(hwnd, TAB__SETITEM, (WPARAM)2, (LPARAM)&tcim);
+							if(iValue == WM__OKAY) {
+								H_WND pTab = (H_WND)tcim.lParam;
+
+								H_WND hWnd = 
+									CreateComponent(	"WButton", 
+									"Press Me !!!", 
+									0, 
+									20,
+									20, 
+									200, 
+									23,
+									pTab, 
+									HMENU(909), 
+									"Button");
+							}
+
+							///////TABBED PANE //////
 							bool b = true;
 						}
-
-						iValue = SendMessageQ(hwnd, TAB__DELETEITEM, (WPARAM)2, (LPARAM)NULL);
-
-						char str[255];
-						sprintf(str, "%s", "ADDED TAB !!!");
-						tcim.lpzText = str;
-						tcim.cchTextMax = strlen(str);
-						iValue = SendMessageQ(hwnd, TAB__INSERTITEM, (WPARAM)1, (LPARAM)&tcim);
-						if(iValue == WM__OKAY) {
-							H_WND pTab = (H_WND)tcim.lParam;
-
-							H_WND hWnd = 
-								CreateComponent(	"WTextField", 
-								"I'm just messing around with thread hooks. I've got one now that displays the clipboard, if it is in CF_TEXT format, whenever the user pastes in my application. The problem I've run into is that it can get the clipboard data fine if I've copied it from another application, but if I copy it from my own, it pastes just fine on the screen, but when I retrieve the clipboard data, its garbled. Heres the code.", 
-								0, 
-								20,
-								20, 
-								200, 
-								23,
-								pTab, 
-								HMENU(99), 
-								NULL);
-							((WTextField*)hWnd)->setComponentAsChild(true);
-						}
-
-						sprintf(str, "%s", "TAB RENAMED !!!");
-						tcim.lpzText = str;
-						tcim.cchTextMax = strlen(str);
-						iValue = SendMessageQ(hwnd, TAB__SETITEMTITLE, (WPARAM)0, (LPARAM)&tcim);
-
-						iValue = SendMessageQ(hwnd, WM__GETTEXT, (WPARAM)1, (LPARAM)&tcim);
-
-						sprintf(str, "%s", "TAB SETTED !!!");
-						tcim.lpzText = str;
-						tcim.cchTextMax = strlen(str);
-						iValue = SendMessageQ(hwnd, TAB__SETITEM, (WPARAM)2, (LPARAM)&tcim);
-						if(iValue == WM__OKAY) {
-							H_WND pTab = (H_WND)tcim.lParam;
-
-							H_WND hWnd = 
-								CreateComponent(	"WButton", 
-								"Press Me !!!", 
-								0, 
-								20,
-								20, 
-								200, 
-								23,
-								pTab, 
-								HMENU(909), 
-								"Button");
-						}
-
-						///////TABBED PANE //////
+					}
+					break;
+				case 121:
+					{
 						bool b = true;
 					}
+					break;
 				}
-				break;
-			case 121:
-				{
-					bool b = true;
+			}
+			break;
+		case WM_BTN_MBUTTONUP:
+			{
+				int WINDOW_ID = wParam;
+				switch(WINDOW_ID) {
+
 				}
-				break;
 			}
-		}
-		break;
-	case WM_BTN_MBUTTONUP:
-		{
-			int WINDOW_ID = wParam;
-			switch(WINDOW_ID) {
+			break;
+		case WM_BTN_RBUTTONUP:
+			{
+				int WINDOW_ID = wParam;
+				switch(WINDOW_ID) {
 
+				}
 			}
-		}
-		break;
-	case WM_BTN_RBUTTONUP:
-		{
-			int WINDOW_ID = wParam;
-			switch(WINDOW_ID) {
+			break;
 
+			//WCheckBox
+		case WM_CBX_CHECKED:
+			{
+				int WINDOW_ID = wParam;
+				switch(WINDOW_ID) {
+
+				}
 			}
-		}
-		break;
+			break;
+		case WM_CBX_UNCHECKED:
+			{
+				int WINDOW_ID = wParam;
+				switch(WINDOW_ID) {
 
-		//WCheckBox
-	case WM_CBX_CHECKED:
-		{
-			int WINDOW_ID = wParam;
-			switch(WINDOW_ID) {
-
+				}
 			}
-		}
-		break;
-	case WM_CBX_UNCHECKED:
-		{
-			int WINDOW_ID = wParam;
-			switch(WINDOW_ID) {
+			break;
 
+			//WTextField
+
+			//WComboBox
+		case WM_CBN_SELENDOK:
+			{
+				int WINDOW_ID = wParam;
+				switch(WINDOW_ID) {
+				case IDC_CB_FONT:
+							WComboBox* pComboBox = (WComboBox*)hWnd;
+							H_FONT hFont = CreateFontQ(pComboBox->getText(), 10, 96);
+							if(hFont != NULL)
+								SelectFontQ(hFont);
+					break;
+				}
 			}
+			break;
+			//WTextBox
+			//EM_GETLINE
+			//EM_GETLINECOUNT
+			//EM_GETLIMITTEXT
+			//EM_LIMITTEXT
+			//EM_GETPASSWORDCHAR
+			//EM_SETPASSWORDCHAR
+			//EM_GETRECT
+			//EM_SETRECT
+			//EM_GETSEL
+			//EM_SETSEL
 		}
-		break;
-
-		//WTextField
-
-		//WComboBox
-	case WM_CBN_SELENDOK:
-		{
-			int WINDOW_ID = wParam;
-			switch(WINDOW_ID) {
-			case IDC_CB_FONT:
-						WComboBox* pComboBox = (WComboBox*)hWnd;
-						H_FONT hFont = CreateFontQ(pComboBox->getText(), 10, 96);
-						if(hFont != NULL)
-							SelectFontQ(hFont);
-				break;
-			}
-		}
-		break;
-		//WTextBox
-		//EM_GETLINE
-		//EM_GETLINECOUNT
-		//EM_GETLIMITTEXT
-		//EM_LIMITTEXT
-		//EM_GETPASSWORDCHAR
-		//EM_SETPASSWORDCHAR
-		//EM_GETRECT
-		//EM_SETRECT
-		//EM_GETSEL
-		//EM_SETSEL
-	}
 
 	return 0;
 }
@@ -384,14 +468,17 @@ Dream3DTest::~Dream3DTest() {
 }
 
 void Dream3DTest::initialize() {
+	////////////////////// SCENE INITIALISATION
 	m_pScene = Scene::create();
 
 	Camera* pCamera = Camera::createPerspective(0, 0, getWidth(), getHeight(), 45.0f, 0.01f, 10.0f);
 	Node* pCameraNode = Node::create("FirstPersonShooterCamera");
 	pCameraNode->setCamera(pCamera);
 	m_pScene->addNode(pCameraNode);
+	//////////////////////////////////////////////
 
-	glEnable(GL_DEPTH_TEST);
+	//////////////////////////////////////////////
+	//glEnable(GL_DEPTH_TEST);
 
 	triangleModelNode = createTriangleModelNode();
 	m_pScene->addNode(triangleModelNode);
@@ -431,16 +518,10 @@ void Dream3DTest::initialize() {
 		prop->print(0);
 
 	//initLights();
+	//////////////////////////////////////////////
 
 	//////////////////// YAGUI Related initializations !!!
-	//////////////////// Setup 2D Camera For YAGUI
-	Camera* pCameraYAGUI = Camera::createPerspective(0, 0, getWidth(), getHeight(), 45.0f, -1.0f, 0.0f);
-	pCameraYAGUI->setType(Camera::ORTHOGRAPHIC);
-	Node* pYAGUICameraNode = Node::create("YAGUI_2DCamera");
-	pYAGUICameraNode->setCamera(pCameraYAGUI);
-
 	addUIListener(UICallback);
-	setUICameraNode(pYAGUICameraNode);
 	addDummyWindows(GetWindowQ(0));
 	////////////////////////////////////////////
 }

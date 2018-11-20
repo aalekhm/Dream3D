@@ -171,7 +171,7 @@ H_FONT WWidgetManager::loadFont(const char* sFontFile, unsigned int iFontSize, u
 
 void WWidgetManager::setGLStates() {
 	Camera* pCamera = EngineManager::getInstance()->getUICamera();
-	pCamera->setType(Camera::ORTHOGRAPHIC);
+	pCamera->forceType(Camera::ORTHOGRAPHIC);
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);

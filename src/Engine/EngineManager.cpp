@@ -42,6 +42,11 @@ void EngineManager::startup(HWND pHWnd) {
 	m_pWidgetManager = WWidgetManager::getInstance();
 	m_pTimer = new Timer();
 
+	Camera* pCameraYAGUI = Camera::createPerspective(0, 0, getWidth(), getHeight(), 45.0f, -1.0f, 0.0f);
+	pCameraYAGUI->setType(Camera::ORTHOGRAPHIC);
+	m_pYAGUICameraNode = Node::create("YAGUI_2DCamera");
+	m_pYAGUICameraNode->setCamera(pCameraYAGUI);
+
 	initTimer();
 
 	m_iState = RUNNING;
@@ -185,12 +190,6 @@ void EngineManager::addUIListener(YAGUICallback callbackProc) {
 	if(callbackProc != NULL) {
 		m_pWidgetManager->setCallback(callbackProc);
 	}
-}
-
-void EngineManager::setUICameraNode(Node* pCameraNode) {
-	GP_ASSERT( pCamera );
-
-	m_pYAGUICameraNode = pCameraNode;
 }
 
 Camera* EngineManager::getUICamera() {

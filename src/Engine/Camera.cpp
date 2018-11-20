@@ -74,6 +74,24 @@ Camera* Camera::createOrthographic(int x, int y, int w, int h, float fNearPlane,
 	return cam;
 }
 
+void Camera::setCameraValues(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane) {
+	///////////////////// Set Camera Values
+	m_iViewX = x;
+	m_iViewY = y;
+	m_iViewW = w;
+	m_iViewH = h;
+	m_fAspectRatio = (float)(w)/h;
+	m_fNearPlane = fNearPlane;
+	m_fFarPlane = fFarPlane;
+	//////////////////////////////////////
+}
+
+void Camera::forceType(Camera::Type camType) {
+
+	m_iCameraType = NONE;
+	setType(camType);
+}
+
 void Camera::setType(Camera::Type camType) {
 	
 	if(m_iCameraType != camType) {
@@ -139,20 +157,21 @@ Matrix4& Camera::getViewMatrix() {
 // configure projection and viewport of sub window
 ///////////////////////////////////////////////////////////////////////////////
 void Camera::setPerspective(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane) {
-	// set viewport
 
+	///////////////////////// Set Viewport
 	int xViewport = x;
 	int yViewport = EngineManager::getInstance()->getHeight() - (y + h);
 	int wViewport = w;
 	int hViewport = h;
-
-	//glEnable(GL_SCISSOR_TEST);
+	glEnable(GL_SCISSOR_TEST);
 	glViewport(xViewport, yViewport, wViewport, hViewport);
-	//glScissor(xViewport, yViewport, wViewport, hViewport);
+	glScissor(xViewport, yViewport, wViewport, hViewport);
+	////////////////////////////////////////////
 
-	// set perspective viewing frustum
+	///////////////// Set Perspective Viewing Frustum
 	setFrustum(iFieldOfView, (float)(w)/h, fNearPlane, fFarPlane); // FOV, AspectRatio, NearClip, FarClip
-	
+	////////////////////////////////////////////
+
 	// copy projection matrix to OpenGL
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixf(m_MatrixProjection.getTranspose());
@@ -190,14 +209,25 @@ void Camera::setPerspectiveFrustum(float l, float r, float b, float t, float n, 
 	m_MatrixProjection[15] =  0;
 }
 
-void Camera::setOrthographic(int x, int y, int w, int h, float iNearPlane, float iFarPlane) {
+void Camera::setOrthographic(int x, int y, int w, int h, float fNearPlane, float fFarPlane) {
 
+	///////////////////////// Set Viewport
+	int xViewport = x;
+	int yViewport = EngineManager::getInstance()->getHeight() - (y + h);
+	int wViewport = w;
+	int hViewport = h;
+	glEnable(GL_SCISSOR_TEST);
+	glViewport(xViewport, yViewport, wViewport, hViewport);
+	glScissor(xViewport, yViewport, wViewport, hViewport);
+	////////////////////////////////////////////
+
+	//////////////// Set Orthogonal Viewing Frustrum
 	int left = x;
 	int right = (x + w);
 	int bottom = (y + h);
 	int top = y;
-
 	setOrthogonalFrustum((float)left, (float)right, (float)bottom, (float)top, 0.0f, 1.0f);
+	////////////////////////////////////////////
 	
 	glMatrixMode(GL_PROJECTION);						// Setup and orthogonal, pixel-to-pixel projection matrix
 	glLoadMatrixf(m_MatrixProjection.getTranspose());	// copy projection matrix to OpenGL

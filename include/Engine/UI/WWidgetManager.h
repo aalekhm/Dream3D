@@ -43,7 +43,6 @@ struct WWidgetManager {
 		void					onMouseWheel(WPARAM wParam, LPARAM lParam);
 
 		void					setGLStates();
-		void					setupOrthogonalProjection();
 		void					flush();
 		static void			drawFont(int x, int y, int charW, int charH, int tX, int tY);
 		static int			getGlyphU(int c);

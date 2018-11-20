@@ -61,7 +61,6 @@ class EngineManager {
 		virtual void			render(float elapsedTime) = 0;
 
 		void					addUIListener(YAGUICallback callbackProc);
-		void					setUICameraNode(Node* pCameraNode);
 		Camera*			getUICamera();
 	private:
 		static EngineManager*	m_pEngineManager;
