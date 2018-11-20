@@ -72,8 +72,8 @@ void WInspector::onCreateEx(LPVOID lpVoid) {
 												m_FrameWidget->widgetSize.height,
 												&wndRect,
 												&idealRect,
-												verticalSBChild->align.iHAlign,
-												verticalSBChild->align.iVAlign
+												verticalSBChild->align.eHAlign,
+												verticalSBChild->align.eVAlign
 												);
 		H_WND hWnd = 
 		CreateComponent(	"WScrollbar", 
@@ -102,8 +102,8 @@ void WInspector::onCreateEx(LPVOID lpVoid) {
 												m_FrameWidget->widgetSize.height,
 												&wndRect,
 												&idealRect,
-												horizontalSBChild->align.iHAlign,
-												horizontalSBChild->align.iVAlign
+												horizontalSBChild->align.eHAlign,
+												horizontalSBChild->align.eVAlign
 												);
 		hWnd = 
 		CreateComponent(	"WScrollbar", 
@@ -132,8 +132,8 @@ void WInspector::onCreateEx(LPVOID lpVoid) {
 												m_FrameWidget->widgetSize.height,
 												&wndRect,
 												&idealRect,
-												btnChild->align.iHAlign,
-												btnChild->align.iVAlign
+												btnChild->align.eHAlign,
+												btnChild->align.eVAlign
 												);
 		hWnd = 
 		CreateComponent(	"WButton", 
@@ -162,8 +162,8 @@ void WInspector::onCreateEx(LPVOID lpVoid) {
 												m_FrameWidget->widgetSize.height,
 												&wndRect,
 												&idealRect,
-												btnChild->align.iHAlign,
-												btnChild->align.iVAlign
+												btnChild->align.eHAlign,
+												btnChild->align.eVAlign
 												);
 		hWnd = 
 		CreateComponent(	"WButton", 
@@ -196,8 +196,8 @@ void WInspector::onCreateEx(LPVOID lpVoid) {
 												m_FrameWidget->widgetSize.height,
 												&wndRect,
 												&idealRect,
-												clientArea->align.iHAlign,
-												clientArea->align.iVAlign
+												clientArea->align.eHAlign,
+												clientArea->align.eVAlign
 												);
 		m_ClientRect.X = destRect.X - getLeft();
 		m_ClientRect.Y = destRect.Y - getTop();

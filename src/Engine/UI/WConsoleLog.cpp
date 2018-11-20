@@ -100,8 +100,8 @@ void WConsoleLog::onCreateEx(LPVOID lpVoid) {
 		m_TextBoxWidget->widgetSize.height,
 		&wndRect,
 		&idealRect,
-		verticalSBChild->align.iHAlign,
-		verticalSBChild->align.iVAlign
+		verticalSBChild->align.eHAlign,
+		verticalSBChild->align.eVAlign
 		);
 	hWnd = 
 	CreateComponent(	"WScrollbar", 
@@ -131,8 +131,8 @@ void WConsoleLog::onCreateEx(LPVOID lpVoid) {
 		m_TextBoxWidget->widgetSize.height,
 		&wndRect,
 		&idealRect,
-		horizontalSBChild->align.iHAlign,
-		horizontalSBChild->align.iVAlign
+		horizontalSBChild->align.eHAlign,
+		horizontalSBChild->align.eVAlign
 		);
 	hWnd = 
 	CreateComponent(	"WScrollbar", 
@@ -163,8 +163,8 @@ void WConsoleLog::onCreateEx(LPVOID lpVoid) {
 			m_TextBoxWidget->widgetSize.height,
 			&wndRect,
 			&idealRect,
-			clientArea->align.iHAlign,
-			clientArea->align.iVAlign
+			clientArea->align.eHAlign,
+			clientArea->align.eVAlign
 			);
 		m_ClientRect.X = destClientRect.X - getLeft();
 		m_ClientRect.Y = destClientRect.Y - getTop();
@@ -767,7 +767,7 @@ bool WConsoleLog::isReadOnlyChar(char ch) {
 	return bRet;
 }
 
-void WConsoleLog::onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch) {
+void WConsoleLog::onKeyBDownEx(unsigned int iVirtualKeycode, unsigned short ch) {
 //printf("In onKeyBDown\n");
 	
 	if(mState == READONLY && !isReadOnlyChar(iVirtualKeycode))
@@ -1404,7 +1404,7 @@ void WConsoleLog::setCaretDrawPosition() {
 //printf("Ex setCaretDrawPosition\n");
 }
 
-void WConsoleLog::onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch) {
+void WConsoleLog::onKeyBUpEx(unsigned int iVirtualKeycode, unsigned short ch) {
 
 }
 

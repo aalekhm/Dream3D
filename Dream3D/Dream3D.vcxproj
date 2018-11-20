@@ -60,12 +60,14 @@
     <ClInclude Include="..\include\Engine\UI\WContainer.h" />
     <ClInclude Include="..\include\Engine\UI\WDummy.h" />
     <ClInclude Include="..\include\Engine\UI\WFrame.h" />
+    <ClInclude Include="..\include\Engine\UI\WGraph.h" />
     <ClInclude Include="..\include\Engine\UI\widgetdef.h" />
     <ClInclude Include="..\include\Engine\UI\WInspector.h" />
     <ClInclude Include="..\include\Engine\UI\WInspectorTab.h" />
     <ClInclude Include="..\include\Engine\UI\WListBox.h" />
     <ClInclude Include="..\include\Engine\UI\WScrollbar.h" />
     <ClInclude Include="..\include\Engine\UI\WSlider.h" />
+    <ClInclude Include="..\include\Engine\UI\WSprite.h" />
     <ClInclude Include="..\include\Engine\UI\WStatic.h" />
     <ClInclude Include="..\include\Engine\UI\WTabbedPane.h" />
     <ClInclude Include="..\include\Engine\UI\WTable.h" />
@@ -119,11 +121,13 @@
     <ClCompile Include="..\src\Engine\UI\WContainer.cpp" />
     <ClCompile Include="..\src\Engine\UI\WDummy.cpp" />
     <ClCompile Include="..\src\Engine\UI\WFrame.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WGraph.cpp" />
     <ClCompile Include="..\src\Engine\UI\WInspector.cpp" />
     <ClCompile Include="..\src\Engine\UI\WInspectorTab.cpp" />
     <ClCompile Include="..\src\Engine\UI\WListBox.cpp" />
     <ClCompile Include="..\src\Engine\UI\WScrollbar.cpp" />
     <ClCompile Include="..\src\Engine\UI\WSlider.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WSprite.cpp" />
     <ClCompile Include="..\src\Engine\UI\WStatic.cpp" />
     <ClCompile Include="..\src\Engine\UI\WTabbedPane.cpp" />
     <ClCompile Include="..\src\Engine\UI\WTable.cpp" />
@@ -189,6 +193,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);USE_YAGUI</PreprocessorDefinitions>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>opengl32.lib;freetype245.lib;CCString.lib;RandomAccessFile.lib;StringTokenizer.lib;%(AdditionalDependencies)</AdditionalDependencies>

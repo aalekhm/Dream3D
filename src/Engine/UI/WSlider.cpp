@@ -66,8 +66,8 @@ void WSlider::onCreateEx(LPVOID lpVoid) {
 												m_DummyWidget->widgetSize.height,
 												&wndRect,
 												&idealRect,
-												clientArea->align.iHAlign,
-												clientArea->align.iVAlign
+												clientArea->align.eHAlign,
+												clientArea->align.eVAlign
 												);
 		m_ClientRect.X = destRect.X - getLeft();
 		m_ClientRect.Y = destRect.Y - getTop();

@@ -251,5 +251,10 @@ void MD5Animation::interpolateSkeletons( FrameSkeleton* pFinalSkeleton, const Fr
 
 		pFinalJoint->m_vPos = Lerp( pJoint0->m_vPos, pJoint1->m_vPos, fInterpolate );
 		pFinalJoint->m_qOrient = Slerp( pJoint0->m_qOrient, pJoint1->m_qOrient, fInterpolate );
+		//The following is "Not" the way to go.
+		//pFinalJoint->m_qOrient._x =  ( pJoint1->m_qOrient._x * fInterpolate ) + ( pJoint0->m_qOrient._x * (1-fInterpolate) );
+		//pFinalJoint->m_qOrient._y =  ( pJoint1->m_qOrient._y * fInterpolate ) + ( pJoint0->m_qOrient._y * (1-fInterpolate) );
+		//pFinalJoint->m_qOrient._z =  ( pJoint1->m_qOrient._z * fInterpolate ) + ( pJoint0->m_qOrient._z * (1-fInterpolate) );
+		//pFinalJoint->m_qOrient._w =  ( pJoint1->m_qOrient._w * fInterpolate ) + ( pJoint0->m_qOrient._w * (1-fInterpolate) );
 	}
 }

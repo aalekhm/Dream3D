@@ -67,13 +67,13 @@ static GLenum __gl_error_code;
 #endif
 
 // Object deletion macro
-#define SAFE_DELETE(x) if(x) { delete x; x = NULL; }
+#define SAFE_DELETE(x) if(x != NULL) { delete x; x = NULL; }
 
 // Array deletion macro
-#define SAFE_DELETE_ARRAY(x) if(x) { delete[] x; x = NULL; }
+#define SAFE_DELETE_ARRAY(x) if(x != NULL) { delete[] x; x = NULL; }
 
 // Ref cleanup macro
-#define SAFE_RELEASE(x)	if(x) { (x)->release(); x = NULL; }
+#define SAFE_RELEASE(x)	if(x != NULL) { (x)->release(); x = NULL; }
 
 typedef GLuint TextureHandle;
 

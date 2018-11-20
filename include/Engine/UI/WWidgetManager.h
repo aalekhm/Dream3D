@@ -59,10 +59,14 @@ struct WWidgetManager {
 		static int			getWidgetID(const char* sWidgetName);
 		static float		getWidgetWidth(const char* sWidgetName);
 		static float		getWidgetHeight(const char* sWidgetName);
-		static void			getDestinationRect(RectF& destRect, float parentW, float parentH, RectF* wndRect, RectF* idealRect, int hAlign, int vAlign);
+		static void			getDestinationRect(RectF& destRect, float parentW, float parentH, RectF* wndRect, RectF* idealRect, H_ALIGN hAlign, V_ALIGN vAlign);
 		bool					loadMainWindowDefaults();
+
 		static void			setClip(int x, int y, int w, int h );
 		static void			GetClipBounds(RectF* reclaimRect);
+		static void			SET_CLIP(int x, int y , int width, int height);
+		static void			RESET_CLIP();
+		static RectF		m_reclaimRect;
 		
 		static void			drawStringFont(const char* cStr, int x, int y, int anchor);
 		static int			getCharWidth(int c);
@@ -109,7 +113,8 @@ struct WWidgetManager {
 	private:
 		WWidgetManager();
 		bool					readMap(char* filePathAndName);
-		int					getWidgetAlignInt(char* sAlign);
+		H_ALIGN			getWidgetHAlign(char* sAlign);
+		V_ALIGN			getWidgetVAlign(char* sAlign);
 		int					getTextAlignInt(char* sAlign);
 
 		static std::vector<WIDGET*>		m_pWidgets;

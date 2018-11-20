@@ -824,10 +824,11 @@ WIDGET Tree_Root {
 	BaseSkin {
 		posOffset	"0 0 16 15" 
 		skinOffset	"2 176 16 15"
-		align		Left Top
+		align		HStretch VStretch
 		Description	""
 	}	
 }
+
 WIDGET Tree_FolderClosed {
 	size 	"15 12"
 	BaseSkin {
@@ -1211,7 +1212,7 @@ WIDGET DummyWindow {
 	}
 	Child {
 		skin		WindowResizeLeft
-		posOffset	"0 17 9 9"
+		posOffset	"-2 17 9 9"
 		align		Left Bottom
 	}
 	Child {
@@ -2991,4 +2992,57 @@ WIDGET WindowCSMX {
 		align		Right Bottom
 		Description	"Window Client Area Right Bottom"
 	}
+}
+
+WIDGET GraphWidget {
+	
+	size	"29 26"
+
+	Child {
+		skin		TextArea
+		posOffset	"0 0 29 26"
+		align		HStretch VStretch
+	}
+	Child {
+		skin		WindowResizeLeft
+		posOffset	"-2 17 9 9"
+		align		Left Bottom
+	}
+	Child {
+		skin		WindowResizeRight
+		posOffset	"20 17 9 9" 
+		align		Right Bottom
+	}
+	ClientArea {
+		skin		EditClient
+		posOffset	"2 2 7 4"
+		align		HStretch VStretch
+	}
+}
+
+WIDGET MiscChildsWidget {
+	
+	size	"100 100"
+	
+	Child {
+		skin		WindowResizeLeft
+		posOffset	"0 0 9 9"
+		align		Left Bottom
+	}
+	
+	Child {
+		skin		WindowResizeRight
+		posOffset	"0 0 9 9" 
+		align		Right Bottom
+	}
+}
+
+WIDGET Exclamation {
+	size 	"24 44"
+	BaseSkin {
+		posOffset	"0 0 24 44" 
+		skinOffset	"162 202 24 44"
+		align		HStretch VStretch
+		Description	""
+	}	
 }

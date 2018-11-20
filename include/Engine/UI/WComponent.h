@@ -2,12 +2,27 @@
 #ifndef WCOMPONENT_H
 #define WCOMPONENT_H
 
+#define HAS_CUSTOM_FEATURES
+
 #include "Engine/UI/UIDefines.h"
 #include "Engine/UI/widgetdef.h"
+
+class WComponent;
+
+struct RenderAlignmentData {
+	RenderAlignmentData() 
+		: m_pMe(NULL)
+	{
+
+	}
+
+	WComponent* m_pMe;
+};
 
 struct WComponent {
 	
 	public:
+
 		enum WND_MSG {
 			MOUSE_DOWN,
 			MOUSE_UP,
@@ -24,7 +39,7 @@ struct WComponent {
 		virtual ~WComponent();
 		
 		virtual	H_WND	Create(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam, bool bIsContainer = false, bool bIsChild = false);
-
+		
 		virtual LRESULT	OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam);
 		const char*		getClassName();
 		const char*		getWindowName();
@@ -53,6 +68,8 @@ struct WComponent {
 						setSize(getWidth(), h); 
 						onMessage((H_WND)this, HEIGHT_CHANGED, getHeight(), h);
 					}
+		u32		getAnchorX();
+		u32		getAnchorY();
 
 		void		setFixedZOrder(bool bFixed)	{ m_bFixedOrder = bFixed; }
 
@@ -81,7 +98,11 @@ struct WComponent {
 		void		setPostRender(bool bPostRender){ m_IsPostRender = bPostRender; }
 
 		void		getFocus();
+		void		getFocusEx() { };
+
 		void		releaseFocus();
+		void		releaseFocusEx() { };
+
 		void		getMouseFocus();
 		void		getKeyBFocus();
 		void		releaseMouseFocus();
@@ -100,10 +121,12 @@ struct WComponent {
 
 		// event handlers. Override these methods to define how your
 		// component behaves
-		virtual void		onCreateEx(LPVOID lpVoid) {};
 		virtual void		updateScroll() {};
 		virtual void		onUpdate() {};
 		virtual void		onRender();
+		virtual void		postRenderEx() { }
+		virtual void		postRenderInternal();
+
 		virtual void		onMouseDown(int x, int y, int iButton);
 		virtual void		onMouseUp(int x, int y, int iButton);
 		virtual void		onMouseEnter(int mCode, int x, int y, int prevX, int prevY);
@@ -113,8 +136,23 @@ struct WComponent {
 		virtual void		onMouseWheel(WPARAM wParam, LPARAM lParam);
 		virtual void		onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch);
 		virtual void		onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch);
-		virtual void		onActivate()	{ m_bActive = true; }
-		virtual void		onDeactivate()	{ m_bActive = false; }
+		
+		// overridables
+		virtual void		onCreateEx(LPVOID lpVoid) { };
+		virtual void		onMouseDownEx(int x, int y, int iButton) { };
+		virtual void		onMouseUpEx(int x, int y, int iButton) { };
+		virtual void		onMouseEnterEx(int mCode, int x, int y, int prevX, int prevY) { };
+		virtual void		onMouseHoverEx(int mCode, int x, int y, int prevX, int prevY) { };
+		virtual void		onMouseLeaveEx(int mCode, int x, int y, int prevX, int prevY) { };
+		virtual void		onMouseMoveEx(int mCode, int x, int y, int prevX, int prevY) { };
+		virtual void		onMouseWheelEx(WPARAM wParam, LPARAM lParam) { }
+		virtual void		onKeyBDownEx(unsigned int iVirtualKeycode, unsigned short ch) { };
+		virtual void		onKeyBUpEx(unsigned int iVirtualKeycode, unsigned short ch) { };
+
+		virtual void		onActivate()	{ m_bActive = true; onActivateEx(); }
+		virtual void		onActivateEx()	{ }
+		virtual void		onDeactivate()	{ m_bActive = false; onDeactivateEx(); }
+		virtual void		onDeactivateEx()	{ }
 		virtual void		onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 		
 		virtual bool	isPointInside(int x, int y);
@@ -150,6 +188,27 @@ struct WComponent {
 
 		int		m_iComponentID;
 
+		WORD	m_iAnchor;
+		WORD	m_iAlignWRTParent;
+
+	private:
+#ifdef HAS_CUSTOM_FEATURES
+			enum COMPONENT_CUSTOM_STATE {
+				CUSTOM_STATE_NONE = 0,
+				CUSTOM_STATE_MOVE,
+				CUSTOM_STATE_SET_ANCHOR,
+				CUSTOM_STATE_ALIGN_TO_PARENT
+			};
+			///////////// Custom features ///////////
+			bool											m_bIsCustom;
+			COMPONENT_CUSTOM_STATE		m_eCustomState;
+			WIDGET*									m_pMiscChildsWidget;
+
+			void											createComponentCustomWidgets();
+
+			static RenderAlignmentData		m_StaticRenderAlignment;
+			//////////////////////////////////////
+#endif
 };
 
 #endif
