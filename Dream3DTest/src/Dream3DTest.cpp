@@ -41,6 +41,8 @@ O -'        .'''       .'                                     "8b d8"   Veilleux
 #include "Engine/Properties.h"
 #include "Engine/MD5Model.h"
 #include "Engine/MD5Animation.h"
+#include "Engine/Material.h"
+#include "Engine/MaterialParameter.h"
 
 #ifdef USE_YAGUI
 #include "Engine/UI/WComponentFactory.h"
@@ -59,6 +61,11 @@ void drawTriangle(const Vector3& p1, const Vector3& p2, const Vector3& p3);
 void drawGrid(int iSize, float fStep);
 void drawLine(const Vector3& p1, const Vector3& p2);
 
+Node* createHearthStoneCoolShaderModelNode(const char* pMaterial);
+Node* magniQuadModelNode;
+Node* medivhQuadModelNode;
+Node* testShaderQuadModelNode;
+
 Node* createTriangleModelNode();
 Node* triangleModelNode;
 
@@ -75,10 +82,13 @@ Node* createCubeModelIndexedNode(float size);
 Node* cubeModelNode;
 
 Node* createQuadIndexedNode();
-Node* quadModelNode;
+Node* quadModelIndexedNode;
 
 Node* createObjNode();
 Node* objModelNode;
+
+Node* createGrid(unsigned int iSize, float fStep = 1.0f);
+Node* g_pGridNode;
 
 std::vector<MD5Model*>	v_pMD5Models;
 
@@ -488,9 +498,10 @@ void Dream3DTest::initialize() {
 	////////////////////// SCENE INITIALISATION
 	m_pScene = Scene::create();
 
-	Camera* pCamera = Camera::createPerspective(0, 0, getWidth(), getHeight(), 45.0f, 0.01f, 10.0f);
+	Camera* pCamera = Camera::createPerspective(0, 0, getWidth(), getHeight(), 45.0f, 0.01f, 100.0f);
 	Node* pCameraNode = Node::create("FirstPersonShooterCamera");
 	pCameraNode->setCamera(pCamera);
+	pCameraNode->setPosition(Vector3(0.0f, 1.0f, -1.0f));
 	m_pScene->addNode(pCameraNode);
 	//////////////////////////////////////////////
 
@@ -498,34 +509,79 @@ void Dream3DTest::initialize() {
 #ifndef USE_YAGUI
 	glEnable(GL_DEPTH_TEST);
 #endif
-	triangleModelNode = createTriangleModelNode();
-	m_pScene->addNode(triangleModelNode);
+	magniQuadModelNode =	createHearthStoneCoolShaderModelNode("data/box.material#magni");
+	{
+		magniQuadModelNode->setPosition(Vector3(0.0f, 0.0f, 3.0f));
+		m_pScene->addNode(magniQuadModelNode);
+	}
 
+	medivhQuadModelNode = createHearthStoneCoolShaderModelNode("data/box.material#medivh");
+	{
+		medivhQuadModelNode->setPosition(Vector3(0.5f, 0.0f, 3.0f));
+		m_pScene->addNode(medivhQuadModelNode);
+	}
+
+	testShaderQuadModelNode = createHearthStoneCoolShaderModelNode("data/box.material#testShader");
+	{
+		testShaderQuadModelNode->setPosition(Vector3(-0.5f, 0.0f, 3.0f));
+		m_pScene->addNode(testShaderQuadModelNode);
+	}
+
+	g_pGridNode = createGrid(10, 0.25);
+	{
+		g_pGridNode->setPosition(Vector3(0.0f, 0.0f, 0.0f));
+		m_pScene->addNode(g_pGridNode);
+	}
+
+	/*
+	triangleModelNode = createTriangleModelNode();
+	{
+		triangleModelNode->setPosition(Vector3(0.0f, 0.0f, 3.0f));
+		m_pScene->addNode(triangleModelNode);
+	}
+	
 	triangleStripModelNode = createTriangleStripModelNode();
-	m_pScene->addNode(triangleStripModelNode);
+	{
+		triangleStripModelNode->setPosition(Vector3(-5.0f, 0.0f, 0.0f));
+		m_pScene->addNode(triangleStripModelNode);
+	}
 	
 	lineStripModelNode = createLineStripModelNode();
-	m_pScene->addNode(lineStripModelNode);
+	{
+		lineStripModelNode->setPosition(Vector3(0.0f, 0.0f, -5.0f));
+		m_pScene->addNode(lineStripModelNode);
+	}
 
 	lineModelNode = createLineModelNode();
-	m_pScene->addNode(lineModelNode);
+	{
+		lineModelNode->setPosition(Vector3(0.0f, 0.0f, 5.0f));
+		m_pScene->addNode(lineModelNode);
+	}
 
-	quadModelNode = createQuadIndexedNode();
-	
 	cubeModelNode = createCubeModelIndexedNode(0.25f);
-	cubeModelNode->rotateY(0.0f);
-	cubeModelNode->setPosition(Vector3(2.0f, 0.0f, -1.0f));
-	m_pScene->addNode(cubeModelNode);
-		quadModelNode->setPosition(Vector3(-1.0f, 0.0f, 0.0f));
-		quadModelNode->rotateY(45.0f);
-	cubeModelNode->addChild(quadModelNode);
+	{
+		cubeModelNode->rotateY(0.0f);
+		cubeModelNode->setPosition(Vector3(0.0f, 0.0f, -1.0f));
+		m_pScene->addNode(cubeModelNode);
+
+		quadModelIndexedNode = createQuadIndexedNode();
+		{
+			quadModelIndexedNode->rotateY(45.0f);
+			quadModelIndexedNode->setPosition(Vector3(0.0f, 0.0f, 0.0f));
+		}
+
+		cubeModelNode->addChild(quadModelIndexedNode);
+	}
 
 	objModelNode = createObjNode();
-	objModelNode->scale(0.1f);
-	m_pScene->addNode(objModelNode);
+	{
+		objModelNode->scale(0.1f);
+		m_pScene->addNode(objModelNode);
+	}
+	//*/
 
-	meshBatch = createMeshBatch();
-	gSpriteBatch = createSpriteBatch();
+	//meshBatch = createMeshBatch();
+	//gSpriteBatch = createSpriteBatch();
 
 	gTexture0 = Texture::create(COLOURFUL_TGA, false);
 	gTexture1 = Texture::create(CORE_UI, false);
@@ -545,7 +601,7 @@ void Dream3DTest::initialize() {
 		Properties* pNS1 = NULL;
 		pNS1 = properties->getNamespace("physics", true);
 		if(pNS1 != NULL) {
-			const char* spacename = pNS1->getNamespace();
+			const char* spacename = pNS1->getNamespaceType();
 			const char* id = pNS1->getID();
 			printf("%s {\n", spacename);
 
@@ -565,7 +621,9 @@ void Dream3DTest::initialize() {
 
 	//initLights();
 
+#ifdef TEST_MD5_MODELS
 	initMD5Models(m_pScene);
+#endif
 	//////////////////////////////////////////////
 
 #ifdef USE_YAGUI
@@ -580,6 +638,7 @@ void Dream3DTest::initialize() {
 	GP_ASSERT( gFBOSpriteBatch );
 }
 
+#ifdef TEST_MD5_MODELS
 void initMD5Models(Scene* pScene) {
 	for(int i = 0; i < 1; i++) {
 		MD5Model* pMD5Model = new MD5Model();
@@ -613,10 +672,10 @@ void initMD5Models(Scene* pScene) {
 		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/turret_attack.md5anim");
 		pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/walk7.md5anim");
 		//m_pMD5Model->loadAnim("data/MD5Models/doom3/hellknight/walk7_left.md5anim");
-		pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/hellknight/hellknight.material", 0);
-		pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/hellknight/gob2.material", 1);
-		pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/hellknight/gob.material", 2);
-		pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/hellknight/tongue.material", 3);
+		pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/hellknight/hellknight.material#box", 0);
+		pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/hellknight/gob2.material#box", 1);
+		pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/hellknight/gob.material#box", 2);
+		pMd5ModelNode->getModel()->setMaterial("data/MD5Models/doom3/hellknight/tongue.material#box", 3);
 
 		//Node* pMd5ModelNode = pMD5Model->loadModel("data/MD5Models/doom3/cacodemon/cacodemon.md5mesh");
 		//pMD5Model->loadAnim("data/MD5Models/doom3/cacodemon/walk.md5anim");
@@ -694,6 +753,7 @@ void initMD5Models(Scene* pScene) {
 		}
 	}
 }
+#endif
 
 void initLights() {
 	glEnable(GL_LIGHTING);
@@ -757,6 +817,53 @@ void drawLine(const Vector3& p1, const Vector3& p2) {
 	glEnd();
 }
 
+Node* createHearthStoneCoolShaderModelNode(const char* pMaterial)
+{
+	// Calculate the vertices of the quad.
+	Vector3 p1(-0.25f,	0.5f,	0.0f);
+	Vector3 p2(-0.25f,	0.0f,	0.0f);
+	Vector3 p3(0.25f,	0.0f,	0.0f);
+	Vector3 p4(0.25f,	0.5f,	0.0f);
+
+	// Create 3 vertices. Each vertex has position (x, y, z), color (red, green, blue) & textureCoords(s, t)
+	float vertices[] =
+	{
+		p1.x, p1.y, p1.z,		/*0.0f, 1.0f, 0.0f,*/		0.0f, 0.0f,
+		p2.x, p2.y, p2.z,		/*1.0f, 0.0f, 0.0f,*/		0.0f, 1.0f,
+		p3.x, p3.y, p3.z,		/*0.0f, 0.0f, 1.0f,*/		1.0f, 1.0f,
+
+		p4.x, p4.y, p4.z,		/*0.0f, 0.0f, 1.0f,*/		1.0f, 0.0f,
+		p1.x, p1.y, p1.z,		/*0.0f, 1.0f, 0.0f,*/		0.0f, 0.0f,
+		p3.x, p3.y, p3.z,		/*0.0f, 0.0f, 1.0f,*/		1.0f, 1.0f
+	};
+	unsigned int vertexCount = 6;
+	VertexFormat::Element elements[] =
+	{
+		VertexFormat::Element(VertexFormat::POSITION, VertexFormat::THREE),
+		//VertexFormat::Element(VertexFormat::COLOR, VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::TEXCOORD0, VertexFormat::TWO),
+	};
+	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
+	Mesh* mesh = Mesh::createMesh(VertexFormat(elements, elementCount), vertexCount, false);
+	if (mesh == NULL)
+	{
+		//GP_ERROR("Failed to create mesh.");
+		printf("Failed to create mesh.");
+		return NULL;
+	}
+	mesh->setPrimitiveType(Mesh::TRIANGLES);
+	mesh->setVertexData(vertices, 0, vertexCount);
+
+	Node* pNode = Node::create("QuadModel");
+	{
+		Model* pModel = Model::create(mesh);
+		pNode->setModel(pModel);
+		pModel->setMaterial(pMaterial);
+	}
+
+	return pNode;
+}
+
 Node* createTriangleModelNode()
 {
 	// Calculate the vertices of the triangle.
@@ -764,7 +871,7 @@ Node* createTriangleModelNode()
 	Vector3 p2(-1.0f,	0,		-1.0f);
 	Vector3 p3(-0.5f,	0,		-1.0f);
 
-	// Create 3 vertices. Each vertex has position (x, y, z) and color (red, green, blue)
+	// Create 3 vertices. Each vertex has position (x, y, z), color (red, green, blue) & textureCoords(s, t)
 	float vertices[] =
 	{
 		p1.x, p1.y, -0.5f,    0.0f, 1.0f, 0.0f,		0.0f, 0.0f,		
@@ -789,11 +896,12 @@ Node* createTriangleModelNode()
 	mesh->setPrimitiveType(Mesh::TRIANGLES);
 	mesh->setVertexData(vertices, 0, vertexCount);
 
-	Model* pModel = Model::create(mesh);
-	pModel->setMaterial("data/box.material");
-
 	Node* pNode = Node::create("TriangleModel");
-	pNode->setModel(pModel);
+	{
+		Model* pModel = Model::create(mesh);
+		pNode->setModel(pModel);
+		pModel->setMaterial("data/box.material#box");
+	}
 
 	return pNode;
 }
@@ -832,11 +940,11 @@ Node* createTriangleStripModelNode() {
 		0.0f,	0.5f, -0.5f,    0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
 		0.0f,	0.0f, -0.5f,    0.0f, 1.0f, 0.0f,	0.0f, 1.0f,
 		0.5f,	0.5f,  0.0f,    1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
-
+								
 		0.5f,	0.0f, -0.5f,    0.0f, 0.0f, 0.5f,	0.0f, 0.0f,
-
+								
 		1.0f,	0.5f, -0.5f,    0.0f, 0.5f, 0.0f,	0.0f, 1.0f,
-
+								
 		1.0f,	0.0f, 0.0f,     0.5f, 0.0f, 0.0f,	1.0f, 1.0f,
 	};
 	unsigned int vertexCount = 6;
@@ -857,11 +965,12 @@ Node* createTriangleStripModelNode() {
 	mesh->setPrimitiveType(Mesh::TRIANGLE_STRIP);
 	mesh->setVertexData(vertices, 0, vertexCount);
 
-	Model* pModel = Model::create(mesh);
-	pModel->setMaterial("data/box.material");
-
 	Node* pNode = Node::create("TriangleStripModel");
-	pNode->setModel(pModel);
+	{
+		Model* pModel = Model::create(mesh);
+		pNode->setModel(pModel);
+		pModel->setMaterial("data/box.material#box");
+	}
 
 	return pNode;
 }
@@ -890,11 +999,12 @@ Node* createLineStripModelNode() {
 	mesh->setPrimitiveType(Mesh::LINE_STRIP);
 	mesh->setVertexData(vertices, 0, vertexCount);
 
-	Model* pModel = Model::create(mesh);
-	pModel->setMaterial("data/box.material");
-
 	Node* pNode = Node::create("LineStripModel");
-	pNode->setModel(pModel);
+	{
+		Model* pModel = Model::create(mesh);
+		pNode->setModel(pModel);
+		pModel->setMaterial("data/box.material#box");
+	}
 
 	return pNode;
 
@@ -925,11 +1035,84 @@ Node* createLineModelNode() {
 	mesh->setPrimitiveType(Mesh::LINES);
 	mesh->setVertexData(vertices, 0, vertexCount);
 
-	Model* pModel = Model::create(mesh);
-	pModel->setMaterial("data/box.material");
-
 	Node* pNode = Node::create("LineModel");
-	pNode->setModel(pModel);
+	{
+		Model* pModel = Model::create(mesh);
+		pNode->setModel(pModel);
+		pModel->setMaterial("data/box.material#box");		
+	}
+
+	return pNode;
+}
+
+Node* createGrid(unsigned int iSize, float fStep) {
+
+	unsigned int iLineCount = (iSize / fStep);
+	unsigned int iLineCountTwice = 2 * iLineCount;
+	unsigned int iVertexCount = 2 * 2 * iLineCountTwice;
+
+	VertexFormat::Element elements[] =
+	{
+		VertexFormat::Element(VertexFormat::POSITION, VertexFormat::THREE),
+		VertexFormat::Element(VertexFormat::COLOR, VertexFormat::THREE)
+	};
+	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
+
+	float fStride = fStep;
+	float* pVertices = new float[iVertexCount * 6];
+	float fVertex = (float)iSize * -1.0f;
+	for (int i = 0; i < iLineCountTwice; i++) {
+
+		///////// Vertical
+		pVertices[i * 24 + 0] = fVertex;
+		pVertices[i * 24 + 1] = 0.0f;
+		pVertices[i * 24 + 2] = (float)iSize * -1.0f;
+
+		pVertices[i * 24 + 3] = 1.0f;
+		pVertices[i * 24 + 4] = 1.0f;
+		pVertices[i * 24 + 5] = 1.0f;
+
+		pVertices[i * 24 + 6] = fVertex;
+		pVertices[i * 24 + 7] = 0.0f;
+		pVertices[i * 24 + 8] = (float)iSize * 1.0f;
+
+		pVertices[i * 24 + 9] = 1.0f;
+		pVertices[i * 24 + 10] = 1.0f;
+		pVertices[i * 24 + 11] = 1.0f;
+
+		///////// Horizontal
+		pVertices[i * 24 + 12] = (float)iSize * -1.0f;
+		pVertices[i * 24 + 13] = 0.0f;
+		pVertices[i * 24 + 14] = fVertex;
+
+		pVertices[i * 24 + 15] = 1.0f;
+		pVertices[i * 24 + 16] = 1.0f;
+		pVertices[i * 24 + 17] = 1.0f;
+
+		pVertices[i * 24 + 18] = (float)iSize * 1.0f;
+		pVertices[i * 24 + 19] = 0.0f;
+		pVertices[i * 24 + 20] = fVertex;
+
+		pVertices[i * 24 + 21] = 1.0f;
+		pVertices[i * 24 + 22] = 1.0f;
+		pVertices[i * 24 + 23] = 1.0f;
+
+		fVertex += fStride;
+	}
+	
+	Mesh* mesh = Mesh::createMesh(VertexFormat(elements, elementCount), iVertexCount, false);
+	GL_ASSERT(mesh);
+	mesh->setPrimitiveType(Mesh::LINES);
+	mesh->setVertexData(pVertices, 0, iVertexCount);
+
+	Node* pNode = Node::create("GridModel");
+	{
+		Model* pModel = Model::create(mesh);
+		pNode->setModel(pModel);
+		pModel->setMaterial("data/box.material#box");
+	}
+
+	SAFE_DELETE_ARRAY( pVertices );
 
 	return pNode;
 }
@@ -1032,12 +1215,13 @@ Node* createCubeModelIndexedNode(float size = 1.0f) {
 	if( meshPart != NULL)
 		meshPart->setIndexData(indicesPart1, 0, indexCount);
 
-	Model* pModel = Model::create(mesh);
-	pModel->setMaterial("data/box.material", 0);	
-	pModel->setMaterial("data/box1.material", 1);
-
 	Node* pNode = Node::create("CubeIndexedModel");
-	pNode->setModel(pModel);
+	{
+		Model* pModel = Model::create(mesh);
+		pNode->setModel(pModel);
+		pModel->setMaterial("data/box.material#box", 0);
+		pModel->setMaterial("data/box.material#box1", 1);
+	}
 
 	return pNode;
 }
@@ -1045,10 +1229,10 @@ Node* createCubeModelIndexedNode(float size = 1.0f) {
 Node* createQuadIndexedNode() {
 	float vertices[] =
 	{
-		-0.5f, 0.5f, 0.0f,		0.0f, 0.0f,
-		-0.5f, -0.5f, 0.0f,		0.0f, 1.0f,
-		0.5f, -0.5f, 0.0f,		1.0f, 1.0f,
-		0.5f, 0.5f, 0.0f,		1.0f, 0.0f
+		-0.5f, 0.5f, 0.0f,		0.0f, 0.0f,		1.0f, 1.0f, 1.0f,
+		-0.5f, -0.5f, 0.0f,		0.0f, 1.0f,		1.0f, 1.0f, 1.0f,
+		0.5f, -0.5f, 0.0f,		1.0f, 1.0f,		1.0f, 1.0f, 1.0f,
+		0.5f, 0.5f, 0.0f,		1.0f, 0.0f,		1.0f, 1.0f, 1.0f
 	};
 
 	short indices[] = 
@@ -1061,7 +1245,8 @@ Node* createQuadIndexedNode() {
 	VertexFormat::Element elements[] = 
 	{
 		VertexFormat::Element(VertexFormat::POSITION, VertexFormat::THREE),
-		VertexFormat::Element(VertexFormat::TEXCOORD0, VertexFormat::TWO)
+		VertexFormat::Element(VertexFormat::TEXCOORD0, VertexFormat::TWO),
+		VertexFormat::Element(VertexFormat::COLOR, VertexFormat::THREE)
 	};
 	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
 
@@ -1076,11 +1261,12 @@ Node* createQuadIndexedNode() {
 	MeshPart* meshPart = mesh->addMeshPart(Mesh::TRIANGLES, Mesh::INDEX16, indexCount, false);
 	meshPart->setIndexData(indices, 0, indexCount);
 
-	Model* pModel = Model::create(mesh);
-	pModel->setMaterial("data/box.material");
-
 	Node* pNode = Node::create("QuadIndexedModel");
-	pNode->setModel(pModel);
+	{
+		Model* pModel = Model::create(mesh);
+		pNode->setModel(pModel);
+		pModel->setMaterial("data/box.material#box");
+	}
 
 	return pNode;
 }
@@ -1090,11 +1276,13 @@ Node* createObjNode() {
 	Node* pNode = NULL;
 	MeshObjLoader* objLoader = new MeshObjLoader();
 	if(objLoader->loadObject("data/OBJModels/foot.obj")) {
-		Model* objModel = objLoader->createModel();
-		objModel->setMaterial("data/box.material");
 
 		pNode = Node::create("ObjModel");
-		pNode->setModel(objModel);
+		{
+			Model* objModel = objLoader->createModel();
+			pNode->setModel(objModel);
+			objModel->setMaterial("data/box.material#box1");
+		}
 	}
 
 	return pNode;
@@ -1109,7 +1297,7 @@ MeshBatch* createMeshBatch() {
 	};
 	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
 	VertexFormat* vf = new VertexFormat(elements, elementCount);
-	MeshBatch* mb = MeshBatch::create(*vf, Mesh::TRIANGLES, true);
+	MeshBatch* mb = MeshBatch::create(*vf, Mesh::TRIANGLES, "data/box.material#box", true);
 	
 	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(0, 0.5f, -0.5f), randomColor(), 0.0f, 0.0f));
 	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(-0.5f, -0.5f, -0.5f), randomColor(), 0.0f, 1.0f));
@@ -1147,33 +1335,30 @@ static float rAngle = 0.0f;
 const float ROTATION_PER_SECOND = 0.25*0.36f;//360deg/sec = 360/1000;
 
 void Dream3DTest::render3D(float deltaTimeMs) {
-	Camera* pCamera = m_pScene->getActiveCamera();
-	pCamera->setType(Camera::PERSPECTIVE);
-
-	//No Transformations to the World(grid) & triangle hence load the 'view matrix'.
-	glLoadMatrixf(pCamera->getNode()->getViewMatrix().getTranspose());
-	drawGrid(10, 0.5);
-	drawTriangle(Vector3(0, 0.5f, -1.5f), Vector3(-0.5f, 0, -1.5f), Vector3(0.5f, 0, -1.5f));
-
-	glColor3f(1.0f, 1.0f, 1.0f);
-	gTexture0->bind();
-	glBegin(GL_QUADS);
-		glTexCoord2d(0.0f, 0.0f);
-		glVertex3f(0.0f, 0.5f, 0.0f);
-
-		glTexCoord2d(0.0f, 1.0f);
-		glVertex3f(0.0f, 0.0f, 0.0f);
-
-		glTexCoord2d(1.0f, 1.0f);
-		glVertex3f(0.5f, 0.0f, 0.0f);
-
-		glTexCoord2d(1.0f, 0.0f);
-		glVertex3f(0.5f, 0.5f, 0.0f);
-	glEnd();
-	gTexture0->unbind();
 	////////////////////////////////////////////////////////////////
-	cubeModelNode->translateForward(0.0001f * deltaTimeMs);
-	quadModelNode->rotateY(0.001f * rAngle);
+	//cubeModelNode->translateForward(0.0001f * deltaTimeMs);
+	//quadModelNode->rotateY(0.001f * rAngle++);
+
+	Model* pModel = NULL;
+	{
+		double t = getTimer()->getElapsedTimeInSec();
+
+		pModel = magniQuadModelNode->getModel();
+		{
+			pModel->getMaterial()->getParameter("u_time")->setValue((float)t);
+		}
+
+		pModel = medivhQuadModelNode->getModel();
+		{
+			pModel->getMaterial()->getParameter("u_time")->setValue((float)t);
+		}
+		
+		pModel = testShaderQuadModelNode->getModel();
+		{
+			pModel->getMaterial()->getParameter("u_time")->setValue((float)t);
+		}
+	}
+
 	m_pScene->render();
 
 	/*
@@ -1224,10 +1409,12 @@ void Dream3DTest::update(float deltaTimeMs) {
 	m_pScene->getActiveCamera()->update(deltaTimeMs);
 #endif
 
+#ifdef TEST_MD5_MODELS
 	for(int i = 0; i < 1; i++) {
 		MD5Model* pMD5Model = (MD5Model*)v_pMD5Models[i];
 		pMD5Model->update( deltaTimeMs );
 	}
+#endif
 }
 
 
@@ -1237,13 +1424,13 @@ void Dream3DTest::render(float deltaTimeMs) {
 
 	render3D(deltaTimeMs);
 
-	gFrameBuffer->bind();
-		glClearColor(0.1f, 0.1f, 0.1f, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
-		m_pScene->render();
-	gFrameBuffer->bindDefault();
+	//gFrameBuffer->bind();
+	//	glClearColor(0.1f, 0.1f, 0.1f, 1);
+	//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
+	//	m_pScene->render();
+	//gFrameBuffer->bindDefault();
 
-	render2D(deltaTimeMs);
+	//render2D(deltaTimeMs);
 }
 
 void Dream3DTest::keyPressedEx(unsigned int iVirtualKeycode, unsigned short ch) {

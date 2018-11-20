@@ -4,7 +4,7 @@ Technique::Technique(const char* id, Material* material)
 	:	m_strID(id),
 		m_pMaterial(material)
 {
-
+	RenderState::m_pParent = (RenderState*)material;
 }
 
 Technique::Technique(const Technique&) {
@@ -51,3 +51,14 @@ Pass* Technique::getPass(const char* id) const {
 
 	return NULL;
 }
+
+void Technique::setNodeBinding(Node* node) {
+
+	RenderState::setNodeBinding(node);
+
+	for (size_t i = 0, count = m_vPasses.size(); i < count; ++i) {
+
+		m_vPasses[i]->setNodeBinding(node);
+	}
+}
+

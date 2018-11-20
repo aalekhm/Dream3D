@@ -67,6 +67,7 @@ struct Vector3
 	Vector3(float x, float y, float z);
 
 	static const Vector3& one();
+	static const Vector3& zero();
 
 	// utils functions
 	void        set(float x, float y, float z);

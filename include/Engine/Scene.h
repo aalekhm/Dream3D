@@ -3,6 +3,7 @@
 
 #include "Engine/Base.h"
 #include "Common/CCString.h"
+#include "Common/Vectors.h"
 
 class Node;
 class Camera;
@@ -27,6 +28,10 @@ class Scene {
 		Camera*			getActiveCamera() const;
 		void			setActiveCamera(Camera* pCamera);
 
+		const Vector3&	getAmbientColor();
+		void			setAmbientColor(float red, float green, float blue);
+
+
 		void			render();
 	private:
 		Scene();
@@ -36,6 +41,7 @@ class Scene {
 		Node*			m_pFirstNode;
 		Node*			m_pLastNode;
 		unsigned int	m_iNodeCount;
+		Vector3			m_AmbientColor;
 };
 
 #endif

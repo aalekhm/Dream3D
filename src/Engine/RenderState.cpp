@@ -1,9 +1,9 @@
-#include "Engine/Base.h"
 #include "Engine/RenderState.h"
 #include "Engine/Node.h"
 #include "Engine/Pass.h"
 #include "Engine/Technique.h"
 #include "Engine/MaterialParameter.h"
+#include "Engine/Scene.h"
 
 // Render state override bits
 #define RS_BLEND		1
@@ -64,12 +64,253 @@ RenderState::StateBlock* RenderState::getStateBlock() const {
 	return m_pStateBlock;
 }
 
+const char* RenderState::autoBindingToString(RenderState::AutoBinding autoBinding) {
+
+	switch (autoBinding) {
+		case NONE:
+			return NULL;
+		case WORLD_MATRIX:
+			return "WORLD_MATRIX";
+		case VIEW_MATRIX:
+			return "VIEW_MATRIX";
+		case PROJECTION_MATRIX:
+			return "PROJECTION_MATRIX";
+		case WORLD_VIEW_MATRIX:
+			return "WORLD_VIEW_MATRIX";
+		case VIEW_PROJECTION_MATRIX:
+			return "VIEW_PROJECTION_MATRIX";
+		case WORLD_VIEW_PROJECTION_MATRIX:
+			return "WORLD_VIEW_PROJECTION_MATRIX";
+		case INVERSE_TRANSPOSE_WORLD_MATRIX:
+			return "INVERSE_TRANSPOSE_WORLD_MATRIX";
+		case INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX:
+			return "INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX";
+		case CAMERA_WORLD_POSITION:
+			return "CAMERA_WORLD_POSITION";
+		case CAMERA_VIEW_POSITION:
+			return "CAMERA_VIEW_POSITION";
+		case MATRIX_PALETTE:
+			return "MATRIX_PALETTE";
+		case SCENE_AMBIENT_COLOR:
+			return "SCENE_AMBIENT_COLOR";
+	}
+}
+
+void RenderState::setParameterAutoBinding(const char* pName, AutoBinding autoBinding) {
+
+	setParameterAutoBinding(pName, autoBindingToString(autoBinding));
+}
+
+void RenderState::setParameterAutoBinding(const char* pName, const char* pAutoBinding) {
+
+	GP_ASSERT( pName );
+	GP_ASSERT( pAutoBinding );
+
+	if (pAutoBinding == NULL) {
+
+		// Remove the existing auto-binding
+		std::map<std::string, std::string>::iterator itr = m_mAutoBindings.find(pName);
+		if (itr != m_mAutoBindings.end())
+			m_mAutoBindings.erase(itr);
+	}
+	else {
+
+		// Add/update an auto-binding
+		m_mAutoBindings[pName] = pAutoBinding;
+	}
+
+	// If we already have a node binding set, pass it to our handler now
+	if (m_pNodeBinding) {
+
+		applyAutoBinding(pName, pAutoBinding);
+	}
+}
+
 void RenderState::setNodeBinding(Node* pNode) {
 
 	if(m_pNodeBinding != pNode) {
 
 		m_pNodeBinding = pNode;
+		if (m_pNodeBinding) {
+
+			// Apply all existing auto-bindings using this node.
+			std::map<std::string, std::string>::iterator itr = m_mAutoBindings.begin();
+			while (itr != m_mAutoBindings.end()) {
+
+				applyAutoBinding(itr->first.c_str(), itr->second.c_str());
+				itr++;
+			}
+		}
 	}
+}
+
+void RenderState::applyAutoBinding(const char* pUniformName, const char* pAutoBinding) {
+
+	GP_ASSERT( m_pNodeBinding );
+
+	MaterialParameter* pMaterialParameter = getParameter(pUniformName);
+	GP_ASSERT( pMaterialParameter );
+
+	bool bBound = false;
+
+	// First attempt to resolve the binding using custom registered resolvers.
+	//...
+
+	// Perform built-in resolution
+	if (!bBound) {
+
+		bBound = true;
+
+		if (strcmp(pAutoBinding, "WORLD_MATRIX") == 0)
+		{
+			pMaterialParameter->bindValue(this, &RenderState::autoBindingGetWorldMatrix);
+		}
+		else
+		if (strcmp(pAutoBinding, "VIEW_MATRIX") == 0)
+		{
+			pMaterialParameter->bindValue(this, &RenderState::autoBindingGetViewMatrix);
+		}
+		else
+		if (strcmp(pAutoBinding, "PROJECTION_MATRIX") == 0)
+		{
+			pMaterialParameter->bindValue(this, &RenderState::autoBindingGetProjectionMatrix);
+		}
+		else
+		if (strcmp(pAutoBinding, "WORLD_VIEW_MATRIX") == 0)
+		{
+			pMaterialParameter->bindValue(this, &RenderState::autoBindingGetWorldViewMatrix);
+		}
+		else
+		if (strcmp(pAutoBinding, "VIEW_PROJECTION_MATRIX") == 0)
+		{
+			pMaterialParameter->bindValue(this, &RenderState::autoBindingGetViewProjectionMatrix);
+		}
+		else
+		if (strcmp(pAutoBinding, "WORLD_VIEW_PROJECTION_MATRIX") == 0)
+		{
+			pMaterialParameter->bindValue(this, &RenderState::autoBindingGetWorldViewProjectionMatrix);
+		}
+		else
+		if (strcmp(pAutoBinding, "INVERSE_TRANSPOSE_WORLD_MATRIX") == 0)
+		{
+			pMaterialParameter->bindValue(this, &RenderState::autoBindingGetInverseTransposeWorldMatrix);
+		}
+		else
+		if (strcmp(pAutoBinding, "INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX") == 0)
+		{
+			pMaterialParameter->bindValue(this, &RenderState::autoBindingGetInverseTransposeWorldViewMatrix);
+		}
+		else
+		if (strcmp(pAutoBinding, "CAMERA_WORLD_POSITION") == 0)
+		{
+			pMaterialParameter->bindValue(this, &RenderState::autoBindingGetCameraWorldPosition);
+		}
+		else
+		if (strcmp(pAutoBinding, "CAMERA_VIEW_POSITION") == 0)
+		{
+			pMaterialParameter->bindValue(this, &RenderState::autoBindingGetCameraViewPosition);
+		}
+		else
+		if (strcmp(pAutoBinding, "MATRIX_PALETTE") == 0)
+		{
+
+		}
+		else
+		if (strcmp(pAutoBinding, "SCENE_AMBIENT_COLOR") == 0)
+		{
+			pMaterialParameter->bindValue(this, &RenderState::autoBindingGetAmbientColor);
+		}
+		else {
+			bBound = false;
+			GP_ERROR("Unsupported auto binding type (%s).", pAutoBinding);
+		}
+	}
+
+	if (bBound) {
+
+		// Mark parameter as an auto binding
+
+	}
+}
+
+const Matrix4& RenderState::autoBindingGetWorldMatrix() const
+{
+	return m_pNodeBinding ? m_pNodeBinding->getWorldMatrix() : Matrix4::identity();
+}
+
+const Matrix4& RenderState::autoBindingGetViewMatrix() const
+{
+	return m_pNodeBinding ? m_pNodeBinding->getViewMatrix() : Matrix4::identity();
+}
+
+const Matrix4& RenderState::autoBindingGetProjectionMatrix() const
+{
+	return m_pNodeBinding ? m_pNodeBinding->getProjectionMatrix() : Matrix4::identity();
+}
+
+const Matrix4& RenderState::autoBindingGetWorldViewMatrix() const
+{
+	return m_pNodeBinding ? m_pNodeBinding->getWorldViewMatrix() : Matrix4::identity();
+}
+
+const Matrix4& RenderState::autoBindingGetViewProjectionMatrix() const
+{
+	return m_pNodeBinding ? m_pNodeBinding->getViewProjectionMatrix() : Matrix4::identity();
+}
+
+const Matrix4& RenderState::autoBindingGetWorldViewProjectionMatrix() const
+{
+	return m_pNodeBinding ? m_pNodeBinding->getWorldViewProjectionMatrix() : Matrix4::identity();
+}
+
+const Matrix4& RenderState::autoBindingGetInverseTransposeWorldMatrix() const
+{
+	return m_pNodeBinding ? m_pNodeBinding->getInverseTransposeWorldMatrix() : Matrix4::identity();
+}
+
+const Matrix4& RenderState::autoBindingGetInverseTransposeWorldViewMatrix() const
+{
+	return m_pNodeBinding ? m_pNodeBinding->getInverseTransposeWorldViewMatrix() : Matrix4::identity();
+}
+
+Vector3 RenderState::autoBindingGetCameraWorldPosition() const
+{
+	return m_pNodeBinding ? m_pNodeBinding->getActiveCameraTranslationWorld() : Vector3::zero();
+}
+
+Vector3 RenderState::autoBindingGetCameraViewPosition() const
+{
+	return m_pNodeBinding ? m_pNodeBinding->getActiveCameraTranslationView() : Vector3::zero();
+}
+
+//const Vector4* RenderState::autoBindingGetMatrixPalette() const
+//{
+//	Model* model = dynamic_cast<Model*>(m_pNodeBinding->getDrawable());
+//	if (model)
+//	{
+//		MeshSkin* skin = model->getSkin();
+//		if (skin)
+//			return skin->getMatrixPalette();
+//	}
+//	return NULL;
+//}
+//
+//unsigned int RenderState::autoBindingGetMatrixPaletteSize() const
+//{
+//	Model* model = dynamic_cast<Model*>(m_pNodeBinding->getDrawable());
+//	if (model)
+//	{
+//		MeshSkin* skin = model->getSkin();
+//		if (skin)
+//			return skin->getMatrixPaletteSize();
+//	}
+//	return 0;
+//}
+
+const Vector3& RenderState::autoBindingGetAmbientColor() const
+{
+	Scene* pScene = m_pNodeBinding ? m_pNodeBinding->getScene() : NULL;
+	return pScene ? pScene->getAmbientColor() : Vector3::zero();
 }
 
 void RenderState::bind(Pass* pPass) {
@@ -78,33 +319,40 @@ void RenderState::bind(Pass* pPass) {
 
 	// Get the combined modified state bits for our RenderState hierarchy.
 	long lStateOverrideBits = m_pStateBlock ? m_pStateBlock->m_lBits : 0;
-	RenderState* pParent = m_pParent;
+	RenderState* pParentRS = m_pParent;
 
-	while(pParent) {
+	while(pParentRS) {
 
-		if(pParent->m_pStateBlock) {
-			lStateOverrideBits |= pParent->m_pStateBlock->m_lBits;
+		if(pParentRS->m_pStateBlock) {
+			lStateOverrideBits |= pParentRS->m_pStateBlock->m_lBits;
 		}
 
-		pParent = pParent->m_pParent;
+		pParentRS = pParentRS->m_pParent;
 	}
 
 	// Restore renderer state to its default, except for explicitly specified states
 	StateBlock::restore(lStateOverrideBits);
 
 	// Apply parameter bindings and renderer state for the entire hierarchy, top-down.
-	pParent = NULL;
-	while(pParent->getTopmost(pParent)) {
+	pParentRS = NULL;
+	Effect* pEffect = pPass->getEffect();
+	while (pParentRS = getTopmost(pParentRS)) {
 
-		if(pParent->m_pStateBlock) {
-			pParent->m_pStateBlock->bindNoRestore();
+		for (size_t i = 0, count = pParentRS->m_vParameters.size(); i < count; i++) {
+
+			GP_ASSERT( pParentRS->m_vParameters[i] );
+			pParentRS->m_vParameters[i]->bind(pEffect);
+		}
+
+		if(pParentRS->m_pStateBlock) {
+			pParentRS->m_pStateBlock->bindNoRestore();
 		}
 	}
 }
 
 RenderState* RenderState::getTopmost(RenderState* below) {
 
-	RenderState* rs = NULL;
+	RenderState* rs = this;
 	if(rs == below) {
 		
 		// Nothing below ourself.
@@ -125,7 +373,7 @@ RenderState* RenderState::getTopmost(RenderState* below) {
 	return NULL;
 }
 
-MaterialParameter* RenderState::getparameter(const char* sName) const {
+MaterialParameter* RenderState::getParameter(const char* sName) const {
 	
 	GP_ASSERT( sName );
 
@@ -238,7 +486,7 @@ void RenderState::StateBlock::bindNoRestore() {
 		&&
 		(m_bDepthTestEnabled != m_pDefaultState->m_bDepthTestEnabled)
 		) {
-			if(m_bCullFaceEnabled)
+			if (m_bDepthTestEnabled)
 				GL_ASSERT( glEnable(GL_DEPTH_TEST) );
 			else
 				GL_ASSERT( glDisable(GL_DEPTH_TEST) );

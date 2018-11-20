@@ -132,6 +132,17 @@ void Scene::setActiveCamera(Camera* pCamera) {
 	}
 }
 
+const Vector3& Scene::getAmbientColor() { 
+	
+	return m_AmbientColor; 
+}
+
+void Scene::setAmbientColor(float red, float green, float blue) {
+
+	m_AmbientColor.set(red, green, blue);
+}
+
+
 void Scene::render() {
 
 	for(Node* node = m_pFirstNode; node != NULL; node = node->getNextSibling()) {

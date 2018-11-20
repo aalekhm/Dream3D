@@ -8,23 +8,26 @@ class VertexFormat;
 class VertexAttributeBinding;
 class Mesh;
 class Texture;
+class Material;
 
 class MeshBatch {
 
 	public:
-		static MeshBatch* create(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, /*Material* material, */ bool bIndexed, unsigned int iInitialCapacity = 1024, unsigned int iGrowSize = 1024);
+		static MeshBatch*		create(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, const char* materialUrl, bool bIndexed, unsigned int iInitialCapacity = 1024, unsigned int iGrowSize = 1024);
+		static MeshBatch*		create(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, Material* material, bool bIndexed, unsigned int iInitialCapacity = 1024, unsigned int iGrowSize = 1024);
 
-		unsigned int getCapacity() const;
-		void		 setCapacity(unsigned int iCapacity);
-		const VertexFormat& MeshBatch::getVertexFormat() const;
+		unsigned int			getCapacity() const;
+		void					setCapacity(unsigned int iCapacity);
+		const VertexFormat&		getVertexFormat() const;
 
 		template <class T>
-		void add(T* vertices, unsigned int vertexCount, unsigned short* pIndices = NULL, unsigned int iIndexCount = 0);
+		void					add(T* vertices, unsigned int vertexCount, unsigned short* pIndices = NULL, unsigned int iIndexCount = 0);
 
-		void start();
-		void stop();
-		void render();
+		void					start();
+		void					stop();
+		void					render();
 
+		Material*				getMaterial() const;
 		void					setTexture(const char* path, bool generateMipmaps = false);
 		void					setTexture(Texture* pTexture, bool generateMipmaps = false);
 		void					bindTexture();
@@ -33,16 +36,18 @@ class MeshBatch {
 
 		~MeshBatch();
 	private:
-		MeshBatch(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, /*Material* material, */ bool bIndexed, unsigned int iInitialCapacity, unsigned int iGrowSize);
+		MeshBatch(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, Material* pMaterial, bool bIndexed, unsigned int iInitialCapacity, unsigned int iGrowSize);
 		
-		bool resize(unsigned int iCapacity);
+		bool					resize(unsigned int iCapacity);
 
-		void updateVertexAttributeBinding();
-		void setVertexAttributeBinding(VertexAttributeBinding* vaBinding);
+		void					updateVertexAttributeBinding();
+		void					setVertexAttributeBinding(VertexAttributeBinding* vaBinding);
 		VertexAttributeBinding*	m_pVertexAttributeBinding;
 
 		const VertexFormat&		m_VertexFormat;
 		Mesh::PrimitiveType		m_PrimitiveType;
+
+		Material*				m_pMaterial;
 		
 		bool					m_bIndexed;
 		unsigned int			m_iCapacity;

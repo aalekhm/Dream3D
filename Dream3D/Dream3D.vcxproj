@@ -23,6 +23,7 @@
     <ClInclude Include="..\include\Engine\Base.h" />
     <ClInclude Include="..\include\Engine\Camera.h" />
     <ClInclude Include="..\include\Engine\DepthStencilTarget.h" />
+    <ClInclude Include="..\include\Engine\Effect.h" />
     <ClInclude Include="..\include\Engine\EngineManager.h" />
     <ClInclude Include="..\include\Engine\FrameBuffer.h" />
     <ClInclude Include="..\include\Engine\Image.h" />
@@ -89,6 +90,7 @@
     <ClCompile Include="..\src\Common\Vectors.cpp" />
     <ClCompile Include="..\src\Engine\Camera.cpp" />
     <ClCompile Include="..\src\Engine\DepthStencilTarget.cpp" />
+    <ClCompile Include="..\src\Engine\Effect.cpp" />
     <ClCompile Include="..\src\Engine\EngineManager.cpp" />
     <ClCompile Include="..\src\Engine\FrameBuffer.cpp" />
     <ClCompile Include="..\src\Engine\Image.cpp" />
@@ -203,7 +205,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);USE_YAGUI</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);</PreprocessorDefinitions>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>opengl32.lib;freetype245.lib;CCString_d.lib;RandomAccessFile_d.lib;StringTokenizer_d.lib;%(AdditionalDependencies)</AdditionalDependencies>

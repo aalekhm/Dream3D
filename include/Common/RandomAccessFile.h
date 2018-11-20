@@ -85,6 +85,10 @@ extern "C" {
 			
 			int						read(char* buf);
 			int						read(char* buf, int offset, int len);
+
+			static CCString			readAll(const char* pFilename);
+			static void				writeAll(const char* pFilename, const char* sWriteString);
+
 			void					write(char* buf);
 			void					write(char* buf, int offset, int len);
 
@@ -124,6 +128,8 @@ extern "C" {
 
 			void					renameFile(const char*);
 			static void				deleteFile(const char*);
+
+			FILE*					getRawFileObj() { return m_pFileObj; }
 	};
 
 	//__int8 nSmall;      // Declares 8-bit integer

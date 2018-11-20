@@ -1,6 +1,9 @@
 #include "Engine/SpriteBatch.h"
 #include "Engine/MeshBatch.h"
 #include "Engine/Texture.h"
+#include "Engine/Effect.h"
+#include "Engine/Material.h"
+#include "Engine/MaterialParameter.h"
 
 // Default size of a newly created sprite batch
 #define SPRITE_BATCH_DEFAULT_SIZE 128
@@ -14,6 +17,12 @@
 				vtx.U = vu; vtx.V = vv; \
 				vtx.R = vr; vtx.G = vg; vtx.B = vb; vtx.A = va
 
+// Default sprite shaders
+#define SPRITE_VSH "data/shaders/sprite.vert"
+#define SPRITE_FSH "data/shaders/sprite.frag"
+
+static Effect* __spriteEffect = NULL;
+
 SpriteBatch::SpriteBatch() 
 	:	m_pMeshBatch(NULL),
 		m_fTextureWidthRatio(0.0f),
@@ -25,22 +34,91 @@ SpriteBatch::SpriteBatch()
 
 SpriteBatch::~SpriteBatch() {
 	SAFE_DELETE( m_pMeshBatch );
+	SAFE_DELETE( m_pSampler );//SAFE_RELEASE( m_pSampler );
+
+	//if (!m_bCustomEffect)
+	//{
+	//	if (__spriteEffect && __spriteEffect->getRefCount() == 1)
+	//	{
+	//		__spriteEffect->release();
+	//		__spriteEffect = NULL;
+	//	}
+	//	else
+	//	{
+	//		__spriteEffect->release();
+	//	}
+	//}
 }
 
-SpriteBatch* SpriteBatch::create(const char* pTexturePath, /*Effect* pEffect = NULL, */unsigned int iInitialCapacity) {
+SpriteBatch* SpriteBatch::create(const char* pTexturePath, Effect* pEffect, unsigned int iInitialCapacity) {
 	
 	Texture* pTexture = Texture::createEx(pTexturePath);
-	SpriteBatch* pSpriteBatch = SpriteBatch::create(pTexture);
+	SpriteBatch* pSpriteBatch = SpriteBatch::create(pTexture, pEffect, iInitialCapacity);
 
 	return pSpriteBatch;
 }
 
-SpriteBatch* SpriteBatch::create(Texture* pTexture, /*Effect* pEffect = NULL, */unsigned int iInitialCapacity) {
+SpriteBatch* SpriteBatch::create(Texture* pTexture, Effect* pEffect, unsigned int iInitialCapacity) {
 
 	GP_ASSERT( pTexture );
+	GP_ASSERT( pTexture->getType() == Texture::TEXTURE_2D );
 
-	// Define the vertex format for the batch
+	bool bCustomEffect = (pEffect == NULL);
+	if (bCustomEffect) {
+		
+		// Create our static sprite effect.
+		if (__spriteEffect == NULL) {
+
+			__spriteEffect = Effect::createFromFile(SPRITE_VSH, SPRITE_FSH);
+			if (__spriteEffect == NULL) {
+
+				GP_ERROR("Unable to load sprite effect.");
+				return NULL;
+			}
+
+			pEffect = __spriteEffect;
+		}
+		else {
+
+			pEffect = __spriteEffect;
+			//__spriteEffect->addRef();
+		}
+	}
+
+	// Search for the first sampler uniform in the effect.
+	Uniform* pSamplerUniform = NULL;
+	for (unsigned int i = 0, count = pEffect->getUniformCount(); i < count;  i++) {
+
+		Uniform* pUniform = pEffect->getUniform(i);
+		if (pUniform && pUniform->getType() == GL_SAMPLER_2D) {
+
+			pSamplerUniform = pUniform;
+			break;
+		}
+	}
+	if (!pSamplerUniform) {
+
+		GP_ERROR("No uniform of type GL_SAMPLER_2D found in sprite effect.");
+		SAFE_DELETE( pEffect );
+		//SAFE_RELEASE(pEffect);
+		return NULL;
+	}
+
+	// Wrap the effect in a material
+	Material* pMaterial = Material::create(pEffect);
+
+	// Set initial material state
+	pMaterial->getStateBlock()->setBlend(true);
+	pMaterial->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
+	pMaterial->getStateBlock()->setBlendDst(RenderState::BLEND_ONE_MINUS_SRC_ALPHA);
+
+	// Bind the texture to the material as a sampler
+	Texture::Sampler* pSampler = Texture::Sampler::create(pTexture);
+	pMaterial->getParameter(pSamplerUniform->getName())->setValue(pSampler);
+
+	//// Define the vertex format for the batch
 	VertexFormat::Element vertexElements[] = {
+
 		VertexFormat::Element(VertexFormat::POSITION, 3),
 		VertexFormat::Element(VertexFormat::TEXCOORD0, 2),
 		VertexFormat::Element(VertexFormat::COLOR, 4)
@@ -49,14 +127,21 @@ SpriteBatch* SpriteBatch::create(Texture* pTexture, /*Effect* pEffect = NULL, */
 	VertexFormat* vertexFormat = new VertexFormat(vertexElements, elementCount);
 
 	// Create the mesh batch
-	MeshBatch* pMeshBatch = MeshBatch::create(*vertexFormat, Mesh::TRIANGLE_STRIP, true, (iInitialCapacity > 0) ? iInitialCapacity : SPRITE_BATCH_DEFAULT_SIZE);
+	MeshBatch* pMeshBatch = MeshBatch::create(*vertexFormat, Mesh::TRIANGLE_STRIP, pMaterial, true, (iInitialCapacity > 0) ? iInitialCapacity : SPRITE_BATCH_DEFAULT_SIZE);
 	pMeshBatch->setTexture(pTexture);
 
 	// Create the batch
 	SpriteBatch* pSpriteBatch = new SpriteBatch();
+	pSpriteBatch->m_pSampler = pSampler;
+	pSpriteBatch->m_bCustomEffect = bCustomEffect;
 	pSpriteBatch->m_pMeshBatch = pMeshBatch;
 	pSpriteBatch->m_fTextureWidthRatio = 1.0f/(float)pTexture->getWidth();
 	pSpriteBatch->m_fTextureHeightRatio = 1.0f/(float)pTexture->getHeight();
+
+	// Bind an ortho projection to the material by default (user can override with setProjectionMatrix)
+	//Game* game = Game::getInstance();
+	//Matrix::createOrthographicOffCenter(0, game->getViewport().width, game->getViewport().height, 0, 0, 1, &pSpriteBatch->_projectionMatrix);
+	//pMaterial->getParameter("u_projectionMatrix")->bindValue(pSpriteBatch, &SpriteBatch::getProjectionMatrix);
 
 	return pSpriteBatch;
 }

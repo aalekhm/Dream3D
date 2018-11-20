@@ -49,11 +49,19 @@ class Node : public Transform {
 
 		Matrix4&		getViewMatrix() const;
 		Matrix4&		getProjectionMatrix() const;
-		Matrix4&		getWorldMatrix();
-		Matrix4&		getWorldViewMatrix();
+		const Matrix4&	getWorldMatrix() const;
+		const Matrix4&	getWorldViewMatrix() const;
+		const Matrix4&	getViewProjectionMatrix() const;
+		const Matrix4&	getInverseViewProjectionMatrix() const;
+		const Matrix4&	getWorldViewProjectionMatrix() const;
+		const Matrix4&	getInverseTransposeWorldMatrix() const;
+		const Matrix4&	getInverseTransposeWorldViewMatrix() const;
+		Vector3			getTranslationWorld() const;
+		Vector3			getTranslationView() const;
+		Vector3			getActiveCameraTranslationWorld() const;
+		Vector3			getActiveCameraTranslationView() const;
 
 		void			render(bool bWireframe);
-
 	protected:
 		Scene*			m_pScene;
 		Node*			m_pNextSibling;
@@ -69,7 +77,7 @@ class Node : public Transform {
 		Node*			m_pLastChild;
 		unsigned int	m_iChildCount;
 
-		Matrix4			m_MatrixWorld;
+		mutable Matrix4	m_MatrixWorld;
 };
 
 #endif

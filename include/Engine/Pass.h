@@ -13,29 +13,31 @@ class RenderState;
 class Pass : public RenderState {
 	
 	public:
-		~Pass();
+									Pass(const char* id, Technique* pTechnique);
+									~Pass();
 
-		static Pass* create(const char* id, Technique* pTechnique/*, const char* vshPath, const char* fshPath, const char* defines*/);
+		bool						initialize(const char* vshPath, const char* fshPath, const char* defines);
 
 		const char*					getId();
-		void								setVertexAttributeBinding(VertexAttributeBinding* pBinding);
-		VertexAttributeBinding*	getVertexAttributeBinding();
+		void						setVertexAttributeBinding(VertexAttributeBinding* pBinding);
+		VertexAttributeBinding*		getVertexAttributeBinding();
 
-		void								setSampler(Texture::Sampler* pSampler);
-		Texture::Sampler*			getSampler();
+		void						setSampler(Texture::Sampler* pSampler);
+		Texture::Sampler*			getSampler() const;
 
-		void								bind();
-		void								unbind();
+		Effect*						getEffect() const;
+
+		void						bind();
+		void						unbind();
+
+		Effect*						m_pEffect; //Check how this is been accessed directly in Gameplay even when its private !!!
 	private:
-		Pass(const char* id, Technique* pTechnique/*, Effect* pEffect*/);
-		Pass(const Pass& copy);
+									Pass(const Pass& copy);
 
-		CCString							m_strID;
-		Technique*							m_pTechnique;
-		//Effect*							m_pEffect;
+		CCString					m_strID;
+		Technique*					m_pTechnique;
 		VertexAttributeBinding*		m_pVertexAttributeBinding;
-		Texture::Sampler*				m_pSampler;
-
+		Texture::Sampler*			m_pSampler;
 };
 
 #endif

@@ -41,6 +41,12 @@ class Texture {
 			//CLAMP_TO_EGDE = GL_CLAMP_TO_EDGE
 		};
 
+		enum Type
+		{
+			TEXTURE_2D = GL_TEXTURE_2D,
+			TEXTURE_CUBE = GL_TEXTURE_CUBE_MAP
+		};
+
 		/**
 		* Destructor.
 		*/
@@ -49,7 +55,7 @@ class Texture {
 		static Texture* create(const char* path, bool generateMipmaps = false);
 		static Texture* createEx(const char* path, bool generateMipmaps = false);
 		static Texture* create(Image* image, bool generateMipmaps = false);
-		static Texture* create(Format format, unsigned int width, unsigned int height, unsigned char* data, bool generateMipmaps = false);
+		static Texture* create(Format format, unsigned int width, unsigned int height, unsigned char* data, bool generateMipmaps = false, Type type = TEXTURE_2D);
 		static Texture* create(GLuint handle, int width, int height, Format format = UNKNOWN);
 
 		static Texture*	createTGA(const char* path, bool generateMipmaps);
@@ -61,6 +67,7 @@ class Texture {
 		bool isMipmapped() const;
 		bool isCompressed() const;
 		GLuint getHandle() const;
+		Type getType() const;
 
 		void setWrapMode(Wrap wrapS, Wrap wrapT);
 		void setFilterMode(Filter minificationFilter, Filter magnificationFilter);
@@ -122,6 +129,7 @@ class Texture {
 		bool			m_bMipmapped;
 		bool			m_bCached;
 		bool			m_bCompressed;
+		Type			m_eType;
 };
 
 #endif

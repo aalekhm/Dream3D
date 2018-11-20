@@ -12,6 +12,7 @@
 #include <cassert>
 #include <string>
 #include <vector>
+#include <map>
 
 #include <gl\glew.h>
 //#include <gl\gl.h>						// Header File For The OpenGL32 Library
@@ -29,7 +30,14 @@ typedef GLuint IBOHandle;					// Indexed Buffer Object Handle
 typedef GLuint FrameBufferHandle;	/** Frame buffer handle. */
 typedef GLuint RenderBufferHandle;	/** Render buffer handle. */
 
-
+#define VERTEX_ATTRIBUTE_POSITION_NAME              "a_position"
+#define VERTEX_ATTRIBUTE_NORMAL_NAME                "a_normal"
+#define VERTEX_ATTRIBUTE_COLOR_NAME                 "a_color"
+#define VERTEX_ATTRIBUTE_TANGENT_NAME               "a_tangent"
+#define VERTEX_ATTRIBUTE_BINORMAL_NAME              "a_binormal"
+#define VERTEX_ATTRIBUTE_BLENDWEIGHTS_NAME          "a_blendWeights"
+#define VERTEX_ATTRIBUTE_BLENDINDICES_NAME          "a_blendIndices"
+#define VERTEX_ATTRIBUTE_TEXCOORD_PREFIX_NAME       "a_texCoord"
 
 #define gl_Vertex 			0
 #define gl_Normal 			1
@@ -51,10 +59,10 @@ typedef GLuint RenderBufferHandle;	/** Render buffer handle. */
 static GLenum __gl_error_code;
 
 // Assert macros.
-#ifdef _DEBUG
-#define GP_ASSERT(expression) assert(expression)
-#else
+#ifdef NDEBUG
 #define GP_ASSERT(expression)
+#else
+#define GP_ASSERT(expression) assert(expression)
 #endif
 
 

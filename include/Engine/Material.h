@@ -6,6 +6,7 @@
 class Technique;
 class Pass;
 class Properties;
+class Effect;
 
 class Material : public RenderState {
 	public:
@@ -13,14 +14,15 @@ class Material : public RenderState {
 
 		static Material* create(const char* url);
 		static Material* create(Properties* pMaterialProperties);
-		static Material* create(/*Effect* effect*/);
+		static Material* create(Effect* effect);
 		//static Material* create(const char* vshPath, const char* fshPath, const char* defines = NULL);
 
 		unsigned int	getTechniqueCount() const;
 		Technique*		getTechniqueByIndex(unsigned int index) const;
 		Technique*		getTechnique(const char* id) const;
 		Technique*		getTechnique() const;
-		void				setTechnique(const char* id);
+		void			setTechnique(const char* id);
+		void			setNodeBinding(Node* node);
 	private:
 		Material();
 		Material(const Material& m);

@@ -133,6 +133,7 @@ Texture* Texture::createTGA(const char* path, bool generateMipmaps) {
 	texture->m_Format = format;
 	texture->m_iWidth = Img.GetWidth();
 	texture->m_iHeight = Img.GetHeight();
+	texture->m_eType = TEXTURE_2D;
 	if(generateMipmaps) {
 		texture->generateMipmaps();
 	}
@@ -219,7 +220,7 @@ Texture* Texture::create(Image* image, bool generateMipmaps) {
 	}
 }
 
-Texture* Texture::create(Format format, unsigned int width, unsigned int height, unsigned char* data, bool generateMipmaps) {
+Texture* Texture::create(Format format, unsigned int width, unsigned int height, unsigned char* data, bool generateMipmaps, Type type) {
 	// Create and load the texture.
 	GLuint textureID;
 
@@ -252,6 +253,7 @@ Texture* Texture::create(Format format, unsigned int width, unsigned int height,
 	texture->m_Format = format;
 	texture->m_iWidth = width;
 	texture->m_iHeight = height;
+	texture->m_eType = type;
 	if(generateMipmaps) {
 		texture->generateMipmaps();
 	}
@@ -306,6 +308,11 @@ bool Texture::isCompressed() const {
 
 GLuint Texture::getHandle() const {
 	return m_hTexture;
+}
+
+Texture::Type Texture::getType() const {
+
+	return m_eType;
 }
 
 void Texture::setWrapMode(Wrap wrapS, Wrap wrapT)

@@ -139,7 +139,7 @@ float Transform::getRotateZ() {
 	return m_vRotation.z;
 }
 
-Matrix4& Transform::getTransformedViewMatrix() {
+const Matrix4& Transform::getTransformedViewMatrix() const {
 	if(m_iDirty) {
 		m_Matrix.setIdentity();
 		//m_Matrix.setTranslate(-m_vTranslation);
@@ -180,7 +180,7 @@ Matrix4& Transform::getTransformedViewMatrix() {
 	return m_Matrix;
 }
 
-Matrix4& Transform::getTransformedModelMatrix() {
+const Matrix4& Transform::getTransformedModelMatrix() const {
 	if(m_iDirty) {
 		m_Matrix.setIdentity();
 		//m_Matrix.rotate(-m_vRotation);
@@ -190,14 +190,14 @@ Matrix4& Transform::getTransformedModelMatrix() {
 		bool bHasTranslation = !m_vTranslation.isZero();
 		bool bHasScaling = !m_vScale.isOne();
 		bool bHasRotation = !m_vRotation.isZero();
-
+		
 		if(bHasRotation || (m_iDirty & DIRTY_ROTATION) == DIRTY_ROTATION) {
 			m_Matrix.rotate(m_vRotation);
-
+		
 			if(bHasTranslation || (m_iDirty & DIRTY_TRANSLATION) == DIRTY_TRANSLATION) {
 				m_Matrix.setTranslate(m_vTranslation);
 			}
-
+		
 			if(bHasScaling || (m_iDirty & DIRTY_SCALE) == DIRTY_SCALE) {
 				m_Matrix.scale(m_vScale);
 			}
@@ -205,7 +205,7 @@ Matrix4& Transform::getTransformedModelMatrix() {
 		else
 		if(bHasTranslation || (m_iDirty & DIRTY_TRANSLATION) == DIRTY_TRANSLATION) {
 			m_Matrix.setTranslate(m_vTranslation);
-
+		
 			if(bHasScaling || (m_iDirty & DIRTY_SCALE) == DIRTY_SCALE) {
 				m_Matrix.scale(m_vScale);
 			}
@@ -214,6 +214,7 @@ Matrix4& Transform::getTransformedModelMatrix() {
 		if(bHasScaling || (m_iDirty & DIRTY_SCALE) == DIRTY_SCALE) {
 			m_Matrix.scale(m_vScale);
 		}
+
 		/*
 		if (bHasTranslation || (m_iDirty & DIRTY_TRANSLATION) == DIRTY_TRANSLATION)
 		{
@@ -239,7 +240,8 @@ Matrix4& Transform::getTransformedModelMatrix() {
 		{
 			m_Matrix.scale(m_vScale);
 		}
-		*/
+		//*/
+		
 		m_iDirty &= ~DIRTY_TRANSLATION & ~DIRTY_ROTATION & ~DIRTY_SCALE;
 	}
 
@@ -264,6 +266,7 @@ void Transform::setAxisZ(const Vector3& vForward) {
 
 void Transform::setPosition(const Vector3& vPosition) {
 	m_vTranslation = vPosition;
+	setDirty(DIRTY_TRANSLATION);
 }
 
 const Vector3& Transform::getPosition() const {

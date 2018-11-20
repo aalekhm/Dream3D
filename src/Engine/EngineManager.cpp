@@ -3,6 +3,7 @@
 #include "Engine/EngineManager.h"
 #include "Engine/Camera.h"
 #include "Engine/FrameBuffer.h"
+#include "Engine/RenderState.h"
 
 EngineManager*	EngineManager::m_pEngineManager;
 
@@ -39,6 +40,8 @@ void EngineManager::startup(HWND pHWnd) {
 	RECT rClientRect;
 	GetClientRect(m_pHWnd, &rClientRect);
 	setViewport(rClientRect.right - rClientRect.left, rClientRect.bottom - rClientRect.top);
+
+	RenderState::initialize();
 	FrameBuffer::initialize();
 
 	m_pKeyboardManager = new KeyboardManager();

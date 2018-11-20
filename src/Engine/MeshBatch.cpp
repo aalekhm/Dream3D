@@ -1,10 +1,13 @@
 #include "Engine/MeshBatch.h"
 #include "Engine/VertexAttributeBinding.h"
 #include "Engine/Texture.h"
+#include "Engine/Material.h"
+#include "Engine/Technique.h"
 
-MeshBatch::MeshBatch(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, /*Material* material, */ bool bIndexed, unsigned int iInitialCapacity, unsigned int iGrowSize) 
+MeshBatch::MeshBatch(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, Material* pMaterial, bool bIndexed, unsigned int iInitialCapacity, unsigned int iGrowSize) 
 	: m_VertexFormat(vertexFormat),
 	  m_PrimitiveType(primitiveType),
+	  m_pMaterial(pMaterial),
 	  m_bIndexed(bIndexed),
 	  m_iCapacity(0),
 	  m_iGrowSize(iGrowSize),
@@ -29,9 +32,22 @@ MeshBatch::~MeshBatch() {
 	SAFE_DELETE_ARRAY(m_pIndices);
 }
 
-MeshBatch* MeshBatch::create(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, /*Material* material, */ bool bIndexed, unsigned int iInitialCapacity, unsigned int iGrowSize) {
+MeshBatch* MeshBatch::create(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, const char* materialUrl, bool bIndexed, unsigned int iInitialCapacity, unsigned int iGrowSize) {
 
-	MeshBatch* meshBatch = new MeshBatch(vertexFormat, primitiveType, /*const char* materialPath, */bIndexed, iInitialCapacity, iGrowSize);
+	Material* pMaterial = Material::create(materialUrl);
+	if (pMaterial == NULL) {
+
+		GP_ERROR("Failed to create material for mesh batch from file %d", materialUrl);
+		return NULL;
+	}
+
+	MeshBatch* meshBatch = new MeshBatch(vertexFormat, primitiveType, pMaterial, bIndexed, iInitialCapacity, iGrowSize);
+	return meshBatch;
+}
+
+MeshBatch* MeshBatch::create(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, Material* pMaterial,  bool bIndexed, unsigned int iInitialCapacity, unsigned int iGrowSize) {
+
+	MeshBatch* meshBatch = new MeshBatch(vertexFormat, primitiveType, pMaterial, bIndexed, iInitialCapacity, iGrowSize);
 	return meshBatch;
 }
 
@@ -123,19 +139,34 @@ bool MeshBatch::resize(unsigned int iCapacity) {
 }
 
 void MeshBatch::updateVertexAttributeBinding() {
-	if(m_pVertexAttributeBinding) {
-		SAFE_DELETE( m_pVertexAttributeBinding );
+
+	GP_ASSERT( m_pMaterial );
+
+	// Update our vertex attribute bindings.
+	for (unsigned int i = 0, iTechniqueCount = m_pMaterial->getTechniqueCount(); i < iTechniqueCount; i++) {
+
+		Technique* pTechnique = m_pMaterial->getTechniqueByIndex(i);
+		GP_ASSERT( pTechnique );
+
+		for (unsigned int j = 0, iPassCount = pTechnique->getPassCount(); j < iPassCount; j++) {
+
+			Pass* pPass = pTechnique->getPassByIndex(j);
+			GP_ASSERT( pPass );
+
+			VertexAttributeBinding* pVAB = VertexAttributeBinding::create(m_VertexFormat, m_pVertices, pPass->getEffect());
+			pPass->setVertexAttributeBinding(pVAB);
+		}
 	}
-
-	VertexAttributeBinding* b = VertexAttributeBinding::create(m_VertexFormat, m_pVertices);
-	GP_ASSERT( b );
-
-	setVertexAttributeBinding(b);
 }
 
 void MeshBatch::setVertexAttributeBinding(VertexAttributeBinding* vaBinding) {
 	GL_ASSERT( vaBinding );
 	m_pVertexAttributeBinding = vaBinding;
+}
+
+Material* MeshBatch::getMaterial() const {
+
+	return m_pMaterial;
 }
 
 void MeshBatch::setTexture(const char* path, bool generateMipmaps) {
@@ -195,8 +226,18 @@ void MeshBatch::render() {
 	if (m_bIndexed)
 		GP_ASSERT(m_pIndices);
 
-	m_pVertexAttributeBinding->bind();
-	bindTexture();
+	// Bind the material
+	Technique* pTechnique = m_pMaterial->getTechnique();
+	GP_ASSERT( pTechnique );
+
+	unsigned int iPassCount = pTechnique->getPassCount();
+	for (unsigned int i = 0; i < iPassCount; i++) {
+
+		Pass* pPass = pTechnique->getPassByIndex(i);
+		GP_ASSERT( pPass );
+
+		pPass->bind();
+
 		if(m_bIndexed) {
 			GL_ASSERT( glDrawElements(m_PrimitiveType, m_iIndexCount, GL_UNSIGNED_SHORT, (GLvoid*)m_pIndices) );
 		}
@@ -204,6 +245,7 @@ void MeshBatch::render() {
 			GL_ASSERT( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
 			GL_ASSERT( glDrawArrays(m_PrimitiveType, 0, m_iVertexCount) );
 		}
-	unbindTexture();
-	m_pVertexAttributeBinding->unbind();
+
+		pPass->unbind();
+	}
 }

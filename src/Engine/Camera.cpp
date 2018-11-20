@@ -222,7 +222,7 @@ void Camera::unproject(const Rectangle_& viewport, float fX, float fY, float fDe
 
 void Camera::pickRay(const Rectangle_& viewport, float x, float y/*, Ray* pRay*/) {
 
-	GP_ASSERT( pRay );
+	//GP_ASSERT( pRay );
 
 	// Get the world-space position at the near clip plane.
 	Vector3 vNearPoint;
@@ -258,12 +258,6 @@ void Camera::setPerspective(int x, int y, int w, int h, float iFieldOfView, floa
 	///////////////// Set Perspective Viewing Frustum
 	setFrustum(iFieldOfView, (float)(w)/h, fNearPlane, fFarPlane); // FOV, AspectRatio, NearClip, FarClip
 	////////////////////////////////////////////
-
-	// copy projection matrix to OpenGL
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(m_MatrixProjection.getTranspose());
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -17,11 +17,6 @@ Model::Model(Mesh* pMesh)
 {
 	GP_ASSERT( pMesh );
 	m_iPartCount = pMesh->getMeshPartCount();
-
-	VertexAttributeBinding* vaBinding = VertexAttributeBinding::create(pMesh);
-	
-	GP_ASSERT( vaBinding );
-	m_pVertexAttributeBinding = vaBinding;
 }
 
 Model* Model::create(Mesh* pMesh) {
@@ -194,21 +189,6 @@ void Model::setMaterialNodeBinding(Material* pMaterial) {
 	GP_ASSERT( pMaterial );
 	if(m_pNode) {
 		pMaterial->setNodeBinding(m_pNode);
-
-		unsigned int iTechniqueCount = pMaterial->getTechniqueCount();
-		for (unsigned int i = 0; i < iTechniqueCount; ++i) {
-
-			Technique* pTechnique = pMaterial->getTechniqueByIndex(i);
-			GP_ASSERT( pTechnique );
-
-			pTechnique->setNodeBinding(m_pNode);
-			unsigned int iPassCount = pTechnique->getPassCount();
-			for (unsigned int j = 0; j < iPassCount; ++j) {
-				Pass* pPass = pTechnique->getPassByIndex(j);
-				GP_ASSERT( pPass );
-				pPass->setNodeBinding(m_pNode);
-			}
-		}
 	}
 }
 
@@ -278,7 +258,7 @@ void Model::setMaterial(Material* pMaterial, int iPartIndex) {
 			for(unsigned int j = 0, iPCount = pTechnique->getPassCount(); j < iPCount; j++) {
 				Pass* pPass = pTechnique->getPassByIndex(j);
 				GP_ASSERT( pPass );
-				VertexAttributeBinding* pVertexAttributeBinding = VertexAttributeBinding::create(m_pMesh);
+				VertexAttributeBinding* pVertexAttributeBinding = VertexAttributeBinding::create(m_pMesh, pPass->getEffect());
 				pPass->setVertexAttributeBinding(pVertexAttributeBinding);
 				//SAFE_RELEASE(pVertexAttributeBinding);
 			}
@@ -317,17 +297,20 @@ Material* Model::getMaterial(int iPartIndex) {
 
 	Material* pMaterial = NULL;
 
-	if(iPartIndex >= 0 && iPartIndex < (int)getMeshPartCount()) {
+	if (iPartIndex < 0)
+		return m_pMaterial;
 
-		// Look up explicitly specified part material.
-		if(m_pPartMaterials) {
-			pMaterial = m_pPartMaterials[iPartIndex];
-		}
+	if (iPartIndex >= (int)m_iPartCount)
+		return NULL;
 
-		if(pMaterial == NULL) {
-			// Return the shared material.
-			pMaterial = m_pMaterial;
-		}
+	// Look up explicitly specified part material.
+	if(m_pPartMaterials) {
+		pMaterial = m_pPartMaterials[iPartIndex];
+	}
+
+	if(pMaterial == NULL) {
+		// Return the shared material.
+		pMaterial = m_pMaterial;
 	}
 
 	return pMaterial;

@@ -155,8 +155,12 @@ void Node::removeAllChildren() {
 Matrix4& Node::getViewMatrix() const {
 	//Get Scene Camera here...
 
-	if(m_pCamera) {
-		return m_pCamera->getViewMatrix();
+	Scene* pScene = getScene();
+	Camera* pCamera = pScene ? pScene->getActiveCamera() : NULL;
+	GP_ASSERT( pCamera );
+
+	if (pCamera) {
+		return pCamera->getViewMatrix();
 	}
 	else {
 		return Matrix4::identity();
@@ -165,25 +169,26 @@ Matrix4& Node::getViewMatrix() const {
 
 Matrix4& Node::getProjectionMatrix() const {
 
-	if(m_pCamera) {
-		return m_pCamera->getProjectionMatrix();
+	Scene* pScene = getScene();
+	Camera* pCamera = pScene ? pScene->getActiveCamera() : NULL;
+	GP_ASSERT(pCamera);
+
+	if (pCamera) {
+		return pCamera->getProjectionMatrix();
 	}
 	else {
 		return Matrix4::identity();
 	}
 }
 
-Matrix4& Node::getWorldMatrix() {
+const Matrix4& Node::getWorldMatrix() const {
 
 	// If we have a parent, multiply our parent world transform by our local
 	// transform to obtain our final resolved world transform.
 	Node* parent = getParent();
 	if (parent) {
-		Matrix4::multiply(	(m_pCamera)?getTransformedViewMatrix():getTransformedModelMatrix(),
-									parent->getWorldMatrix(),
-									&m_MatrixWorld);
-
-		//Matrix4::multiply(parent->getWorldMatrix(), getTransformedModelMatrix(), &m_MatrixWorld);
+		m_MatrixWorld = parent->getWorldMatrix() * ((m_pCamera) ? getTransformedViewMatrix() : getTransformedModelMatrix());
+		//Matrix4::multiply(((m_pCamera) ? getTransformedViewMatrix() : getTransformedModelMatrix()), parent->getWorldMatrix(), &m_MatrixWorld);
 	}
 	else
 	{
@@ -193,12 +198,112 @@ Matrix4& Node::getWorldMatrix() {
 	return m_MatrixWorld;
 }
 
-Matrix4& Node::getWorldViewMatrix() {
-	static Matrix4 worldView;
+const Matrix4& Node::getWorldViewMatrix() const {
 
-	Matrix4::multiply(getViewMatrix(), getWorldMatrix(), &worldView);
+	static Matrix4 worldViewMat;
 
-	return worldView;
+	worldViewMat = getViewMatrix() * getWorldMatrix();
+
+	return worldViewMat;
+}
+
+const Matrix4& Node::getViewProjectionMatrix() const {
+
+	static Matrix4 viewProjMat;
+	viewProjMat = getProjectionMatrix() * getViewMatrix();
+
+	return viewProjMat;
+}
+
+const Matrix4& Node::getInverseViewProjectionMatrix() const {
+
+	Scene* pScene = getScene();
+	Camera* pCamera = pScene ? pScene->getActiveCamera() : NULL;
+	if (pCamera)
+	{
+		return pCamera->getInverseViewProjectionMatrix();
+	}
+	return Matrix4::identity();
+}
+
+const Matrix4& Node::getWorldViewProjectionMatrix() const {
+
+	// Always re-calculate worldViewProjection matrix since it's extremely difficult
+	// to track whether the camera has changed (it may frequently change every frame).
+	static Matrix4 worldViewProjMat;
+	worldViewProjMat = getProjectionMatrix() * getViewMatrix() * getWorldMatrix();
+
+	return worldViewProjMat.getTranspose();
+}
+
+const Matrix4& Node::getInverseTransposeWorldMatrix() const {
+
+	static Matrix4 invTransWorld;
+	invTransWorld = getWorldMatrix();
+	invTransWorld.invert(&invTransWorld);
+	invTransWorld.transpose();
+	return invTransWorld;
+}
+
+const Matrix4& Node::getInverseTransposeWorldViewMatrix() const {
+
+	static Matrix4 invTransWorldView;
+	Matrix4::multiply(getViewMatrix(), getWorldMatrix(), &invTransWorldView);
+	invTransWorldView.invert(&invTransWorldView);
+	invTransWorldView.transpose();
+	return invTransWorldView;
+}
+
+Vector3 Node::getTranslationWorld() const {
+
+	Vector3 translation;
+	getWorldMatrix().getTranslation(&translation);
+	return translation;
+}
+
+Vector3 Node::getTranslationView() const {
+
+	Vector3 translation;
+	getWorldMatrix().getTranslation(&translation);
+	getViewMatrix().transformPoint(&translation);
+	return translation;
+}
+
+Vector3 Node::getActiveCameraTranslationWorld() const {
+
+	Scene* pScene = getScene();
+	if (pScene) {
+
+		Camera* pCamera = pScene->getActiveCamera();
+		if (pCamera)
+		{
+			Node* pCameraNode = pCamera->getNode();
+			if (pCameraNode)
+			{
+				return pCameraNode->getTranslationWorld();
+			}
+		}
+	}
+
+	return Vector3::zero();
+}
+
+Vector3 Node::getActiveCameraTranslationView() const {
+
+	Scene* pScene = getScene();
+	if (pScene)
+	{
+		Camera* pCamera = pScene->getActiveCamera();
+		if (pCamera)
+		{
+			Node* pCameraNode = pCamera->getNode();
+			if (pCameraNode)
+			{
+				return pCameraNode->getTranslationView();
+			}
+		}
+	}
+	return Vector3::zero();
 }
 
 Scene* Node::getScene() const {
@@ -251,13 +356,6 @@ void Node::setCamera(Camera* pCamera) {
 
 void Node::render(bool bWireframe) {
 	if(m_pModel) {
-		Scene* pScene = getScene();
-		Node* pCameraNode = pScene->getActiveCamera()->getNode();
-
-		Matrix4 worldView = Matrix4::identity();
-		worldView = pCameraNode->getViewMatrix() * getWorldMatrix();
-		glLoadMatrixf(worldView.getTranspose());
-
 		m_pModel->draw(bWireframe);
 
 		for(Node* node = m_pFirstChild; node != NULL; node = node->getNextSibling()) {

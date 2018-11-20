@@ -5,11 +5,12 @@
 #include "Engine/VertexFormat.h"
 #include "Engine/Mesh.h"
 
+class Effect;
 class VertexAttributeBinding {
 	
 	public:
-		static VertexAttributeBinding*	create(Mesh* mesh/*, Effect* effect*/);
-		static VertexAttributeBinding*	create(const VertexFormat& vertexFormat, void* vertexPointer/*, Effect* effect*/);
+		static VertexAttributeBinding*	create(Mesh* mesh, Effect* pEffect);
+		static VertexAttributeBinding*	create(const VertexFormat& vertexFormat, void* vertexPointer, Effect* pEffect);
 
 		void							bind();
 		void							unbind();
@@ -27,7 +28,7 @@ class VertexAttributeBinding {
 		};
 
 		VertexAttributeBinding();
-		static VertexAttributeBinding*	create(Mesh* mesh, const VertexFormat& vertexFormat, void* vertexPointer/*, Effect* effect*/);
+		static VertexAttributeBinding*	create(Mesh* mesh, const VertexFormat& vertexFormat, void* vertexPointer, Effect* pEffect);
 		void setVertexAttributeBinding(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid* pointer);
 
 #ifdef USE_VAO
@@ -35,6 +36,7 @@ class VertexAttributeBinding {
 #endif
 		VertexAttribute*	m_pAttributes;
 		Mesh*				m_pMesh;
+		Effect*				m_pEffect;
 };
 
 #endif

@@ -18,46 +18,46 @@ class Transform {
 		Transform();
 		virtual ~Transform();
 
-		void	scale(float fScale);
-		void	scale(float sx, float sy, float sz);
-		void	scale(const Vector3& v);
-		void	scaleX(float sx);
-		void	scaleY(float sy);
-		void	scaleZ(float sz);
+		void					scale(float fScale);
+		void					scale(float sx, float sy, float sz);
+		void					scale(const Vector3& v);
+		void					scaleX(float sx);
+		void					scaleY(float sy);
+		void					scaleZ(float sz);
 
-		void	translate(float tx, float ty, float tz);
-		void	translate(const Vector3& v);
-		void	translateForward(float amount);
-		void	translateLeft(float amount);
-		void	translateUp(float amount);
+		void					translate(float tx, float ty, float tz);
+		void					translate(const Vector3& v);
+		void					translateForward(float amount);
+		void					translateLeft(float amount);
+		void					translateUp(float amount);
 
-		void    rotate(float angle, const Vector3& axis);		// rotate angle(degree) along the given axix
-		void    rotate(float angle, float x, float y, float z);
-		void    rotate(const Vector3& vAngles);					// rotate on X,Y & Z-axis with angle in the Vector3
-		void    rotateX(float angle);							// rotate on X-axis with degree
-		void    rotateY(float angle);							// rotate on Y-axis with degree
-		void    rotateZ(float angle);							// rotate on Z-axis with degree
-		float   getRotateX();
-		float   getRotateY();
-		float   getRotateZ();
+		void					rotate(float angle, const Vector3& axis);		// rotate angle(degree) along the given axix
+		void					rotate(float angle, float x, float y, float z);
+		void					rotate(const Vector3& vAngles);					// rotate on X,Y & Z-axis with angle in the Vector3
+		void					rotateX(float angle);							// rotate on X-axis with degree
+		void					rotateY(float angle);							// rotate on Y-axis with degree
+		void					rotateZ(float angle);							// rotate on Z-axis with degree
+		float					getRotateX();
+		float					getRotateY();
+		float					getRotateZ();
 
-		void	setIdentity();
-		void	setAxisX(const Vector3& vLeft);
-		void	setAxisY(const Vector3& vUp);
-		void	setAxisZ(const Vector3& vForward);
-		void	setPosition(const Vector3& vPosition);
-		const Vector3& getPosition() const;
+		void					setIdentity();
+		void					setAxisX(const Vector3& vLeft);
+		void					setAxisY(const Vector3& vUp);
+		void					setAxisZ(const Vector3& vForward);
+		void					setPosition(const Vector3& vPosition);
+		const Vector3&			getPosition() const;
 
-		void		setDirty(unsigned int bits);
-		Matrix4&	getTransformedModelMatrix();
-		Matrix4&	getTransformedViewMatrix();
+		void					setDirty(unsigned int bits);
+		const Matrix4&			getTransformedModelMatrix() const;
+		const Matrix4&			getTransformedViewMatrix() const;
 	private:
-		Matrix4			m_Matrix;
-		Vector3			m_vScale;
-		Vector3			m_vTranslation;
-		Vector3			m_vRotation;
+		mutable Matrix4			m_Matrix;
+		mutable Vector3			m_vScale;
+		mutable Vector3			m_vTranslation;
+		mutable Vector3			m_vRotation;
 
-		unsigned int	m_iDirty;
+		mutable unsigned int	m_iDirty;
 };
 
 #endif

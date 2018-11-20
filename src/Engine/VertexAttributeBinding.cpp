@@ -1,13 +1,15 @@
 #include "Engine/VertexAttributeBinding.h"
+#include "Engine/Effect.h"
 
 static GLuint __maxVertexAttributes = 0;
 static std::vector<VertexAttributeBinding*>	__vertexAttributeBindingCache;
 
 VertexAttributeBinding::VertexAttributeBinding()
-	:	m_pAttributes(NULL),
-		m_pMesh(NULL)
+	:	m_pAttributes(NULL)
+	,	m_pMesh(NULL)
+	,	m_pEffect(NULL)
 #ifdef USE_VAO
-		, m_hVAO(0)
+	,	m_hVAO(0)
 #endif
 {
 
@@ -34,7 +36,7 @@ VertexAttributeBinding::~VertexAttributeBinding() {
 #endif
 }
 
-VertexAttributeBinding*	VertexAttributeBinding::create(Mesh* mesh/*, Effect* effect*/) {
+VertexAttributeBinding*	VertexAttributeBinding::create(Mesh* mesh, Effect* pEffect) {
 
 	GP_ASSERT( mesh );
 
@@ -43,14 +45,14 @@ VertexAttributeBinding*	VertexAttributeBinding::create(Mesh* mesh/*, Effect* eff
 	for(int i = 0, count = __vertexAttributeBindingCache.size(); i < count; i++) {
 		b = __vertexAttributeBindingCache[i];
 		GP_ASSERT( b );
-		if(b->m_pMesh == mesh /*&& b->m_pEffect == effect*/) {
+		if(b->m_pMesh == mesh && b->m_pEffect == pEffect) {
 			
 			//Found a match
 			return b;
 		}
 	}
 
-	b = create(mesh, mesh->getVertexFormat(), 0/*, effect*/);
+	b = create(mesh, mesh->getVertexFormat(), 0, pEffect);
 
 	//Add the new Vertex Attribute Cache to the Cache
 	if(b) {
@@ -60,13 +62,13 @@ VertexAttributeBinding*	VertexAttributeBinding::create(Mesh* mesh/*, Effect* eff
 	return b;
 }
 
-VertexAttributeBinding*	VertexAttributeBinding::create(const VertexFormat& vertexFormat, void* vertexPointer/*, Effect* effect*/) {
-	return create(NULL, vertexFormat, vertexPointer);
+VertexAttributeBinding*	VertexAttributeBinding::create(const VertexFormat& vertexFormat, void* vertexPointer, Effect* pEffect) {
+	return create(NULL, vertexFormat, vertexPointer, pEffect);
 }
 
-VertexAttributeBinding*	VertexAttributeBinding::create(Mesh* mesh, const VertexFormat& vertexFormat, void* vertexPointer/*, Effect* effect*/) {
+VertexAttributeBinding*	VertexAttributeBinding::create(Mesh* mesh, const VertexFormat& vertexFormat, void* vertexPointer, Effect* pEffect) {
 
-	//GP_ASSERT( effect );
+	GP_ASSERT( pEffect );
 
 	//One time initialization
 	if(__maxVertexAttributes == 0) {
@@ -127,10 +129,13 @@ VertexAttributeBinding*	VertexAttributeBinding::create(Mesh* mesh, const VertexF
 		GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, mesh->getVertexBuffer()) );
 	}
 
-	//b->_effect = effect;
+	b->m_pEffect = pEffect;
+	//pEffect->addRef();
 
 	// Call setVertexAttribPointer for each vertex element.
+	std::string name;
 	unsigned int offset = 0;
+
 	for(int i = 0, count = vertexFormat.getElementCount(); i < count; i++) {
 
 		const VertexFormat::Element& e = vertexFormat.getElement(i);
@@ -138,25 +143,29 @@ VertexAttributeBinding*	VertexAttributeBinding::create(Mesh* mesh, const VertexF
 
 		switch(e.type) {
 			case VertexFormat::POSITION:
-				attrib = gl_Vertex;
+				attrib = pEffect->getVertexAttribute(VERTEX_ATTRIBUTE_POSITION_NAME); // gl_Vertex;
 			break;
 			case VertexFormat::NORMAL:
-				attrib = gl_Normal;
+				attrib = pEffect->getVertexAttribute(VERTEX_ATTRIBUTE_NORMAL_NAME); // gl_Normal;
 			break;
 			case VertexFormat::COLOR:
-				attrib = gl_Color;
+				attrib = pEffect->getVertexAttribute(VERTEX_ATTRIBUTE_COLOR_NAME); // gl_Color;
 			break;
 			case VertexFormat::TANGENT:
+				attrib = pEffect->getVertexAttribute(VERTEX_ATTRIBUTE_TANGENT_NAME); // gl_Tangent
 			break;
 			case VertexFormat::BINORMAL:
+				attrib = pEffect->getVertexAttribute(VERTEX_ATTRIBUTE_BINORMAL_NAME);
 			break;
 			case VertexFormat::BLENDWEIGHTS:
+				attrib = pEffect->getVertexAttribute(VERTEX_ATTRIBUTE_BLENDWEIGHTS_NAME);
 			break;
 			case VertexFormat::BLENDINDICES:
+				attrib = pEffect->getVertexAttribute(VERTEX_ATTRIBUTE_BLENDINDICES_NAME);
 			break;
 			case VertexFormat::TEXCOORD0:
-				attrib = gl_TexCoord;
-			break;
+				if ((attrib = pEffect->getVertexAttribute(VERTEX_ATTRIBUTE_TEXCOORD_PREFIX_NAME)) != -1) // gl_TexCoord
+					break;
 			case VertexFormat::TEXCOORD1:
 			case VertexFormat::TEXCOORD2:
 			case VertexFormat::TEXCOORD3:
@@ -164,11 +173,18 @@ VertexAttributeBinding*	VertexAttributeBinding::create(Mesh* mesh, const VertexF
 			case VertexFormat::TEXCOORD5:
 			case VertexFormat::TEXCOORD6:
 			case VertexFormat::TEXCOORD7:
+				name = VERTEX_ATTRIBUTE_TEXCOORD_PREFIX_NAME;
+				name += '0' + (e.type - VertexFormat::TEXCOORD0);
+				attrib = pEffect->getVertexAttribute(name.c_str());
+			break;
+			default:
+				// This happens whenever vertex data contains extra information (not an error).
+				attrib = -1;
 			break;
 		}
 
 		if( attrib == -1) {
-
+			//GP_WARN("Warning: Vertex element with usage '%s' in mesh '%s' does not correspond to an attribute in effect '%s'.", VertexFormat::toString(e.usage), mesh->getUrl(), effect->getId());
 		}
 		else {
 			void* pointer = vertexPointer ? (void*)((unsigned char*)vertexPointer + offset) : (void*)offset;

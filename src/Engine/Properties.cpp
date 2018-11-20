@@ -145,31 +145,29 @@ Properties* Properties::getNextNamespace() {
 	return NULL;
 }
 
-Properties* Properties::getNamespace(const char* id, bool bSearchNames) const {
+Properties* Properties::getNamespace(const char* id, bool bSearchNames /*= false*/) {
 	
 	if(id == NULL)
 		return NULL;
 
-	Properties* ret = NULL;
-	std::vector<Properties*>::const_iterator itr;
-
-	for(itr = m_vNamespaces.begin(); itr < m_vNamespaces.end(); itr++) {
-
-		ret = *itr;
-		if( strcmp( (bSearchNames ? ret->getNamespace(): ret->getID()), id) == 0) {
-			return ret;
+	rewind();
+	Properties* pRetProperties = NULL;
+	Properties* pProperties = getNextNamespace();
+	
+	while (pProperties != NULL)
+	{
+		if (strcmp((bSearchNames ? pProperties->getNamespaceType() : pProperties->getID()), id) == 0) {
+			pRetProperties = pProperties;
+			break;
 		}
 
-		ret = ret->getNamespace(id, bSearchNames);
-		if(ret != NULL) {
-			return ret;
-		}
+		pProperties = getNextNamespace();
 	}
 
-	return ret;
+	return pRetProperties;
 }
 
-const char* Properties::getNamespace() {
+const char* Properties::getNamespaceType() {
 	return m_sNamespace.c_str();
 }
 
@@ -195,37 +193,30 @@ const char* Properties::getString(const char* name) const {
 	return NULL;
 }
 
-bool Properties::exists(const char* name) const {
-	if(name != NULL)
-		return m_mProperties.find(name) != m_mProperties.end();
-
-	return false;
-}
-
 static bool isStringNumeric(const char* str) {
-	
-	GP_ASSERT( str );
+
+	GP_ASSERT(str);
 
 	char ch = '\0';
 
 	// The first character may be '-'
-	if(*str == '-') {
+	if (*str == '-') {
 		str++;
 	}
 
 	// The first character after the sign must be a digit
-	if(!isdigit(*str)) {
+	if (!isdigit(*str)) {
 		return false;
 	}
 
 	str++;
-	
+
 	// All remaining characters must be digits, with a single decimal (.) permitted
 	unsigned int decimalPos = 0;
-	while(*str) {
+	while (*str) {
 
-		if(!isdigit(*str)) {
-			if(*str == '.' && decimalPos == 0) {
+		if (!isdigit(*str)) {
+			if (*str == '.' && decimalPos == 0) {
 				// Max of 1 decimal allowed
 				decimalPos++;
 			}
@@ -239,11 +230,194 @@ static bool isStringNumeric(const char* str) {
 
 	return true;
 }
+
+Properties::Type Properties::getType(const char* sName) const {
+
+	const char* sValue = getString(sName);
+	if (!sValue) {
+		return Properties::NONE;
+	}
+
+	// Parse the value to determine the format
+	unsigned int iCommaCount = 0;
+	char* sValuePtr = (char*)sValue;
+	while( sValuePtr = strchr(sValuePtr, ',') ) {
+		iCommaCount++;
+		sValuePtr++;
+	}
+
+	switch (iCommaCount) {
+
+		case 0:
+			return isStringNumeric(sValue) ? Properties::NUMBER : Properties::STRING;
+		case 1:
+			return Properties::VECTOR2;
+		case 2:
+			return Properties::VECTOR3;
+		case 3:
+			return Properties::VECTOR4;
+		case 15:
+			return Properties::MATRIX;
+		default:
+			return Properties::STRING;
+	}
+}
+
+bool Properties::exists(const char* name) const {
+	if(name != NULL)
+		return m_mProperties.find(name) != m_mProperties.end();
+
+	return false;
+}
+
+bool Properties::parseVector2(const char* pStr, Vector2* pOutVector2) {
+
+	if (pStr) {
+
+		float x, y;
+		if (sscanf(pStr, "%f, %f", &x, &y)) {
+
+			if (pOutVector2) {
+				pOutVector2->set(x, y);
+			}
+
+			return true;
+		}
+		else
+		{
+			GP_ERROR("Error attempting to parse property as a two-dimensional vector: %s", pStr);
+		}
+	}
+
+	if (pOutVector2)
+		pOutVector2->set(0.0f, 0.0f);
+
+	return false;
+}
+
+bool Properties::parseVector3(const char* pStr, Vector3* pOutVector3) {
+
+	if (pStr) {
+
+		float x, y, z;
+		if (sscanf(pStr, "%f, %f, %f", &x, &y, &z)) {
+
+			if (pOutVector3) {
+				pOutVector3->set(x, y, z);
+			}
+
+			return true;
+		}
+		else
+		{
+			GP_ERROR("Error attempting to parse property as a three-dimensional vector: %s", pStr);
+		}
+	}
+
+	if (pOutVector3)
+		pOutVector3->set(0.0f, 0.0f, 0.0f);
+
+	return false;
+}
+
+bool Properties::parseVector4(const char* pStr, Vector4* pOutVector4) {
+
+	if (pStr) {
+
+		float x, y, z, w;
+		if (sscanf(pStr, "%f, %f, %f, %f", &x, &y, &z, &w)) {
+
+			if (pOutVector4) {
+				pOutVector4->set(x, y, z, w);
+			}
+
+			return true;
+		}
+		else
+		{
+			GP_ERROR("Error attempting to parse property as a three-dimensional vector: %s", pStr);
+		}
+	}
+
+	if (pOutVector4)
+		pOutVector4->set(0.0f, 0.0f, 0.0f, 0.0f);
+
+	return false;
+}
+
+bool Properties::parseMatrix(const char* pStr, Matrix4* pOutMatrix4) {
+
+	if (pStr) {
+
+		float m[16];
+		int scanned;
+		scanned = sscanf(	pStr, 
+							"%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f",
+							&m[0], &m[1], &m[2], &m[3], &m[4], &m[5], &m[6], &m[7],
+							&m[8], &m[9], &m[10], &m[11], &m[12], &m[13], &m[14], &m[15]
+						);
+		if (scanned == EOF) {
+			GP_ERROR("Error attempting to parse property '%s' as a matrix.", name);
+			pOutMatrix4->setIdentity();
+			return false;
+		}
+
+		pOutMatrix4->set(m);
+		return true;
+	}
+
+	pOutMatrix4->setIdentity();
+	return false;
+}
+
+float Properties::getFloat(const char* name) const {
+
+	const char* sValueString = getString(name);
+	if (sValueString) {
+
+		float fValue;
+		int scanned;
+		scanned = sscanf(sValueString, "%f", &fValue);
+		if (scanned == EOF) {
+
+			GP_ERROR("Error attempting to parse property '%s' as a float.", name);
+			return 0.0f;
+		}
+
+		return fValue;
+	}
+
+	return 0.0f;
+}
+
+bool Properties::getVector2(const char* name, Vector2* out) const {
+	return parseVector2(getString(name), out);
+}
+
+bool Properties::getVector3(const char* name, Vector3* out) const {
+	return parseVector3(getString(name), out);
+}
+
+bool Properties::getVector4(const char* name, Vector4* out) const {
+	return parseVector4(getString(name), out);
+}
+
+bool Properties::getMatrix(const char* name, Matrix4* out) const {
+	return parseMatrix(getString(name), out);
+}
+
+//bool Properties::getColor(const char* name, Vector3* out) const {
+//
+//}
+//
+//bool Properties::getColor(const char* name, Vector4* out) const {
+//
+//}
 	
 void Properties::printProperties(Properties* properties) {
 
 	// Print the name and ID of the current namespace.
-	const char* spacename = properties->getNamespace();
+	const char* spacename = properties->getNamespaceType();
 	const char* id = properties->getID();
 	//GP_WARN("Namespace: %s  ID: %s\n{", spacename, id);
 	printf("%s %s {\n", spacename, id);

@@ -194,6 +194,11 @@ const Vector3& Vector3::one() {
 	return value;
 }
 
+const Vector3& Vector3::zero() {
+	static Vector3 value(0.0f, 0.0f, 0.0f);
+	return value;
+}
+
 Vector3 Vector3::operator-() const {
 	return Vector3(-x, -y, -z);
 }

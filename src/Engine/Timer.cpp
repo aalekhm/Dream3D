@@ -124,6 +124,8 @@ double Timer::getDeltaTimeMs() {
 void Timer::initTimer() {
 	m_dElapsedTimeMs = m_dLastElapsedTimeMs = getElapsedTimeInMilliSec();
 	m_dElapasedGameTimeMs = 0;
+
+	start();
 }
 
 void Timer::startFrame() {

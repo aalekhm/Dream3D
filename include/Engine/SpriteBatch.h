@@ -5,15 +5,16 @@
 #include "Common/Rectangle.h"
 #include "Common/Vectors.h"
 #include "Common/Matrices.h"
+#include "Engine/Texture.h"
 
 class MeshBatch;
-class Texture;
+class Effect;
 
 class SpriteBatch {
 
 	public:
-		static SpriteBatch* create(const char* pTexturePath, /*Effect* pEffect = NULL, */unsigned int iInitialCapacity = 0);
-		static SpriteBatch* create(Texture* pTexture, /*Effect* pEffect = NULL, */unsigned int iInitialCapacity = 0);
+		static SpriteBatch* create(const char* pTexturePath, Effect* pEffect = NULL, unsigned int iInitialCapacity = 0);
+		static SpriteBatch* create(Texture* pTexture, Effect* pEffect = NULL, unsigned int iInitialCapacity = 0);
 		
 		void start();
 		void stop();
@@ -62,10 +63,13 @@ class SpriteBatch {
 		void addSprite(float x, float y, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color, SpriteVertex* vertices);
 		void addSprite(float x, float y, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color, const Vector4& clip, SpriteBatch::SpriteVertex* vertices);
 		
-		MeshBatch*		m_pMeshBatch;
-		float			m_fTextureWidthRatio;
-		float			m_fTextureHeightRatio;
-		Vector4			m_ClipRect;
+		MeshBatch*			m_pMeshBatch;
+		Texture::Sampler*	m_pSampler;
+		bool				m_bCustomEffect;
+		float				m_fTextureWidthRatio;
+		float				m_fTextureHeightRatio;
+		Vector4				m_ClipRect;
+		mutable Matrix4		m_ProjectionMatrix;
 };
 
 #endif

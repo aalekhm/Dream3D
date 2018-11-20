@@ -9,6 +9,20 @@
 #include "Engine/Texture.h"
 #include "Engine/MaterialParameter.h"
 
+void resolveFilenameAndMaterialNamespace(CCString& sUrl, CCString& sFileString, CCString& sNamespace) {
+
+	// Find pos of "#".
+	int iHashPos = sUrl.lastIndexOf("#");
+	if (iHashPos >= 0)
+	{
+		sFileString = sUrl.substr(0, iHashPos);
+		sNamespace = sUrl.substr(iHashPos + 1);
+	}
+	else {
+		sFileString = sUrl;
+	}
+}
+
 Material::Material() 
 	:	m_pCurrentTechnique(NULL)
 {
@@ -27,9 +41,17 @@ Material::~Material() {
 
 Material* Material::create(const char* url) {
 
+	// Create Material from the string which has a following format:
+	// res/sample.material#box
+	// Todo: eg: res/sample.material#box/technique/pass/sampler
+	CCString sUrlString = url;
+	CCString sFilenameString;
+	CCString sNamespace;
+	resolveFilenameAndMaterialNamespace(sUrlString, sFilenameString, sNamespace);
+
 	// Load the material properties from file.
 	MaterialReader* pMatReader = new MaterialReader();
-	Properties* pProperties = pMatReader->read(url);
+	Properties* pProperties = pMatReader->read(sFilenameString.c_str());
 	if(pProperties == NULL) {
 		GP_ERROR("Failed to create material from file");
 		return NULL;
@@ -37,7 +59,7 @@ Material* Material::create(const char* url) {
 
 	Material* pMaterial = NULL;
 	Properties* pMaterialNamespace = NULL;
-	pMaterialNamespace = pProperties->getNamespace("material", true);
+	pMaterialNamespace = pProperties->getNamespace(sNamespace.c_str());
 	if( pMaterialNamespace != NULL) {
 		
 		pMaterial = create( pMaterialNamespace );
@@ -52,7 +74,7 @@ Material* Material::create(const char* url) {
 Material* Material::create(Properties* pMaterialProperties) {
 
 	// Check if the Properties is valid and has a valid namespace.
-	if( !pMaterialProperties || ( !strcmp(pMaterialProperties->getNamespace(), "material") == 0 ) ) {
+	if( !pMaterialProperties || ( !strcmp(pMaterialProperties->getNamespaceType(), "material") == 0 ) ) {
 
 		GP_ERROR("Properties object must be non-null and have namespace equal to 'material'.");
 		return NULL;
@@ -65,7 +87,7 @@ Material* Material::create(Properties* pMaterialProperties) {
 	Properties* pTechniqueProperties = NULL;
 	while( pTechniqueProperties = pMaterialProperties->getNextNamespace() ) {
 
-		if( strcmp(pTechniqueProperties->getNamespace(), "technique") == 0 ) {
+		if( strcmp(pTechniqueProperties->getNamespaceType(), "technique") == 0 ) {
 
 			if( !loadTechnique(pMaterial, pTechniqueProperties) ) {
 
@@ -91,24 +113,26 @@ Material* Material::create(Properties* pMaterialProperties) {
 	return pMaterial;
 }
 
-Material* Material::create(/*Effect* effect*/) {
+Material* Material::create(Effect* pEffect) {
 
-	//GP_ASSERT(effect);
+	GP_ASSERT(pEffect);
 
 	// Create a new material with a single technique and pass for the given effect.
 	Material* material = new Material();
 
-	Technique* technique = new Technique(NULL, material);
+	Technique* technique = new Technique("", material);
 	material->m_vTechniques.push_back(technique);
 
-	Pass* pass = Pass::create(technique->getId(), technique);//, effect);
-	technique->m_vPasses.push_back(pass);
-	//effect->addRef();
+	Pass* pPass = new Pass(NULL, technique);
+	pPass->m_pEffect = pEffect;
+	technique->m_vPasses.push_back(pPass);
+	//pEffect->addRef();
 
 	material->m_pCurrentTechnique = technique;
 
 	return material;
 }
+
 
 bool Material::loadTechnique(Material* pMaterial, Properties* pTechniqueProperties) {
 	
@@ -123,7 +147,7 @@ bool Material::loadTechnique(Material* pMaterial, Properties* pTechniqueProperti
 	Properties* pPassProperties = NULL;
 	while( pPassProperties = pTechniqueProperties->getNextNamespace() ) {
 
-		if( strcmp(pPassProperties->getNamespace(), "pass") == 0 ) {
+		if( strcmp(pPassProperties->getNamespaceType(), "pass") == 0 ) {
 
 			// Create and load passes.
 			if( !loadPass(pTechnique, pPassProperties) ) {
@@ -159,15 +183,17 @@ bool Material::loadPass(Technique* pTechnique, Properties* pPassProperties) {
 	const char* sDefines = pPassProperties->getString("defines");
 
 	// Create the pass.
-	Pass* pPass = Pass::create(pTechnique->getId(), pTechnique);
-	if( !pPass) {
-
-		GP_ERROR("Failed to create pass for technique.");
-		return false;
-	}
+	Pass* pPass = new Pass(pTechnique->getId(), pTechnique);
 
 	// Load render state.
 	loadRenderState(pPass, pPassProperties);
+
+	if (!pPass->initialize(sVertexSahaderPath, sFragmentShaderPath, sDefines)) {
+
+		GP_ERROR("Failed to create pass for technique.");
+		SAFE_DELETE(pPass);
+		return false;
+	}
 
 	// Add the new pass to the technique.
 	pTechnique->m_vPasses.push_back(pPass);
@@ -224,6 +250,27 @@ static Texture::Filter parseTextureFilterMode(const char* str, Texture::Filter d
 	}
 }
 
+static bool isMaterialKeyword(const char* sKeyword) {
+
+	GP_ASSERT( sKeyword );
+
+	#define MATERIAL_KEYWORD_COUNT 3
+	static const char* reservedKeywords[MATERIAL_KEYWORD_COUNT] =
+	{
+		"vertexShader",
+		"fragmentShader",
+		"defines"
+	};
+
+	for (unsigned int i = 0; i < MATERIAL_KEYWORD_COUNT; i++) {
+		if (strcmp(sKeyword, reservedKeywords[i]) == 0) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void Material::loadRenderState(RenderState* pRenderState, Properties* pProperties) {
 
 	GP_ASSERT( pRenderState );
@@ -234,12 +281,66 @@ void Material::loadRenderState(RenderState* pRenderState, Properties* pPropertie
 
 	const char* sName;
 	// 1.
+	while ((sName = pProperties->getNextProperty())) {
+
+		// Skip the keywords
+		if (isMaterialKeyword(sName))
+			continue;
+
+		MaterialParameter* pMaterialParameter = pRenderState->getParameter(sName);
+
+		switch (pProperties->getType(sName)) {
+
+			case Properties::NUMBER:
+				GL_ASSERT(pMaterialParameter);
+				pMaterialParameter->setValue(pProperties->getFloat(sName));
+			break;
+			case Properties::VECTOR2:
+			{
+				Vector2 vector2;
+				if (pProperties->getVector2(sName, &vector2)) {
+					pMaterialParameter->setValue(vector2);
+				}
+			}
+			break;				
+			case Properties::VECTOR3:
+			{
+				Vector3 vector3;
+				if (pProperties->getVector3(sName, &vector3)) {
+					pMaterialParameter->setValue(vector3);
+				}
+			}
+			break;				
+			case Properties::VECTOR4:
+			{
+				Vector4 vector4;
+				if (pProperties->getVector4(sName, &vector4)) {
+					pMaterialParameter->setValue(vector4);
+				}
+			}
+			break;				
+			case Properties::MATRIX:
+			{
+				Matrix4 mat4;
+				if (pProperties->getMatrix(sName, &mat4)) {
+					pMaterialParameter->setValue(mat4);
+				}
+			}
+			break;
+			default:
+            {
+                // Assume this is a parameter auto-binding.
+				pRenderState->setParameterAutoBinding(sName, pProperties->getString(sName));
+            }
+            break;
+		}
+	}
 
 	// 2. Iterate through all child namespaces searching for samplers and render state blocks.
 	Properties* ns;
 	while( ns = pProperties->getNextNamespace()) {
 
-		if( strcmp(ns->getNamespace(), "sampler") == 0 ) {
+		if( strcmp(ns->getNamespaceType(), "sampler") == 0 ) {
 
 			// Read the texture uniform name.
 			sName = ns->getID();
@@ -267,19 +368,22 @@ void Material::loadRenderState(RenderState* pRenderState, Properties* pPropertie
 			Texture::Filter magFilter = parseTextureFilterMode(ns->getString("magFilter"), Texture::LINEAR);
 
 			// Set the sampler parameter.
-			GP_ASSERT( pRenderState->getParameter(sName) );
-			Texture::Sampler* pSampler = pRenderState->getparameter(sName)->setValue(sPath, bMipmap);
+			MaterialParameter* pMaterialParameter = pRenderState->getParameter(sName);
+			GP_ASSERT( pMaterialParameter );
+			Texture::Sampler* pSampler = pMaterialParameter->setValue(sPath, bMipmap);
 			GP_ASSERT( pSampler );
 			if(pSampler) {
 				pSampler->setWrapMode(wrapS, wrapT);
 				pSampler->setFilterMode(minFilter, magFilter);
-
-				((Pass*)pRenderState)->setSampler(pSampler);
 			}
 		}
 		else 
-		if( strcmp(ns->getNamespace(), "renderState") == 0 ) {
+		if( strcmp(ns->getNamespaceType(), "renderState") == 0 ) {
 
+			while ((sName = ns->getNextProperty())) {
+				GP_ASSERT(pRenderState->getStateBlock());
+				pRenderState->getStateBlock()->setState(sName, ns->getString(sName));
+			}
 		}
 	}
 }
@@ -320,5 +424,15 @@ void Material::setTechnique(const char* id) {
 	Technique* technique = getTechnique(id);
 	if(technique) {
 		m_pCurrentTechnique = technique;
+	}
+}
+
+void Material::setNodeBinding(Node* node) {
+
+	RenderState::setNodeBinding(node);
+
+	for (size_t i = 0, count = m_vTechniques.size(); i < count; ++i) {
+
+		m_vTechniques[i]->setNodeBinding(node);
 	}
 }

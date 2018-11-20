@@ -17,7 +17,7 @@ class Technique : public RenderState {
 		unsigned int	getPassCount() const;
 		Pass*			getPassByIndex(unsigned int index) const;
 		Pass*			getPass(const char* id) const;
-
+		void			setNodeBinding(Node* node);
 	private:
 		Technique(const char* id, Material* material);
 		Technique(const Technique&);
