@@ -174,7 +174,7 @@ Matrix4& Transform::getTransformedViewMatrix() {
 			m_Matrix.scale(m_vScale);
 		}
 
-				m_iDirty &= ~DIRTY_TRANSLATION & ~DIRTY_ROTATION & ~DIRTY_SCALE;
+		m_iDirty &= ~DIRTY_TRANSLATION & ~DIRTY_ROTATION & ~DIRTY_SCALE;
 	}
 
 	return m_Matrix;
@@ -192,10 +192,10 @@ Matrix4& Transform::getTransformedModelMatrix() {
 		bool bHasRotation = !m_vRotation.isZero();
 
 		if(bHasRotation || (m_iDirty & DIRTY_ROTATION) == DIRTY_ROTATION) {
-			m_Matrix.rotate(-m_vRotation);
+			m_Matrix.rotate(m_vRotation);
 
 			if(bHasTranslation || (m_iDirty & DIRTY_TRANSLATION) == DIRTY_TRANSLATION) {
-				m_Matrix.setTranslate(-m_vTranslation);
+				m_Matrix.setTranslate(m_vTranslation);
 			}
 
 			if(bHasScaling || (m_iDirty & DIRTY_SCALE) == DIRTY_SCALE) {
@@ -204,7 +204,7 @@ Matrix4& Transform::getTransformedModelMatrix() {
 		}
 		else
 		if(bHasTranslation || (m_iDirty & DIRTY_TRANSLATION) == DIRTY_TRANSLATION) {
-			m_Matrix.rotate(-m_vRotation);
+			m_Matrix.setTranslate(m_vTranslation);
 
 			if(bHasScaling || (m_iDirty & DIRTY_SCALE) == DIRTY_SCALE) {
 				m_Matrix.scale(m_vScale);

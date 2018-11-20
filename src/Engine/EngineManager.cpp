@@ -100,12 +100,20 @@ void EngineManager::setLMouseStatus(bool bPressed, int mouseX, int mouseY) {
 	m_pMouseManager->setLMouseStatus(bPressed, mouseX, mouseY);
 }
 
+void EngineManager::setMMouseStatus(bool bPressed, int mouseX, int mouseY) {
+	m_pMouseManager->setMMouseStatus(bPressed, mouseX, mouseY);
+}
+
 void EngineManager::setRMouseStatus(bool bPressed, int mouseX, int mouseY) {
 	m_pMouseManager->setRMouseStatus(bPressed, mouseX, mouseY);
 }
 
 void EngineManager::setMouseMove(WPARAM keyState, int mouseX, int mouseY) {
 	m_pMouseManager->setMouseMove(keyState, mouseX, mouseY);
+}
+
+MouseManager* EngineManager::getMouseManager() const {
+	return m_pMouseManager;
 }
 
 unsigned int EngineManager::getWidth() {

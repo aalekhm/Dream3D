@@ -67,6 +67,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 				m_pEngineManager->setLMouseStatus(false, LOWORD(lParam), HIWORD(lParam));
 			}
 			break;
+		case WM_MBUTTONDOWN:
+			{
+				m_pEngineManager->setMMouseStatus(true, LOWORD(lParam), HIWORD(lParam));
+			}
+			break;
+		case WM_MBUTTONUP:
+			{
+				m_pEngineManager->setMMouseStatus(false, LOWORD(lParam), HIWORD(lParam));
+			}
+			break;
 		case WM_RBUTTONDOWN:
 			{
 				m_pEngineManager->setRMouseStatus(true, LOWORD(lParam), HIWORD(lParam));
@@ -78,11 +88,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			}
 			break;
 		case WM_MOUSEMOVE:
+		case WM_MOUSEWHEEL:
 			{
 				m_pEngineManager->setMouseMove(wParam, LOWORD(lParam), HIWORD(lParam));
 			}
 			break;
-
 	}
 
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);

@@ -28,13 +28,17 @@ class EngineManager {
 		void			setViewport(int w, int h);
 		void			initTimer();
 		Timer*			getTimer();
+
 		static bool		isKeyPressed(int iKeyID);
 		void			setKeyPressed(int iKeyID);
 		void			setKeyReleased(int iKeyID);
 
 		void			setLMouseStatus(bool bPressed, int mouseX, int mouseY);
+		void			setMMouseStatus(bool bPressed, int mouseX, int mouseY);
 		void			setRMouseStatus(bool bPressed, int mouseX, int mouseY);
 		void			setMouseMove(WPARAM keyState, int mouseX, int mouseY);
+
+		MouseManager*	getMouseManager() const;
 
 		unsigned int	getWidth();
 		unsigned int	getHeight();

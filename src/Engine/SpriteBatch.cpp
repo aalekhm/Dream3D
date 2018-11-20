@@ -73,7 +73,7 @@ void SpriteBatch::stop() {
 	
 	// Finish and draw the batch
 	m_pMeshBatch->stop();
-	m_pMeshBatch->draw();
+	m_pMeshBatch->render();
 
 	// Disable Blending
 	GL_ASSERT( glDisable(GL_BLEND) );

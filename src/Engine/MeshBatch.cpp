@@ -123,6 +123,9 @@ bool MeshBatch::resize(unsigned int iCapacity) {
 }
 
 void MeshBatch::updateVertexAttributeBinding() {
+	if(m_pVertexAttributeBinding) {
+		SAFE_DELETE( m_pVertexAttributeBinding );
+	}
 
 	VertexAttributeBinding* b = VertexAttributeBinding::create(m_VertexFormat, m_pVertices);
 	GP_ASSERT( b );
@@ -171,7 +174,7 @@ void MeshBatch::stop() {
 
 }
 
-void MeshBatch::draw() {
+void MeshBatch::render() {
 	
 	if(m_iVertexCount == 0 || (m_bIndexed && m_iIndexCount == 0))
 		return;// Nothing to draw

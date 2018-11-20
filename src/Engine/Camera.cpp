@@ -257,11 +257,15 @@ void Camera::setCamera(float posX, float posY, float posZ, float targetX, float 
 }
 
 void Camera::handleMouse(float deltaTimeMs) {
-	int screenCenterX = EngineManager::getInstance()->getWidth()>>1;
-	int screenCenterY = EngineManager::getInstance()->getHeight()>>1;
+	EngineManager* pEngineManager = EngineManager::getInstance();
+	//MouseManager* pMouseManager = pEngineManager->getMouseManager();
+	int screenCenterX = pEngineManager->getWidth()>>1;
+	int screenCenterY = pEngineManager->getHeight()>>1;
 
 	POINT mousePos;
 	GetCursorPos(&mousePos);
+	//mousePos.x = pMouseManager->getMousePosX();
+	//mousePos.y = pMouseManager->getMousePosY();
 
 	//Mouse not moved, hence return;
 	if(mousePos.x == screenCenterX && mousePos.y == screenCenterY)
@@ -357,6 +361,10 @@ void Camera::handleKeyboard(float deltaTimeMs) {
 void Camera::update(float deltaTimeMs) {
 	handleKeyboard(deltaTimeMs);
 	handleMouse(deltaTimeMs);
+}
+
+Node* Camera::getNode() const {
+	return m_pNode;
 }
 
 void Camera::setNode(Node* node) {

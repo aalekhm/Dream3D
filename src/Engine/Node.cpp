@@ -1,10 +1,12 @@
+#include "Engine/Scene.h"
 #include "Engine/Node.h"
 #include "Engine/Model.h"
 #include "Engine/Camera.h"
 #include "Common/Matrices.h"
 
 Node::Node(const char* id)
-	:	m_pModel(NULL),
+	:	m_pScene(NULL),
+		m_pModel(NULL),
 		m_pCamera(NULL),
 		m_pParent(NULL),
 		m_pFirstChild(NULL),
@@ -16,7 +18,7 @@ Node::Node(const char* id)
 		m_MatrixWorld()
 {
 	if(id) {
-		m_sID = id;
+		setID(id);
 	}
 }
 
@@ -42,20 +44,43 @@ Node* Node::getParent() const{
 	return m_pParent;
 }
 
+void Node::setParent(Node* pParent) {
+	m_pParent = pParent;
+
+	Scene* pScene = pParent->getScene();
+	setScene(pScene);
+}
+
 Node* Node::getFirstChild() const {
 	return m_pFirstChild;
+}
+
+void Node::setFirstChild(Node* pNode) {
+	m_pFirstChild = pNode;
 }
 
 Node* Node::getLastChild() const {
 	return m_pLastChild;
 }
 
+void Node::setLastChild(Node* pNode) {
+	m_pLastChild = pNode;
+}
+
 Node* Node::getNextSibling() const {
 	return m_pNextSibling;
 }
 
+void Node::setNextSibling(Node* pNode) {
+	m_pNextSibling = pNode;;
+}
+
 Node* Node::getPrevSibling() const {
 	return m_pPrevSibling;
+}
+
+void Node::setPrevSibling(Node* pNode) {
+	m_pPrevSibling = pNode;
 }
 
 Node* Node::getRootNode() const {
@@ -78,14 +103,14 @@ void Node::addChild(Node* pChild) {
 	}
 
 	if(m_pFirstChild) {
-		m_pFirstChild->m_pPrevSibling = pChild;
-		pChild->m_pNextSibling = m_pFirstChild;
-		m_pFirstChild = pChild;
+		m_pFirstChild->setPrevSibling(pChild);
+		pChild->setNextSibling(m_pFirstChild);
+		setFirstChild(pChild);
 	}
 	else 
-		m_pFirstChild = pChild;
+		setFirstChild(pChild);
 
-	pChild->m_pParent = this;
+	pChild->setParent(this);
 	m_iChildCount++;
 }
 
@@ -100,16 +125,16 @@ void Node::removeChild(Node* pChild) {
 
 void Node::remove() {
 	if(m_pPrevSibling) {
-		m_pPrevSibling->m_pNextSibling = m_pNextSibling;
+		m_pPrevSibling->setNextSibling(m_pNextSibling);
 	}
 	if(m_pNextSibling) {
-		m_pNextSibling->m_pPrevSibling = m_pPrevSibling;
+		m_pNextSibling->setPrevSibling(m_pPrevSibling);
 	}
 
 	Node* pParent = m_pParent;
 	if(pParent) {
 		if(this == pParent->m_pFirstChild) {
-			pParent->m_pFirstChild = m_pNextSibling;
+			pParent->setFirstChild(m_pNextSibling);
 		}
 
 		--pParent->m_iChildCount;
@@ -154,8 +179,8 @@ Matrix4& Node::getWorldMatrix() {
 	// transform to obtain our final resolved world transform.
 	Node* parent = getParent();
 	if (parent) {
-		Matrix4::multiply(	parent->getWorldMatrix(), 
-							(m_pCamera)?getTransformedViewMatrix():getTransformedModelMatrix(), 
+		Matrix4::multiply(	(m_pCamera)?getTransformedViewMatrix():getTransformedModelMatrix(),
+							parent->getWorldMatrix(),
 							&m_MatrixWorld);
 	}
 	else
@@ -172,6 +197,16 @@ Matrix4& Node::getWorldViewMatrix() {
 	Matrix4::multiply(getViewMatrix(), getWorldMatrix(), &worldView);
 
 	return worldView;
+}
+
+Scene* Node::getScene() const {
+	return m_pScene;
+}
+
+void Node::setScene(Scene* pScene) {
+	GP_ASSERT( pScene );
+	
+	m_pScene = pScene;
 }
 
 Model* Node::getModel() const {
@@ -214,7 +249,18 @@ void Node::setCamera(Camera* pCamera) {
 
 void Node::render(bool bWireframe) {
 	if(m_pModel) {
+		Scene* pScene = getScene();
+		Node* pCameraNode = pScene->getActiveCamera()->getNode();
+
+		Matrix4 worldView = Matrix4::identity();
+		worldView = pCameraNode->getViewMatrix() * getWorldMatrix();
+		glLoadMatrixf(worldView.getTranspose());
+
 		m_pModel->draw(bWireframe);
+
+		for(Node* node = m_pFirstChild; node != NULL; node = node->getNextSibling()) {
+			node->render(bWireframe);
+		}
 	}
 }
 

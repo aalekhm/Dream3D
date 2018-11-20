@@ -41,6 +41,9 @@ Node* lineModelNode;
 Node* createCubeModelIndexedNode(float size);
 Node* cubeModelNode;
 
+Node* createQuadIndexedNode();
+Node* quadModelNode;
+
 SpriteBatch* createSpriteBatch();
 SpriteBatch* spriteBatch;
 
@@ -66,6 +69,8 @@ Vector3 randomColor() {
 MeshBatch* meshBatch;
 MeshBatch* createMeshBatch();
 std::vector<MeshBatchVertex> _meshBatchVertices;
+unsigned short* _indices = NULL;
+unsigned int _indicesCount = 0;
 /////////////////////////////////////////
 
 bool loadTexture(char* sTexName, GLuint &texid, GLuint* texWH) {
@@ -111,22 +116,36 @@ Dream3DTest::~Dream3DTest() {
 }
 
 void Dream3DTest::initialize() {
+	m_pScene = Scene::create();
+
 	Camera* pCamera = Camera::createPerspective(0, 0, getWidth(), getHeight(), 45.0f, 0.01f, 10.0f);
-	m_pCameraNode = Node::create("FirstPersonShooterCamera");
-	m_pCameraNode->setCamera(pCamera);
+	Node* pCameraNode = Node::create("FirstPersonShooterCamera");
+	pCameraNode->setCamera(pCamera);
+	m_pScene->addNode(pCameraNode);
 
 	glEnable(GL_DEPTH_TEST);
 
 	triangleModelNode = createTriangleModelNode();
+	m_pScene->addNode(triangleModelNode);
+
 	triangleStripModelNode = createTriangleStripModelNode();
+	m_pScene->addNode(triangleStripModelNode);
 	
 	lineStripModelNode = createLineStripModelNode();
+	m_pScene->addNode(lineStripModelNode);
 
 	lineModelNode = createLineModelNode();
+	m_pScene->addNode(lineModelNode);
+
+	quadModelNode = createQuadIndexedNode();
 
 	cubeModelNode = createCubeModelIndexedNode(0.25f);
-	cubeModelNode->rotateY(45.0f);
-	cubeModelNode->setPosition(Vector3(2.0f, 0.0f, 0.0f));
+	cubeModelNode->rotateY(0.0f);
+	cubeModelNode->setPosition(Vector3(2.0f, 0.0f, -1.0f));
+	m_pScene->addNode(cubeModelNode);
+		quadModelNode->setPosition(Vector3(-1.0f, 0.0f, 0.0f));
+		quadModelNode->rotateY(45.0f);
+	cubeModelNode->addChild(quadModelNode);
 
 	meshBatch = createMeshBatch();
 	spriteBatch = createSpriteBatch();
@@ -420,6 +439,49 @@ Node* createCubeModelIndexedNode(float size = 1.0f) {
 	return pNode;
 }
 
+Node* createQuadIndexedNode() {
+	float vertices[] =
+	{
+		-0.5f, 0.5f, 0.0f,		0.0f, 0.0f,
+		-0.5f, -0.5f, 0.0f,		0.0f, 1.0f,
+		0.5f, -0.5f, 0.0f,		1.0f, 1.0f,
+		0.5f, 0.5f, 0.0f,		1.0f, 0.0f
+	};
+
+	short indices[] = 
+	{
+		0, 1, 3, 3, 1, 2
+	};
+
+	unsigned int vertexCount = 4;
+	unsigned int indexCount = sizeof(indices) / sizeof(short);
+	VertexFormat::Element elements[] = 
+	{
+		VertexFormat::Element(VertexFormat::POSITION, 3),
+		VertexFormat::Element(VertexFormat::TEXCOORD0, 2)
+	};
+	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
+
+	Mesh* mesh = Mesh::createMesh(VertexFormat(elements, elementCount), vertexCount, false);
+	if(mesh == NULL) {
+		//GP_ERROR("Unable to create Mesh");
+		return NULL;
+	}
+	mesh->setPrimitiveType(Mesh::TRIANGLES);
+	mesh->setVertexData(vertices, 0, vertexCount);
+
+	MeshPart* meshPart = mesh->addMeshPart(Mesh::TRIANGLES, Mesh::INDEX16, indexCount, false);
+	meshPart->setIndexData(indices, 0, indexCount);
+
+	Model* pModel = Model::create(mesh);
+	pModel->setTexture("data/cartoon.tga");
+
+	Node* pNode = Node::create("QuadIndexedModel");
+	pNode->setModel(pModel);
+
+	return pNode;
+}
+
 MeshBatch* createMeshBatch() {
 	VertexFormat::Element elements[] = 
 	{
@@ -429,20 +491,28 @@ MeshBatch* createMeshBatch() {
 	};
 	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
 	VertexFormat* vf = new VertexFormat(elements, elementCount);
-	MeshBatch* mb = MeshBatch::create(*vf, Mesh::TRIANGLES, false);
+	MeshBatch* mb = MeshBatch::create(*vf, Mesh::TRIANGLES, true);
 	
 	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(0, 0.5f, -0.5f), randomColor(), 0.0f, 0.0f));
 	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(-0.5f, -0.5f, -0.5f), randomColor(), 0.0f, 1.0f));
 	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(0.5f, -0.5f, -0.5f), randomColor(), 1.0f, 1.0f));
 
 	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(0, 0.5f, -1.5f), randomColor(), 0.0f, 0.0f));
-	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(-0.5f, -0.5f, -0.5f), randomColor(), 0.0f, 1.0f));
-	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(0.5f, -0.5f, -0.5f), randomColor(), 1.0f, 1.0f));
+	//_meshBatchVertices.push_back(MeshBatchVertex(Vector3(-0.5f, -0.5f, -0.5f), randomColor(), 0.0f, 1.0f));
+	//_meshBatchVertices.push_back(MeshBatchVertex(Vector3(0.5f, -0.5f, -0.5f), randomColor(), 1.0f, 1.0f));
 
 	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(0, 0.5f, 1.5f), randomColor(), 0.0f, 0.0f));
-	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(-0.5f, -0.5f, -0.5f), randomColor(), 0.0f, 1.0f));
-	_meshBatchVertices.push_back(MeshBatchVertex(Vector3(0.5f, -0.5f, -0.5f), randomColor(), 1.0f, 1.0f));
+	//_meshBatchVertices.push_back(MeshBatchVertex(Vector3(-0.5f, -0.5f, -0.5f), randomColor(), 0.0f, 1.0f));
+	//_meshBatchVertices.push_back(MeshBatchVertex(Vector3(0.5f, -0.5f, -0.5f), randomColor(), 1.0f, 1.0f));
 
+	unsigned int triangleCount = 3;
+	unsigned int indexCount = triangleCount * 3;
+	unsigned short indices[] = {0, 1, 2, 3, 1, 2, 4, 1, 2};
+	_indices = new unsigned short[indexCount];
+	memcpy(_indices, indices, sizeof(unsigned short) * indexCount);
+
+	_indicesCount = indexCount;
+	
 	mb->setTexture("data/cartoon.tga");
 
 	return mb;
@@ -459,23 +529,21 @@ void Dream3DTest::update(float deltaTimeMs) {
 	if(isKeyPressed(VK_ESCAPE))
 		exit();
 
-	m_pCameraNode->getCamera()->update(deltaTimeMs);
+	m_pScene->getActiveCamera()->update(deltaTimeMs);
 }
 
 static float rAngle = 0.0f;
 const float ROTATION_PER_SECOND = 0.25*0.36f;//360deg/sec = 360/1000;
 
-void Dream3DTest::render(float deltaTimeMs) {
-	glClearColor(0.1f, 0.1f, 0.1f, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
-
-	m_pCameraNode->getCamera()->setType(Camera::PERSPECTIVE);
+void Dream3DTest::render3D(float deltaTimeMs) {
+	Camera* pCamera = m_pScene->getActiveCamera();
+	pCamera->setType(Camera::PERSPECTIVE);
 
 	//No Transformations to the World(grid) & triangle hence load the 'view matrix'.
-	glLoadMatrixf(m_pCameraNode->getViewMatrix().getTranspose());
+	glLoadMatrixf(pCamera->getNode()->getViewMatrix().getTranspose());
 	drawGrid(10, 0.5);
 	drawTriangle(Vector3(0, 0.5f, -1.5f), Vector3(-0.5f, 0, -1.5f), Vector3(0.5f, 0, -1.5f));
-	
+
 	glColor3f(1.0f, 1.0f, 1.0f);
 
 	glEnable(GL_TEXTURE_2D);
@@ -496,28 +564,22 @@ void Dream3DTest::render(float deltaTimeMs) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 	////////////////////////////////////////////////////////////////
-	//triangleModelNode->getModel()->draw(!true);
-
-	//triangleStripModelNode->getModel()->draw(!true);
-
-	//lineStripModelNode->getModel()->draw();
-
-	//lineModelNode->getModel()->draw();
-	
 	cubeModelNode->translateForward(0.0001f * deltaTimeMs);
-	Matrix4 worldView = Matrix4::identity();
-	worldView = m_pCameraNode->getViewMatrix() * cubeModelNode->getWorldMatrix();
-	glLoadMatrixf(worldView.getTranspose());
-	cubeModelNode->render(!true);
-	
-	// Draw all of the triangles as one mesh batch.
-	//meshBatch->start();
-	//meshBatch->add(&_meshBatchVertices[0], (unsigned int)_meshBatchVertices.size());
-	//meshBatch->stop();
-	//meshBatch->draw();
-	////////////////////////////////////////////////////////////////
+	quadModelNode->rotateY(0.001f * rAngle);
+	m_pScene->render();
 
-	m_pCameraNode->getCamera()->setType(Camera::ORTHOGRAPHIC);
+	glLoadMatrixf(pCamera->getNode()->getViewMatrix().getTranspose());
+	// Draw all of the triangles as one mesh batch.
+	meshBatch->start();
+	meshBatch->add(&_meshBatchVertices[0], (unsigned int)_meshBatchVertices.size(), _indices, _indicesCount);
+	meshBatch->stop();
+	meshBatch->render();
+	////////////////////////////////////////////////////////////////
+}
+
+void Dream3DTest::render2D(float deltaTimeMs) {
+	Camera* pCamera = m_pScene->getActiveCamera();
+	pCamera->setType(Camera::ORTHOGRAPHIC);
 
 	Vector4 src(0, 0, 900.0f, 695.0f);
 	spriteBatch->setClip(0, 0, getWidth(), getHeight());
@@ -542,20 +604,10 @@ void Dream3DTest::render(float deltaTimeMs) {
 	if(rAngle >= 360.0f) rAngle = 0.0f;
 }
 
+void Dream3DTest::render(float deltaTimeMs) {
+	glClearColor(0.1f, 0.1f, 0.1f, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	render3D(deltaTimeMs);
+	render2D(deltaTimeMs);
+}

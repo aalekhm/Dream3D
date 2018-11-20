@@ -5,6 +5,7 @@
 #include "Engine/Transform.h"
 #include <Common/CCString.h>
 
+class Scene;
 class Camera;
 class Model;
 struct Matrix4;
@@ -13,10 +14,14 @@ class Node : public Transform {
 
 	public:
 		Node(const char* id);
+		virtual ~Node();
 
 		static Node*	create(const char* id);
 		void			setID(const char* id);
 		const char*		getID();
+
+		Scene*			getScene() const;
+		void			setScene(Scene* pScene);
 
 		Model*			getModel() const;
 		void			setModel(Model* pModel);
@@ -26,10 +31,15 @@ class Node : public Transform {
 
 		unsigned int	getChildCount() const;
 		Node*			getParent() const;
+		void			setParent(Node* pParent);
 		Node*			getFirstChild() const;
+		void			setFirstChild(Node* pNode);
 		Node*			getLastChild() const;
+		void			setLastChild(Node* pNode);
 		Node*			getNextSibling() const;
+		void			setNextSibling(Node* pNode);
 		Node*			getPrevSibling() const;
+		void			setPrevSibling(Node* pNode);
 		Node*			getRootNode() const;
 
 		void			addChild(Node* pChild);
@@ -43,9 +53,12 @@ class Node : public Transform {
 		Matrix4&		getWorldViewMatrix();
 
 		void			render(bool bWireframe);
-	private:
-		virtual ~Node();
 
+	protected:
+		Scene*			m_pScene;
+		Node*			m_pNextSibling;
+		Node*			m_pPrevSibling;
+	private:
 		CCString		m_sID;
 
 		Model*			m_pModel;
@@ -55,9 +68,6 @@ class Node : public Transform {
 		Node*			m_pFirstChild;
 		Node*			m_pLastChild;
 		unsigned int	m_iChildCount;
-
-		Node*			m_pNextSibling;
-		Node*			m_pPrevSibling;
 
 		Matrix4			m_MatrixWorld;
 };

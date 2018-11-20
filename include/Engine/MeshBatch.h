@@ -23,7 +23,7 @@ class MeshBatch {
 
 		void start();
 		void stop();
-		void draw();
+		void render();
 
 		void					setTexture(const char* path, bool generateMipmaps = false);
 		void					setTexture(Texture* pTexture, bool generateMipmaps = false);

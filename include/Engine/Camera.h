@@ -49,6 +49,7 @@ class Camera {
 		void			handleKeyboard(float deltaTimeMs);
 		void			handleMouse(float deltaTimeMs);
 
+		Node*			getNode() const;
 		void			setNode(Node* node);
 		void			setDirty(int iDirty);
 	private:
