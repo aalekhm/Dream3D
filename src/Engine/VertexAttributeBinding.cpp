@@ -103,7 +103,7 @@ VertexAttributeBinding*	VertexAttributeBinding::create(Mesh* mesh, const VertexF
 		VertexAttribute* vertexAttribs = new VertexAttribute[__maxVertexAttributes];
 		for(unsigned int i = 0; i < __maxVertexAttributes; i++) {
 			//Set GL defauts
-			vertexAttribs[i].m_bEnabled = true;
+			vertexAttribs[i].m_bEnabled = false;
 			vertexAttribs[i].m_iSize = 4;
 			vertexAttribs[i].m_Type = GL_FLOAT;
 			vertexAttribs[i].m_bNormalized = false;
@@ -116,6 +116,9 @@ VertexAttributeBinding*	VertexAttributeBinding::create(Mesh* mesh, const VertexF
 
 	if(mesh) {
 		b->m_pMesh = mesh;
+
+		// Bind the Mesh VBO so that out glVertexAttribPointer calls use it.
+		GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, mesh->getVertexBuffer()) );
 	}
 
 	//b->_effect = effect;
@@ -169,6 +172,10 @@ VertexAttributeBinding*	VertexAttributeBinding::create(Mesh* mesh, const VertexF
 		offset += e.size * sizeof(float);
 	}
 
+	if(mesh) {
+		GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, 0) );
+	}
+
 	if(b->m_hVAO) {
 		GL_ASSERT( glBindVertexArray(0) );
 	}
@@ -211,6 +218,54 @@ void VertexAttributeBinding::bind() {
 			GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, 0) );
 		}
 
+#ifdef USE_VERTEX_POINTERS
+		unsigned int offset = 0;
+		const VertexFormat& vertexFormat = m_pMesh->getVertexFormat();
+		for(int i = 0, count = vertexFormat.getElementCount(); i < count; i++) {
+			const VertexFormat::Element& element = vertexFormat.getElement(i);
+
+			switch(element.type) {
+				case VertexFormat::POSITION:
+					GL_ASSERT( glEnableClientState(GL_VERTEX_ARRAY) );
+					GL_ASSERT( glVertexPointer(element.size, GL_FLOAT, vertexFormat.getVertexSize(), (void*)(sizeof(float) * offset)) );
+					break;
+				case VertexFormat::NORMAL:
+					break;
+				case VertexFormat::COLOR:
+					GL_ASSERT( glEnableClientState(GL_COLOR_ARRAY) );
+					GL_ASSERT( glColorPointer(element.size, GL_FLOAT, vertexFormat.getVertexSize(), (void*)(sizeof(float) * offset)) );
+					break;
+				case VertexFormat::TANGENT:
+					break;
+				case VertexFormat::BINORMAL:
+					break;
+				case VertexFormat::BLENDWEIGHTS:
+					break;
+				case VertexFormat::BLENDINDICES:
+					break;
+				case VertexFormat::TEXCOORD0:
+					GL_ASSERT( glEnableClientState(GL_TEXTURE_COORD_ARRAY) );
+					GL_ASSERT( glTexCoordPointer(element.size, GL_FLOAT, vertexFormat.getVertexSize(), (void*)(sizeof(float) * offset)) );
+					break;
+				case VertexFormat::TEXCOORD1:
+					break;
+				case VertexFormat::TEXCOORD2:
+					break;
+				case VertexFormat::TEXCOORD3:
+					break;
+				case VertexFormat::TEXCOORD4:
+					break;
+				case VertexFormat::TEXCOORD5:
+					break;
+				case VertexFormat::TEXCOORD6:
+					break;
+				case VertexFormat::TEXCOORD7:
+					break;
+			}
+
+			offset += element.size;
+		}
+#else
 		GL_ASSERT( m_pAttributes );
 		for(unsigned int i = 0; i < __maxVertexAttributes; i++) {
 			VertexAttribute& a = m_pAttributes[i];
@@ -219,6 +274,7 @@ void VertexAttributeBinding::bind() {
 				GL_ASSERT( glEnableVertexAttribArray(i) );
 			}
 		}
+#endif
 	}
 }
 
@@ -233,11 +289,54 @@ void VertexAttributeBinding::unbind() {
 			GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, 0) );
 		}
 
+#ifdef USE_VERTEX_POINTERS
+		const VertexFormat& vertexFormat = m_pMesh->getVertexFormat();
+		for(int i = 0, count = vertexFormat.getElementCount(); i < count; i++) {
+			const VertexFormat::Element& element = vertexFormat.getElement(i);
+
+			switch(element.type) {
+				case VertexFormat::POSITION:
+					GL_ASSERT( glDisableClientState(GL_VERTEX_ARRAY) );
+					break;
+				case VertexFormat::NORMAL:
+					break;
+				case VertexFormat::COLOR:
+					GL_ASSERT( glDisableClientState(GL_COLOR_ARRAY) );
+					break;
+				case VertexFormat::TANGENT:
+					break;
+				case VertexFormat::BINORMAL:
+					break;
+				case VertexFormat::BLENDWEIGHTS:
+					break;
+				case VertexFormat::BLENDINDICES:
+					break;
+				case VertexFormat::TEXCOORD0:
+					GL_ASSERT( glDisableClientState(GL_TEXTURE_COORD_ARRAY) );
+					break;
+				case VertexFormat::TEXCOORD1:
+					break;
+				case VertexFormat::TEXCOORD2:
+					break;
+				case VertexFormat::TEXCOORD3:
+					break;
+				case VertexFormat::TEXCOORD4:
+					break;
+				case VertexFormat::TEXCOORD5:
+					break;
+				case VertexFormat::TEXCOORD6:
+					break;
+				case VertexFormat::TEXCOORD7:
+					break;
+			}
+		}
+#else
 		GL_ASSERT( m_pAttributes );
 		for(unsigned int i = 0; i < __maxVertexAttributes; i++) {
 			if(m_pAttributes[i].m_bEnabled) {
 				GL_ASSERT( glDisableVertexAttribArray(i) );
 			}
 		}
+#endif
 	}
 }

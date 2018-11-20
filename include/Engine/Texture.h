@@ -41,9 +41,13 @@ class Texture {
 		};
 
 		static Texture* create(const char* path, bool generateMipmaps = false);
+		static Texture* createEx(const char* path, bool generateMipmaps = false);
 		static Texture* create(Image* image, bool generateMipmaps = false);
 		static Texture* create(Format format, unsigned int width, unsigned int height, unsigned char* data, bool generateMipmaps = false);
 		static Texture* create(GLuint handle, int width, int height, Format format = UNKNOWN);
+
+		static Texture*	createTGA(const char* path, bool generateMipmaps);
+
 		Format getFormat() const;
 		unsigned int getWidth() const;
 		unsigned int getHeight() const;
@@ -57,6 +61,7 @@ class Texture {
 
 		void bind();
 		void unbind();
+		GLuint			m_hTexture;
 	private:
 		/**
 		* Constructor.
@@ -79,7 +84,7 @@ class Texture {
 		Texture& operator=(const Texture&);
 		
 		std::string		m_sPath;
-		GLuint			m_hTexture;
+		
 		Format			m_Format;
 		unsigned int	m_iWidth;
 		unsigned int	m_iHeight;

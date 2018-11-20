@@ -23,9 +23,8 @@ Mesh* lineMesh;
 Mesh* createCubeMeshIndexed(float size);
 Mesh* cubeMeshIndexed;
 
-Texture* texture;
-GLuint texID;
-GLuint textureWH[1][1];
+GLuint texID[2];
+GLuint textureWH[2][2];
 
 bool loadTexture(char* sTexName, GLuint &texid, GLuint* texWH) {
 	TGAImg Img;        // Image loader
@@ -34,7 +33,7 @@ bool loadTexture(char* sTexName, GLuint &texid, GLuint* texWH) {
 	if(Img.Load(sTexName) != IMG_OK)
 		return false;
 
-	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, &texid);
 	glBindTexture(GL_TEXTURE_2D, texid); // Set our Tex handle as current
 
 	// Specify filtering and edge actions
@@ -48,11 +47,11 @@ bool loadTexture(char* sTexName, GLuint &texid, GLuint* texWH) {
 		glTexImage2D(GL_TEXTURE_2D, 0, 3, Img.GetWidth(), Img.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, Img.GetImg());
 	}
 	else 
-		if(Img.GetBPP() == 32){
-			glTexImage2D(GL_TEXTURE_2D, 0, 4, Img.GetWidth(), Img.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, Img.GetImg());
-		}
-		else
-			return false;
+	if(Img.GetBPP() == 32){
+		glTexImage2D(GL_TEXTURE_2D, 0, 4, Img.GetWidth(), Img.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, Img.GetImg());
+	}
+	else
+		return false;
 
 	texWH[0] = Img.GetWidth();
 	texWH[1] = Img.GetHeight();
@@ -76,12 +75,13 @@ void Dream3DTest::initialize() {
 
 	triangleMesh = createTriangleMesh();
 	triangleStripMesh = createTriangleStripMesh();
+	
 	lineStripMesh = createLineStripMesh();
 	lineMesh = createLineMesh();
 	cubeMeshIndexed = createCubeMeshIndexed(0.25f);
 
-	texture = Texture::create("data/core.tga");
-	//loadTexture("data/core.tga", texID, textureWH[0]);
+	loadTexture("data/ColorFul_2048x1300.tga", texID[0], textureWH[0]);
+	loadTexture("data/core.tga", texID[1], textureWH[1]);
 }
 
 void Dream3DTest::update(float deltaTimeMs) {
@@ -137,7 +137,7 @@ void Dream3DTest::drawLine(const Vector3& p1, const Vector3& p2) {
 
 Mesh* createTriangleMesh()
 {
-	// Calculate the vertices of the equilateral triangle.
+	// Calculate the vertices of the triangle.
 	Vector3 p1(-0.5f,	0.5f,	-1.0f);
 	Vector3 p2(-1.0f,	0,		-1.0f);
 	Vector3 p3(-0.5f,	0,		-1.0f);
@@ -145,15 +145,16 @@ Mesh* createTriangleMesh()
 	// Create 3 vertices. Each vertex has position (x, y, z) and color (red, green, blue)
 	float vertices[] =
 	{
-		p1.x, p1.y, -0.5f,    0.0f, 1.0f, 0.0f,
-		p2.x, p2.y, 0.0f,     1.0f, 0.0f, 0.0f,
-		p3.x, p3.y, 0.0f,     0.0f, 0.0f, 1.0f,
+		p1.x, p1.y, -0.5f,    0.0f, 1.0f, 0.0f,		0.0f, 0.0f,		
+		p2.x, p2.y, 0.0f,     1.0f, 0.0f, 0.0f,		0.0f, 1.0f,		
+		p3.x, p3.y, 0.0f,     0.0f, 0.0f, 1.0f,		1.0f, 1.0f,		
 	};
 	unsigned int vertexCount = 3;
 	VertexFormat::Element elements[] =
 	{
 		VertexFormat::Element(VertexFormat::POSITION, 3),
-		VertexFormat::Element(VertexFormat::COLOR, 3)
+		VertexFormat::Element(VertexFormat::COLOR, 3),
+		VertexFormat::Element(VertexFormat::TEXCOORD0, 2),
 	};
 	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
 	Mesh* mesh = Mesh::createMesh(VertexFormat(elements, elementCount), vertexCount, false);
@@ -170,6 +171,7 @@ Mesh* createTriangleMesh()
 	GL_ASSERT( b );
 
 	mesh->setVertexAttributeBinding(b);
+	mesh->setTexture("data/ColorFul_2048x1300.tga");
 
 	return mesh;
 }
@@ -205,21 +207,22 @@ Mesh* createTriangleStripMesh() {
 	//};
 	float vertices[] =
 	{
-		0.0f,	0.5f, -0.5f,    0.0f, 0.0f, 1.0f,
-		0.0f,	0.0f, -0.5f,    0.0f, 1.0f, 0.0f,
-		0.5f,	0.5f,  0.0f,    1.0f, 0.0f, 0.0f,
+		0.0f,	0.5f, -0.5f,    0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
+		0.0f,	0.0f, -0.5f,    0.0f, 1.0f, 0.0f,	0.0f, 1.0f,
+		0.5f,	0.5f,  0.0f,    1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
 
-		0.5f,	0.0f, -0.5f,    0.0f, 0.0f, 0.5f,
+		0.5f,	0.0f, -0.5f,    0.0f, 0.0f, 0.5f,	0.0f, 0.0f,
 
-		1.0f,	0.5f, -0.5f,    0.0f, 0.5f, 0.0f,
+		1.0f,	0.5f, -0.5f,    0.0f, 0.5f, 0.0f,	0.0f, 1.0f,
 
-		1.0f,	0.0f, 0.0f,     0.5f, 0.0f, 0.0f,
+		1.0f,	0.0f, 0.0f,     0.5f, 0.0f, 0.0f,	1.0f, 1.0f,
 	};
 	unsigned int vertexCount = 6;
 	VertexFormat::Element elements[] =
 	{
 		VertexFormat::Element(VertexFormat::POSITION, 3),
-		VertexFormat::Element(VertexFormat::COLOR, 3)
+		VertexFormat::Element(VertexFormat::COLOR, 3),
+		VertexFormat::Element(VertexFormat::TEXCOORD0, 2),
 	};
 	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
 	Mesh* mesh = Mesh::createMesh(VertexFormat(elements, elementCount), vertexCount, false);
@@ -236,6 +239,7 @@ Mesh* createTriangleStripMesh() {
 	GL_ASSERT( b );
 
 	mesh->setVertexAttributeBinding(b);
+	mesh->setTexture("data/cartoon.tga");
 
 	return mesh;
 }
@@ -309,30 +313,30 @@ Mesh* createCubeMeshIndexed(float size = 1.0f) {
 	float a = size * 0.5f;
 	float vertices[] =
 	{
-		-a, -a,  a,   /* 0.0,  0.0,  1.0,*/   1.0, 0.0, 0.0,	/*0.0, 0.0,*/
-		 a, -a,  a,   /* 0.0,  0.0,  1.0,*/   0.0, 1.0, 0.0,	/*1.0, 0.0,*/
-		-a,  a,  a,   /* 0.0,  0.0,  1.0,*/   0.0, 0.0, 1.0,	/*0.0, 1.0,*/
-		 a,  a,  a,   /* 0.0,  0.0,  1.0,*/   1.0, 1.0, 0.0,	/*1.0, 1.0,*/
-		-a,  a,  a,   /* 0.0,  1.0,  0.0,*/   0.0, 1.0, 1.0,	/*0.0, 0.0,*/
-		 a,  a,  a,   /* 0.0,  1.0,  0.0,*/   1.0, 0.0, 1.0,	/*1.0, 0.0,*/
-		-a,  a, -a,   /* 0.0,  1.0,  0.0,*/   0.0, 1.0, 0.0,	/*0.0, 1.0,*/
-		 a,  a, -a,   /* 0.0,  1.0,  0.0,*/   1.0, 0.0, 0.0,	/*1.0, 1.0,*/
-		-a,  a, -a,   /* 0.0,  0.0, -1.0,*/   0.0, 0.0, 1.0,	/*0.0, 0.0,*/
-		 a,  a, -a,   /* 0.0,  0.0, -1.0,*/   0.0, 1.0, 1.0,	/*1.0, 0.0,*/
-		-a, -a, -a,   /* 0.0,  0.0, -1.0,*/   1.0, 1.0, 0.0,	/*0.0, 1.0,*/
-		 a, -a, -a,   /* 0.0,  0.0, -1.0,*/   0.0, 1.0, 1.0,	/*1.0, 1.0,*/
-		-a, -a, -a,   /* 0.0, -1.0,  0.0,*/   1.0, 0.0, 1.0,	/*0.0, 0.0,*/
-		 a, -a, -a,   /* 0.0, -1.0,  0.0,*/   1.0, 1.0, 0.0,	/*1.0, 0.0,*/
-		-a, -a,  a,   /* 0.0, -1.0,  0.0,*/   0.0, 1.0, 0.0,	/*0.0, 1.0,*/
-		 a, -a,  a,   /* 0.0, -1.0,  0.0,*/   1.0, 1.0, 0.0,	/*1.0, 1.0,*/
-		 a, -a,  a,   /* 1.0,  0.0,  0.0,*/   1.0, 0.0, 1.0,	/*0.0, 0.0,*/
-		 a, -a, -a,   /* 1.0,  0.0,  0.0,*/   1.0, 0.0, 1.0,	/*1.0, 0.0,*/
-		 a,  a,  a,   /* 1.0,  0.0,  0.0,*/   0.0, 1.0, 1.0,	/*0.0, 1.0,*/
-		 a,  a, -a,   /* 1.0,  0.0,  0.0,*/   1.0, 1.0, 1.0,	/*1.0, 1.0,*/
-		-a, -a, -a,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	/*0.0, 0.0,*/
-		-a, -a,  a,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	/*1.0, 0.0,*/
-		-a,  a, -a,   /*-1.0,  0.0,  0.0,*/   0.0, 1.0, 1.0,	/*0.0, 1.0,*/
-		-a,  a,  a,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	/*1.0, 1.0 */
+		-a, -a,  a,   /* 0.0,  0.0,  1.0,*/   1.0, 0.0, 0.0,	0.0, 0.0,
+		 a, -a,  a,   /* 0.0,  0.0,  1.0,*/   0.0, 1.0, 0.0,	1.0, 0.0,
+		-a,  a,  a,   /* 0.0,  0.0,  1.0,*/   0.0, 0.0, 1.0,	0.0, 1.0,
+		 a,  a,  a,   /* 0.0,  0.0,  1.0,*/   1.0, 1.0, 0.0,	1.0, 1.0,
+		-a,  a,  a,   /* 0.0,  1.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 0.0,
+		 a,  a,  a,   /* 0.0,  1.0,  0.0,*/   1.0, 0.0, 1.0,	1.0, 0.0,
+		-a,  a, -a,   /* 0.0,  1.0,  0.0,*/   0.0, 1.0, 0.0,	0.0, 1.0,
+		 a,  a, -a,   /* 0.0,  1.0,  0.0,*/   1.0, 0.0, 0.0,	1.0, 1.0,
+		-a,  a, -a,   /* 0.0,  0.0, -1.0,*/   0.0, 0.0, 1.0,	0.0, 0.0,
+		 a,  a, -a,   /* 0.0,  0.0, -1.0,*/   0.0, 1.0, 1.0,	1.0, 0.0,
+		-a, -a, -a,   /* 0.0,  0.0, -1.0,*/   1.0, 1.0, 0.0,	0.0, 1.0,
+		 a, -a, -a,   /* 0.0,  0.0, -1.0,*/   0.0, 1.0, 1.0,	1.0, 1.0,
+		-a, -a, -a,   /* 0.0, -1.0,  0.0,*/   1.0, 0.0, 1.0,	0.0, 0.0,
+		 a, -a, -a,   /* 0.0, -1.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 0.0,
+		-a, -a,  a,   /* 0.0, -1.0,  0.0,*/   0.0, 1.0, 0.0,	0.0, 1.0,
+		 a, -a,  a,   /* 0.0, -1.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 1.0,
+		 a, -a,  a,   /* 1.0,  0.0,  0.0,*/   1.0, 0.0, 1.0,	0.0, 0.0,
+		 a, -a, -a,   /* 1.0,  0.0,  0.0,*/   1.0, 0.0, 1.0,	1.0, 0.0,
+		 a,  a,  a,   /* 1.0,  0.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 1.0,
+		 a,  a, -a,   /* 1.0,  0.0,  0.0,*/   1.0, 1.0, 1.0,	1.0, 1.0,
+		-a, -a, -a,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	0.0, 0.0,
+		-a, -a,  a,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 0.0,
+		-a,  a, -a,   /*-1.0,  0.0,  0.0,*/   0.0, 1.0, 1.0,	0.0, 1.0,
+		-a,  a,  a,   /*-1.0,  0.0,  0.0,*/   1.0, 1.0, 0.0,	1.0, 1.0 
 	};
 	
 	short indices[] = 
@@ -347,7 +351,7 @@ Mesh* createCubeMeshIndexed(float size = 1.0f) {
 		VertexFormat::Element(VertexFormat::POSITION, 3),
 		//VertexFormat::Element(VertexFormat::NORMAL, 3),
 		VertexFormat::Element(VertexFormat::COLOR, 3),
-		//VertexFormat::Element(VertexFormat::TEXCOORD0, 2)
+		VertexFormat::Element(VertexFormat::TEXCOORD0, 2)
 	};
 	unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
 
@@ -356,6 +360,7 @@ Mesh* createCubeMeshIndexed(float size = 1.0f) {
 		//GP_ERROR("Unable to create Mesh");
 		return NULL;
 	}
+	mesh->setPrimitiveType(Mesh::TRIANGLES);
 	mesh->setVertexData(vertices, 0, vertexCount);
 
 	MeshPart* meshPart = mesh->addMeshPart(Mesh::TRIANGLES, Mesh::INDEX16, indexCount, false);
@@ -363,6 +368,7 @@ Mesh* createCubeMeshIndexed(float size = 1.0f) {
 
 	VertexAttributeBinding* b = VertexAttributeBinding::create(mesh);
 	mesh->setVertexAttributeBinding(b);
+	mesh->setTexture("data/cartoon.tga");
 
 	return mesh;
 }
@@ -376,35 +382,35 @@ void Dream3DTest::render(float deltaTimeMs) {
 	drawGrid(10, 0.5);
 	drawTriangle(Vector3(0, 0.5f, -1.5f), Vector3(-0.5f, 0, -1.5f), Vector3(0.5f, 0, -1.5f));
 	
-	//glEnable(GL_TEXTURE_2D);
-	//glBindTexture(GL_TEXTURE_2D, texID);
-	//glBegin(GL_QUADS);
-	//	glTexCoord2d(0.0f, 0.0f);
-	//	glVertex3f(0.0f, 0.5f, 0.0f);
+	glColor3f(1.0f, 1.0f, 1.0f);
 
-	//	glTexCoord2d(0.0f, 1.0f);
-	//	glVertex3f(0.0f, 0.0f, 0.0f);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texID[0]);
+	glBegin(GL_QUADS);
+		glTexCoord2d(0.0f, 0.0f);
+		glVertex3f(0.0f, 0.5f, 0.0f);
 
-	//	glTexCoord2d(1.0f, 1.0f);
-	//	glVertex3f(0.5f, 0.0f, 0.0f);
+		glTexCoord2d(0.0f, 1.0f);
+		glVertex3f(0.0f, 0.0f, 0.0f);
 
-	//	glTexCoord2d(1.0f, 0.0f);
-	//	glVertex3f(0.5f, 0.5f, 0.0f);
-	//glEnd();
-	//glBindTexture(GL_TEXTURE_2D, 0);
+		glTexCoord2d(1.0f, 1.0f);
+		glVertex3f(0.5f, 0.0f, 0.0f);
 
+		glTexCoord2d(1.0f, 0.0f);
+		glVertex3f(0.5f, 0.5f, 0.0f);
+	glEnd();
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
 	////////////////////////////////////////////////////////////////
 	triangleMesh->draw(!true);
-	
+
 	triangleStripMesh->draw(!true);
 
 	lineStripMesh->draw();
 
 	lineMesh->draw();
 
-	//texture->bind();
 	cubeMeshIndexed->draw(!true);
-	//texture->unbind();
 
 	////////////////////////////////////////////////////////////////
 }

@@ -29,9 +29,117 @@ Texture::~Texture() {
 		}
 	}
 }
-		
+
+Texture* Texture::createEx(const char* path, bool generateMipmaps) {
+	GP_ASSERT( path );
+
+	// Search texture cache first.
+	for(size_t i = 0; i < __textureCache.size(); i++) {
+		Texture* t = __textureCache[i];
+		if(strcmp(t->m_sPath.c_str(), path) == 0) {
+			// If 'generateMipmaps' is true, call Texture::generateMipamps() to force the 
+			// texture to generate its mipmap chain if it hasn't already done so.
+			if (generateMipmaps) {
+				t->generateMipmaps();
+			}
+
+			// Found a match.
+			return t;
+		}
+	}
+
+	Texture* texture = NULL;
+
+	// Filter loading based on file extension.
+	const char* ext = strrchr(path, '.');
+	if(ext) {
+		switch(strlen(ext)) {
+		case 4:
+			if (tolower(ext[1]) == 'p' && tolower(ext[2]) == 'n' && tolower(ext[3]) == 'g') {
+			}
+			else 
+			if (tolower(ext[1]) == 't' && tolower(ext[2]) == 'g' && tolower(ext[3]) == 'a') {
+				texture = createTGA(path, generateMipmaps);
+			}
+			else 
+			if (tolower(ext[1]) == 'p' && tolower(ext[2]) == 'v' && tolower(ext[3]) == 'r') {
+				// PowerVR Compressed Texture RGBA.
+				//texture = createCompressedPVRTC(path);
+			}
+			else 
+			if (tolower(ext[1]) == 'd' && tolower(ext[2]) == 'd' && tolower(ext[3]) == 's') {
+				// DDS file format (DXT/S3TC) compressed textures
+				//texture = createCompressedDDS(path);
+			}
+			break;
+		}
+	}
+
+	if(texture) {
+		texture->m_sPath = path;
+		texture->m_bCached = true;
+
+		// Add to texture cache.
+		__textureCache.push_back(texture);
+
+		return texture;
+	}
+
+	//GP_ERROR("Failed to load texture from file '%s'.", path);
+	return NULL;
+}
+
+Texture* Texture::createTGA(const char* path, bool generateMipmaps) {
+
+	// Image loader
+	TGAImg Img;
+	Texture* texture = NULL;
+
+	// Load our Texture
+	if(Img.Load((char*)path) != IMG_OK)
+		return texture;
+
+	// Create and load the texture.
+	GLuint textureID;
+	GL_ASSERT( glGenTextures(1, &textureID) );
+	GL_ASSERT( glBindTexture(GL_TEXTURE_2D, textureID) ); // Set our Tex handle as current
+
+	// Specify filtering and edge actions
+	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR) );
+	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR) );
+	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP) );
+	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP) );
+
+	Texture::Format format = Texture::UNKNOWN;
+	
+	if(Img.GetBPP() == 24)
+		format = Texture::RGB;
+	else 
+	if(Img.GetBPP() == 32)
+		format = Texture::RGBA;
+	else
+		return texture;
+
+	// Create the texture
+	GL_ASSERT( glTexImage2D(GL_TEXTURE_2D, 0, (GLuint)format, Img.GetWidth(), Img.GetHeight(), 0, (GLuint)format, GL_UNSIGNED_BYTE, Img.GetImg()) );
+	
+	GL_ASSERT( glBindTexture(GL_TEXTURE_2D, 0) );
+	GL_ASSERT( glDisable(GL_TEXTURE_2D) );
+
+	texture = new Texture();
+	texture->m_hTexture = textureID;
+	texture->m_Format = format;
+	texture->m_iWidth = Img.GetWidth();
+	texture->m_iHeight = Img.GetHeight();
+	if(generateMipmaps) {
+		texture->generateMipmaps();
+	}
+
+	return texture;
+}
+
 Texture* Texture::create(const char* path, bool generateMipmaps) {
-	GP_ASSERT(path);
+	GP_ASSERT( path );
 
 	// Search texture cache first.
 	for(size_t i = 0; i < __textureCache.size(); i++) {
@@ -92,7 +200,7 @@ Texture* Texture::create(const char* path, bool generateMipmaps) {
 
 Texture* Texture::create(Image* image, bool generateMipmaps) {
 	
-	GP_ASSERT(image);
+	GP_ASSERT( image );
 
 	switch(image->getFormat()) {
 		case Image::RGB:
@@ -110,13 +218,30 @@ Texture* Texture::create(Image* image, bool generateMipmaps) {
 Texture* Texture::create(Format format, unsigned int width, unsigned int height, unsigned char* data, bool generateMipmaps) {
 	// Create and load the texture.
 	GLuint textureID;
+
+	// OpenGL keeps a track of loaded textures by numbering them: the first one you load is 1, second is 2, ...and so on.
 	GL_ASSERT( glGenTextures(1, &textureID) );
+
+	// Binding the texture to GL_TEXTURE_2D is like telling OpenGL that the texture with this ID is now the current 2D texture in use
 	GL_ASSERT( glBindTexture(GL_TEXTURE_2D, textureID) );
-	GL_ASSERT( glPixelStorei(GL_UNPACK_ALIGNMENT, 1) );
+
+	// Specify filtering and edge actions
+	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MIN_FILTER, GL_LINEAR) );
+	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MAG_FILTER, GL_LINEAR) );
+	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_S, GL_CLAMP) );
+	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_T, GL_CLAMP) );
+
+	//GL_ASSERT( glPixelStorei(GL_UNPACK_ALIGNMENT, 1) );
+
+	// This call will actually load the image data into OpenGL and your video card's memory. 
+	// The texture is always loaded into the current texture you have selected with the last glBindTexture call
+	// It asks for the width, height, type of image (determines the format of the data you are giving to it) and the pointer to the actual data
 	GL_ASSERT( glTexImage2D(GL_TEXTURE_2D, 0, GLenum(format), width, height, 0, GLenum(format), GL_UNSIGNED_BYTE, data));
 
+	// Specify filtering and edge actions
 	// Set initial minification filter based on whether or not mipmaping was enabled.
-	GL_ASSERT( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, generateMipmaps ? GL_NEAREST_MIPMAP_LINEAR : GL_LINEAR) );
+	//GL_ASSERT( glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, generateMipmaps ? GL_NEAREST_MIPMAP_LINEAR : GL_LINEAR) );
+	GL_ASSERT( glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, generateMipmaps ? GL_NEAREST_MIPMAP_LINEAR : GL_LINEAR) );
 
 	Texture* texture = new Texture();
 	texture->m_hTexture = textureID;
@@ -129,12 +254,13 @@ Texture* Texture::create(Format format, unsigned int width, unsigned int height,
 
 	// Restore the texture id
 	GL_ASSERT( glBindTexture(GL_TEXTURE_2D, __currentTextureID) );
+	GL_ASSERT( glDisable(GL_TEXTURE_2D) );
 
 	return texture;
 }
 
 Texture* Texture::create(TextureHandle handle, int width, int height, Format format) {
-	GP_ASSERT(handle);
+	GP_ASSERT( handle );
 
 	Texture* texture = new Texture();
 	texture->m_hTexture = handle;
@@ -188,17 +314,13 @@ void Texture::setFilterMode(Filter minificationFilter, Filter magnificationFilte
 }
 
 void Texture::bind() {
-	GL_ASSERT( m_hTexture );
-
-	GL_ASSERT( glActiveTexture(GL_TEXTURE0) );
+	GP_ASSERT( m_hTexture );
 
 	GL_ASSERT( glEnable(GL_TEXTURE_2D) );
 	GL_ASSERT( glBindTexture(GL_TEXTURE_2D, m_hTexture) );
-
-	setWrapMode(CLAMP_TO_EGDE, CLAMP_TO_EGDE);
-	setFilterMode(NEAREST, NEAREST);
 }
 
 void Texture::unbind() {
 	GL_ASSERT( glBindTexture(GL_TEXTURE_2D, 0) );
+	GL_ASSERT( glDisable(GL_TEXTURE_2D) );
 }

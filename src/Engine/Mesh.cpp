@@ -1,6 +1,7 @@
 #include "Engine/Mesh.h"
 #include "Engine/MeshPart.h"
 #include "Engine/VertexAttributeBinding.h"
+#include "Engine/Texture.h"
 
 Mesh::Mesh(const VertexFormat& vertexFormat) 
 	:	m_VertexFormat(vertexFormat),
@@ -9,7 +10,8 @@ Mesh::Mesh(const VertexFormat& vertexFormat)
 		m_PrimitiveType(TRIANGLES),
 		m_bDynamic(false),
 		m_ppMeshParts(NULL),
-		m_iPartCount(0)
+		m_iPartCount(0),
+		m_pTexture(NULL)
 {
 
 }
@@ -66,6 +68,7 @@ void Mesh::setPrimitiveType(Mesh::PrimitiveType type) {
 }
 
 void Mesh::setVertexData(const float* vertexData, unsigned int vertexStart, unsigned int vertexCount) {
+
 	GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, m_hVBO) );
 	if(vertexStart == 0 && vertexCount == 0) {
 		GL_ASSERT( glBufferData(GL_ARRAY_BUFFER, m_VertexFormat.getVertexSize() * m_iVertexCount, vertexData, m_bDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW) );
@@ -77,6 +80,7 @@ void Mesh::setVertexData(const float* vertexData, unsigned int vertexStart, unsi
 
 		GL_ASSERT( glBufferSubData(GL_ARRAY_BUFFER, vertexStart * m_VertexFormat.getVertexSize(), vertexCount * m_VertexFormat.getVertexSize(), vertexData) );
 	}
+	GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, 0) );
 }
 
 MeshPart* Mesh::addMeshPart(PrimitiveType primitiveType, IndexFormat indexFormat, unsigned int indexCount, bool isDynamic) {
@@ -118,14 +122,38 @@ void Mesh::setVertexAttributeBinding(VertexAttributeBinding* vaBinding) {
 }
 
 void Mesh::draw(bool bWireframe) {
+#ifdef USE_VERTEX_POINTERS
+	m_pVertexAttributeBinding->bind();
+	bindTexture();
 
 	if(m_iPartCount == 0) {
-		m_pVertexAttributeBinding->bind();
 		GL_ASSERT( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
+		GL_ASSERT( glDrawArrays(getPrimitiveType(), 0, getVertexCount()) );
+	}
+	else {
+		for(int i = 0; i < getMeshPartCount(); i++) {
+			MeshPart* meshPart = getMeshPart(i);
+			GP_ASSERT( meshPart );
+
+			GL_ASSERT( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshPart->getIndexBuffer()) );
+			GL_ASSERT( glDrawElements(meshPart->getPrimitiveType(), meshPart->getIndexCount(), meshPart->getIndexFormat(), 0) );
+			GL_ASSERT( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
+		}
+	}
+
+	m_pVertexAttributeBinding->unbind();
+	unbindTexture();
+#else
+	if(m_iPartCount == 0) {
+		bindTexture();
+		m_pVertexAttributeBinding->bind();
+		
+		GL_ASSERT( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
+		
 
 		if(bWireframe && (getPrimitiveType() == Mesh::TRIANGLES || getPrimitiveType() == Mesh::TRIANGLE_STRIP)) {
 			unsigned int vertexCount = getVertexCount();
-			for(int i = 0; i < vertexCount; i += 3) {
+			for(unsigned int i = 0; i < vertexCount; i += 3) {
 				GL_ASSERT( glDrawArrays(GL_LINE_LOOP, i, 3) );
 			}
 		}
@@ -134,30 +162,33 @@ void Mesh::draw(bool bWireframe) {
 		}
 
 		m_pVertexAttributeBinding->unbind();
+		unbindTexture();
 	}
 	else {
 		for(int i = 0; i < getMeshPartCount(); i++) {
 			MeshPart* meshPart = getMeshPart(i);
 			GP_ASSERT( meshPart );
 
+			bindTexture();
 			m_pVertexAttributeBinding->bind();
+			
 			GL_ASSERT( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshPart->getIndexBuffer()) );
 
 			if(bWireframe && (getPrimitiveType() == Mesh::TRIANGLES || getPrimitiveType() == Mesh::TRIANGLE_STRIP)) {
 				unsigned int indexCount = meshPart->getIndexCount();
 				unsigned int indexSize = 0;
 				switch(meshPart->getIndexFormat()) {
-					case Mesh::INDEX8:
-						indexSize = 1;
+				case Mesh::INDEX8:
+					indexSize = 1;
 					break;
-					case Mesh::INDEX16:
-						indexSize = 2;
+				case Mesh::INDEX16:
+					indexSize = 2;
 					break;
-					case Mesh::INDEX32:
-						indexSize = 4;
+				case Mesh::INDEX32:
+					indexSize = 4;
 					break;
-					default:
-						//GP_ERROR("Unsupported index format (%d).", part->getIndexFormat());
+				default:
+					//GP_ERROR("Unsupported index format (%d).", part->getIndexFormat());
 					continue;
 				}
 
@@ -169,8 +200,32 @@ void Mesh::draw(bool bWireframe) {
 				GL_ASSERT( glDrawElements(meshPart->getPrimitiveType(), meshPart->getIndexCount(), meshPart->getIndexFormat(), 0) );
 			}
 
+			GL_ASSERT( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
 			m_pVertexAttributeBinding->unbind();
+			unbindTexture();
 		}
 	}
+#endif
 }
 ///////////////////////////////////// TO BE PUT IN 'MODEL' /////////////////////////////////////
+
+void Mesh::setTexture(const char* path, bool generateMipmaps) {
+	GP_ASSERT( path );
+
+	Texture* texture = Texture::createEx(path, generateMipmaps);
+	GP_ASSERT( path );
+
+	m_pTexture = texture;
+}
+
+void Mesh::bindTexture() {
+	if(m_pTexture != NULL) {
+		m_pTexture->bind();
+	}
+}
+
+void Mesh::unbindTexture() {
+	if(m_pTexture != NULL) {
+		m_pTexture->unbind();
+	}
+}

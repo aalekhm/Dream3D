@@ -1,6 +1,7 @@
 #ifndef BASE_H
 #define BASE_H
 
+#define USE_VERTEX_POINTERS
 //#define USE_VAO
 
 //C/C++
@@ -25,7 +26,7 @@ typedef GLuint IBOHandle;					// Indexed Buffer Object Handle
 
 #define gl_Vertex 			0
 #define gl_Normal 			1
-#define gl_TexCoord 		2
+#define gl_TexCoord 		8
 #define gl_Color 			3
 #define gl_SecondaryColor 	4
 #define gl_FogCoord 		5

@@ -5,18 +5,19 @@ Image::Image() {
 }
 
 Image* Image::createImage(const char* sTexWithPath) {
-	TGAImg* tgaImg = new TGAImg();        // Image loader
+	//TGAImg* tgaImg = new TGAImg();        // Image loader
+	TGAImg tgaImg;
 
 	// Load our Texture
-	if(tgaImg->Load((char*)sTexWithPath) != IMG_OK)
+	if(tgaImg.Load((char*)sTexWithPath) != IMG_OK)
 		return false;
 	
 	Image* image = new Image();
-	image->m_iWidth = tgaImg->GetWidth();
-	image->m_iHeight = tgaImg->GetHeight();
+	image->m_iWidth = tgaImg.GetWidth();
+	image->m_iHeight = tgaImg.GetHeight();
 
 	unsigned int size = 0;
-	switch (tgaImg->GetBPP())
+	switch (tgaImg.GetBPP())
 	{
 		case 32:
 			image->m_Format = Image::RGBA;
@@ -29,9 +30,9 @@ Image* Image::createImage(const char* sTexWithPath) {
 	}
 
 	image->m_pPixelData = new unsigned char[size];
-	_memccpy(image->m_pPixelData, tgaImg->GetImg(), sizeof(unsigned char), size);
+	_memccpy(image->m_pPixelData, tgaImg.GetImg(), sizeof(unsigned char), size);
 
-	SAFE_DELETE(tgaImg);
+	//SAFE_DELETE(tgaImg);
 	return image;
 }
 
