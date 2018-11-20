@@ -15,7 +15,7 @@
 
 #define MAX_WIDGETS			80
 
-typedef void (__stdcall* YAGUICallback)(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+typedef L_RESULT (__stdcall* YAGUICallback)(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 struct WWidgetManager {
 
@@ -43,6 +43,7 @@ struct WWidgetManager {
 		void					onMouseWheel(WPARAM wParam, LPARAM lParam);
 
 		void					setGLStates();
+		void					setupOrthogonalProjection();
 		void					flush();
 		static void			drawFont(int x, int y, int charW, int charH, int tX, int tY);
 		static int			getGlyphU(int c);
@@ -77,8 +78,6 @@ struct WWidgetManager {
 		static void			clearScreen();
 		static void			setCursor(int MOUSE_IDC);
 
-		static void			setupOrthogonalProjection();
-		
 		static void			drawQuadU(	Texture* texture, 
 													float posX, float posY, float posW, float posH,
 													float texX, float texY, float texW, float texH);
@@ -88,7 +87,7 @@ struct WWidgetManager {
 		static H_FONT	loadFont(const char* sFontFileName, unsigned int iFontSize, unsigned int iFontDPI);
 		static bool			selectFont(H_FONT hFont);
 
-		static void			onEvent(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+		static L_RESULT	onEvent(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 		static H_WND		getWindow(int wndID);
 
 		static char*					m_clipboardTextData;

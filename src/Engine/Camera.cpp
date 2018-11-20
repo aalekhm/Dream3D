@@ -140,7 +140,15 @@ Matrix4& Camera::getViewMatrix() {
 ///////////////////////////////////////////////////////////////////////////////
 void Camera::setPerspective(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane) {
 	// set viewport
-	glViewport(x, y, w, h);
+
+	int xViewport = x;
+	int yViewport = EngineManager::getInstance()->getHeight() - (y + h);
+	int wViewport = w;
+	int hViewport = h;
+
+	//glEnable(GL_SCISSOR_TEST);
+	glViewport(xViewport, yViewport, wViewport, hViewport);
+	//glScissor(xViewport, yViewport, wViewport, hViewport);
 
 	// set perspective viewing frustum
 	setFrustum(iFieldOfView, (float)(w)/h, fNearPlane, fFarPlane); // FOV, AspectRatio, NearClip, FarClip
@@ -183,7 +191,13 @@ void Camera::setPerspectiveFrustum(float l, float r, float b, float t, float n, 
 }
 
 void Camera::setOrthographic(int x, int y, int w, int h, float iNearPlane, float iFarPlane) {
-	setOrthogonalFrustum((float)x, (float)x+w, (float)y+h, (float)y, 0.0f, 1.0f);
+
+	int left = x;
+	int right = (x + w);
+	int bottom = (y + h);
+	int top = y;
+
+	setOrthogonalFrustum((float)left, (float)right, (float)bottom, (float)top, 0.0f, 1.0f);
 	
 	glMatrixMode(GL_PROJECTION);						// Setup and orthogonal, pixel-to-pixel projection matrix
 	glLoadMatrixf(m_MatrixProjection.getTranspose());	// copy projection matrix to OpenGL

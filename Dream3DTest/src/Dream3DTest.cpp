@@ -64,10 +64,23 @@ SpriteBatch* spriteBatch;
 Texture*  gTexture0;
 Texture*  gTexture1;
 
-void CALLBACK UICallback(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+L_RESULT CALLBACK UICallback(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	switch(msg) {
-
+		case WM__CREATE:
+			{
+				int WINDOW_ID = wParam;
+				switch(WINDOW_ID) {
+				}
+			}
+			break;
+		case WM__PAINT:
+			{
+				int WINDOW_ID = wParam;
+				switch(WINDOW_ID) {
+				}
+			}
+			break;
 		//WButton
 	case WM_BTN_LBUTTONDOWN:
 		{
@@ -333,6 +346,8 @@ void CALLBACK UICallback(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		//EM_GETSEL
 		//EM_SETSEL
 	}
+
+	return 0;
 }
 
 void addDummyWindows(H_WND hParent);
@@ -417,8 +432,17 @@ void Dream3DTest::initialize() {
 
 	//initLights();
 
-	addDummyWindows(GetWindowQ(0));
+	//////////////////// YAGUI Related initializations !!!
+	//////////////////// Setup 2D Camera For YAGUI
+	Camera* pCameraYAGUI = Camera::createPerspective(0, 0, getWidth(), getHeight(), 45.0f, -1.0f, 0.0f);
+	pCameraYAGUI->setType(Camera::ORTHOGRAPHIC);
+	Node* pYAGUICameraNode = Node::create("YAGUI_2DCamera");
+	pYAGUICameraNode->setCamera(pCameraYAGUI);
+
 	addUIListener(UICallback);
+	setUICameraNode(pYAGUICameraNode);
+	addDummyWindows(GetWindowQ(0));
+	////////////////////////////////////////////
 }
 
 void initLights() {

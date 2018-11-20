@@ -170,8 +170,8 @@ H_FONT WWidgetManager::loadFont(const char* sFontFile, unsigned int iFontSize, u
 }
 
 void WWidgetManager::setGLStates() {
-	//clearScreen();
-	setupOrthogonalProjection();
+	Camera* pCamera = EngineManager::getInstance()->getUICamera();
+	pCamera->setType(Camera::ORTHOGRAPHIC);
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
@@ -849,34 +849,6 @@ void WWidgetManager::drawQuadU(	Texture* pTexture,
 	}
 }
 
-void WWidgetManager::setupOrthogonalProjection() {
-	// Setup and orthogonal, pixel-to-pixel projection matrix
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	//int left = ((WContainer*)WWidgetManager::getInstance()->m_pBaseWindow)->getLeft();
-	//int right = left + ((WContainer*)WWidgetManager::getInstance()->m_pBaseWindow)->getWidth();
-	//int top = ((WContainer*)WWidgetManager::getInstance()->m_pBaseWindow)->getTop();
-	//int bottom = top + ((WContainer*)WWidgetManager::getInstance()->m_pBaseWindow)->getHeight();
-
-	//glOrtho(	left,
-	//				right, 
-	//				bottom, 
-	//				top, 
-	//				0.0, 
-	//				1.0);
-
-	glOrtho(	0,
-					1024, 
-					768, 
-					0, 
-					0.0, 
-					1.0);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-}
-
 int WWidgetManager::getStringWidthTillPos(const char* cStr, int iPos) {
 
 	int iRetWidth = 0;
@@ -1062,10 +1034,10 @@ void WWidgetManager::setCallback(YAGUICallback wndProc) {
 		m_lpfnWWndProc = wndProc;
 }
 
-void WWidgetManager::onEvent(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+L_RESULT WWidgetManager::onEvent(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	if(m_lpfnWWndProc != NULL)
-		m_lpfnWWndProc(hWnd, msg, wParam, lParam);
+		return m_lpfnWWndProc(hWnd, msg, wParam, lParam);
 }
 
 H_WND WWidgetManager::GetWindow(int ID_WINDOW) {
