@@ -4,6 +4,7 @@
 #include "Engine/Base.h"
 #include "Common/Vectors.h"
 #include "Common/Matrices.h"
+#include "Common/Rectangle.h"
 #include "Engine/Transform.h"
 #include "Engine/Node.h"
 
@@ -49,6 +50,13 @@ class Camera {
 		Matrix4&			getProjectionMatrix();
 		Matrix4&			getViewProjectionMatrix();
 		Matrix4&			getViewMatrix();
+		
+		const Matrix4&	getInverseViewMatrix();
+		const Matrix4&	getInverseViewProjectionMatrix();
+
+		void					pickRay(const Rectangle_& viewport, float x, float y/*, Ray* dst*/) ;
+
+		void					unproject(const Rectangle_& viewport, float x, float y, float depth, Vector3* dst);
 
 		void					handleKeyboard(float deltaTimeMs);
 		void					handleMouse(float deltaTimeMs);
@@ -77,6 +85,9 @@ class Camera {
 		Matrix4			m_MatrixView;
 		Matrix4			m_MatrixProjection;
 		Matrix4			m_MatrixViewProjection;
+
+		Matrix4			m_MatrixInverseView;
+		Matrix4			m_MatrixInverseViewProjection;
 
 		Node*			m_pNode;
 };

@@ -3,23 +3,23 @@
 
 #include <iostream>
 
-struct Rectangle {
+struct Rectangle_ {
 	public:
 		float x;
 		float y;
 		float width;
 		float height;
 
-		Rectangle();
-		Rectangle(float width, float height);
-		Rectangle(float x, float y, float width, float height);
-		Rectangle(const Rectangle& copy);
+		Rectangle_();
+		Rectangle_(float width, float height);
+		Rectangle_(float x, float y, float width, float height);
+		Rectangle_(const Rectangle_& copy);
 	
-		static const Rectangle& empty();
+		static const Rectangle_& empty();
 		bool isEmpty();
 	
 		void set(float x, float y, float width, float height);
-		void set(const Rectangle& r);
+		void set(const Rectangle_& r);
 		void setPosition(float x, float y);
 	
 		float left() const;
@@ -29,19 +29,19 @@ struct Rectangle {
 
 		bool contains(float x, float y) const;
 		bool contains(float x, float y, float width, float height) const;
-		bool contains(const Rectangle& r) const;
+		bool contains(const Rectangle_& r) const;
 
 		bool intersects(float x, float y, float width, float height) const;
-		bool intersects(const Rectangle& r) const;
+		bool intersects(const Rectangle_& r) const;
 
-		static void combine(const Rectangle& r1, const Rectangle& r2, Rectangle* dest);
+		static void combine(const Rectangle_& r1, const Rectangle_& r2, Rectangle_* dest);
 		void inflate(float horizontalAmount, float verticalAmount);
 	
-		Rectangle& operator = (const Rectangle& r);
-		bool operator == (const Rectangle& r) const;
-		bool operator != (const Rectangle& r) const;
+		Rectangle_& operator = (const Rectangle_& r);
+		bool operator == (const Rectangle_& r) const;
+		bool operator != (const Rectangle_& r) const;
 
-		friend std::ostream& operator<<(std::ostream& os, const Rectangle& vec);
+		friend std::ostream& operator<<(std::ostream& os, const Rectangle_& vec);
 };
 
 #endif

@@ -40,11 +40,18 @@ class EngineManager {
 		static bool			isKeyPressed(int iKeyID);
 		void					keyPressed(unsigned int iVirtualKeycode, unsigned short ch);
 		void					keyReleased(unsigned int iVirtualKeycode, unsigned short ch);
+		virtual void			keyPressedEx(unsigned int iVirtualKeycode, unsigned short ch) { }
+		virtual void			keyReleasedEx(unsigned int iVirtualKeycode, unsigned short ch) { }
 	
 		void					onMouseDown(int mCode, int x, int y);
 		void					onMouseMove(int mCode, int x, int y);
 		void					onMouseUp(int mCode, int x, int y);
 		void					onMouseWheel(WPARAM wParam, LPARAM lParam);
+
+		virtual void			onMouseDownEx(int mCode, int x, int y) { }
+		virtual void			onMouseMoveEx(int mCode, int x, int y) { }
+		virtual void			onMouseUpEx(int mCode, int x, int y) { }
+		virtual void			onMouseWheelEx(WPARAM wParam, LPARAM lParam) { }
 
 		void					setLMouseStatus(bool bPressed, int mouseX, int mouseY);
 		void					setMMouseStatus(bool bPressed, int mouseX, int mouseY);

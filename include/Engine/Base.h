@@ -26,6 +26,10 @@ typedef GLuint VertexAttribute;				// Vertex Attribute
 typedef GLuint VBOHandle;					// Vertex Buffer Object Handle
 typedef GLuint VAOHandle;					// Vertex Array Object Handle
 typedef GLuint IBOHandle;					// Indexed Buffer Object Handle
+typedef GLuint FrameBufferHandle;	/** Frame buffer handle. */
+typedef GLuint RenderBufferHandle;	/** Render buffer handle. */
+
+
 
 #define gl_Vertex 			0
 #define gl_Normal 			1

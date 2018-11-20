@@ -73,8 +73,10 @@ struct Matrix4
 		static void	multiply(const Matrix4& m1, const Matrix4& m2, Matrix4* dst);
 		static void	multiplyMatrix(const float* m1, const float* m2, float* dst);
 		static void	multiplyMatrix(const float* m, float scalar, float* dst);
-		bool		invert(Matrix4* dst) const;
+		bool			invert(Matrix4* dst) const;
 		
+		void			transformVector(const Vector4& vector, Vector4* dst) const;
+		void			transformVector(float x, float y, float z, float w, Vector4* dst) const;
 
 		// operators
 		Matrix4     operator+(const Matrix4& rhs) const;    // add rhs

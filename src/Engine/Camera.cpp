@@ -21,6 +21,9 @@ Camera::Camera(int x, int y, int w, int h, float iFieldOfView, float fNearPlane,
 		m_MatrixProjection(),
 		m_MatrixViewProjection(),
 
+		m_MatrixInverseView(),
+		m_MatrixInverseViewProjection(),
+
 		m_pNode(NULL)
 {
 	
@@ -44,6 +47,9 @@ Camera::Camera(int x, int y, int w, int h, float fNearPlane, float fFarPlane)
 		m_MatrixView(),
 		m_MatrixProjection(),
 		m_MatrixViewProjection(),
+
+		m_MatrixInverseView(),
+		m_MatrixInverseViewProjection(),
 
 		m_pNode(NULL)
 {
@@ -131,6 +137,7 @@ Matrix4& Camera::getViewProjectionMatrix() {
 	if (m_iDirty & CAMERA_DIRTY_VIEW_PROJ)
 	{
 		m_MatrixViewProjection = getProjectionMatrix() * getViewMatrix();
+		//Matrix4::multiply(getProjectionMatrix(), getViewMatrix(), &m_MatrixViewProjection);
 		m_iDirty &= ~CAMERA_DIRTY_VIEW_PROJ;
 	}
 
@@ -141,7 +148,8 @@ Matrix4& Camera::getViewMatrix() {
 	if (m_iDirty & CAMERA_DIRTY_VIEW) {
 		if (m_pNode) {
 			// The view matrix is the inverse of our transform matrix.
-			m_MatrixView = m_pNode->getWorldMatrix();//.invert(&m_MatrixView);
+			m_MatrixView = m_pNode->getWorldMatrix();
+			//m_pNode->getWorldMatrix().invert(&m_MatrixView);
 		}
 		else {
 			m_MatrixView.setIdentity();
@@ -151,6 +159,85 @@ Matrix4& Camera::getViewMatrix() {
 	}
 
 	return m_MatrixView;
+}
+
+/**
+* Gets the camera's inverse view matrix.
+*
+* @return The camera inverse view matrix.
+*/
+const Matrix4& Camera::getInverseViewMatrix() {
+	if(m_iDirty & CAMERA_DIRTY_INV_VIEW) {
+
+		getViewMatrix().invert(&m_MatrixInverseView);
+		m_iDirty &= ~CAMERA_DIRTY_INV_VIEW;
+	}
+
+	return m_MatrixInverseView;
+}
+
+/**
+    * Gets the camera's inverse view * projection matrix.
+    *
+    * @return The camera inverse view * projection matrix.
+    */
+const Matrix4& Camera::getInverseViewProjectionMatrix() {
+	//if(m_iDirty & CAMERA_DIRTY_INV_VIEW_PROJ) 
+	{
+		getViewProjectionMatrix().invert(&m_MatrixInverseViewProjection);
+		m_iDirty &= ~CAMERA_DIRTY_INV_VIEW_PROJ;
+	}
+
+	return m_MatrixInverseViewProjection;
+}
+
+void Camera::unproject(const Rectangle_& viewport, float fX, float fY, float fDepth, Vector3* dst) {
+
+	GP_ASSERT( dst );
+
+	// Create our screen space position in NDC.
+	GP_ASSERT( viewport.width != 0.0f && viewport.height != 0.0f );
+	Vector4 _vScreen( (fX - viewport.x) / viewport.width,
+							   ((viewport.height - fY) - viewport.y) / viewport.height,
+							   fDepth,
+							   1.0f);
+
+	// Map to range -1 to 1.
+	_vScreen.x = _vScreen.x * 2.0f - 1.0f;
+	_vScreen.y = _vScreen.y * 2.0f - 1.0f;
+	_vScreen.z = _vScreen.z * 2.0f - 1.0f;
+
+	// Transform the screen-space NDC by our inverse view projection matrix.
+	getInverseViewProjectionMatrix().transformVector(_vScreen, &_vScreen);
+
+	// Divide by our W coordinate.
+	if (_vScreen.w != 0.0f) {
+		_vScreen.x /= _vScreen.w;
+		_vScreen.y /= _vScreen.w;
+		_vScreen.z /= _vScreen.w;
+	}
+
+	dst->set(_vScreen.x, _vScreen.y, _vScreen.z);
+}
+
+void Camera::pickRay(const Rectangle_& viewport, float x, float y/*, Ray* pRay*/) {
+
+	GP_ASSERT( pRay );
+
+	// Get the world-space position at the near clip plane.
+	Vector3 vNearPoint;
+	unproject(viewport, x, y, 0.0f, &vNearPoint);
+
+	// Get the world-space position at the far clip plane.
+	Vector3 vFarPoint;
+	unproject(viewport, x, y, 1.0f, &vFarPoint);
+
+	// Set the direction of the ray.
+	Vector3 vDirection;
+	vDirection = vFarPoint - vNearPoint;
+	vDirection.normalize();
+
+	//pRay->set(vNearPoint, vDirection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -184,6 +271,30 @@ void Camera::setPerspective(int x, int y, int w, int h, float iFieldOfView, floa
 // (vertical field of view, aspect ratio, near, far)
 ///////////////////////////////////////////////////////////////////////////////
 void Camera::setFrustum(float fovY, float aspectRatio, float front, float back) {
+	/*
+	float tangent = tanf(fovY * DEG2RAD) * 0.5f;   // tangent of half fovY
+	float height = front * tangent;           // half height of near plane
+	float width = height * aspectRatio;       // half width of near plane
+
+	// params: left, right, bottom, top, near, far
+	//setPerspectiveFrustum(-width, width, -height, height, front, back);
+
+	float f_n = 1.0f / (back - front);
+	float theta = tanf(fovY * DEG2RAD) * 0.5f;
+
+	float divisor = tan(theta);
+	GP_ASSERT(divisor);
+	float factor = 1.0f / divisor;
+
+	m_MatrixProjection.setIdentity();
+	GP_ASSERT(aspectRatio);
+	m_MatrixProjection[0] = (1.0f / aspectRatio) * factor;
+	m_MatrixProjection[5] = factor;
+	m_MatrixProjection[10] = (-(back + front)) * f_n;
+	m_MatrixProjection[11] = -1.0f;
+	m_MatrixProjection[14] = -2.0f * back * front * f_n;
+	*/
+	
 	float tangent = tanf(fovY/2 * DEG2RAD);   // tangent of half fovY
 	float height = front * tangent;           // half height of near plane
 	float width = height * aspectRatio;       // half width of near plane

@@ -18,6 +18,15 @@ class Dream3DTest : EngineManager
 
 		void render3D(float deltaTimeMs);
 		void render2D(float deltaTimeMs);
+
+		virtual void			keyPressedEx(unsigned int iVirtualKeycode, unsigned short ch);
+		virtual void			keyReleasedEx(unsigned int iVirtualKeycode, unsigned short ch);
+
+		virtual void			onMouseDownEx(int mCode, int x, int y);
+		virtual void			onMouseMoveEx(int mCode, int x, int y);
+		virtual void			onMouseUpEx(int mCode, int x, int y);
+		virtual void			onMouseWheelEx(WPARAM wParam, LPARAM lParam);
+
 	private:
 		Scene*		m_pScene;
 };

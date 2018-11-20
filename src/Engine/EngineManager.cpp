@@ -2,6 +2,7 @@
 #include "Engine/Texture.h"
 #include "Engine/EngineManager.h"
 #include "Engine/Camera.h"
+#include "Engine/FrameBuffer.h"
 
 EngineManager*	EngineManager::m_pEngineManager;
 
@@ -38,6 +39,7 @@ void EngineManager::startup(HWND pHWnd) {
 	RECT rClientRect;
 	GetClientRect(m_pHWnd, &rClientRect);
 	setViewport(rClientRect.right - rClientRect.left, rClientRect.bottom - rClientRect.top);
+	FrameBuffer::initialize();
 
 	m_pKeyboardManager = new KeyboardManager();
 	m_pMouseManager = new MouseManager();
@@ -96,6 +98,8 @@ void EngineManager::keyPressed(unsigned int iVirtualKeycode, unsigned short ch) 
 #ifdef USE_YAGUI
 	m_pWidgetManager->keyPressed(iVirtualKeycode, ch);
 #endif
+
+	keyPressedEx(iVirtualKeycode, ch);
 }
 
 void EngineManager::keyReleased(unsigned int iVirtualKeycode, unsigned short ch) {
@@ -103,6 +107,8 @@ void EngineManager::keyReleased(unsigned int iVirtualKeycode, unsigned short ch)
 #ifdef USE_YAGUI
 	m_pWidgetManager->keyReleased(iVirtualKeycode, ch);
 #endif
+
+	keyReleasedEx(iVirtualKeycode, ch);
 }
 
 void EngineManager::frame() {
@@ -131,6 +137,8 @@ void EngineManager::onMouseDown(int mCode, int x, int y) {
 #ifdef USE_YAGUI
 	m_pWidgetManager->onMouseDown(mCode, x, y);
 #endif
+
+	onMouseDownEx(mCode, x, y);
 }
 
 void EngineManager::onMouseMove(int mCode, int x, int y) {
@@ -146,6 +154,8 @@ void EngineManager::onMouseMove(int mCode, int x, int y) {
 		m_pWidgetManager->onMouseMove(mCode, x, y);
 #endif
 	}
+
+	onMouseMoveEx(mCode, x, y);
 }
 
 void EngineManager::onMouseWheel(WPARAM wParam, LPARAM lParam) {
@@ -153,6 +163,8 @@ void EngineManager::onMouseWheel(WPARAM wParam, LPARAM lParam) {
 #ifdef USE_YAGUI
 	m_pWidgetManager->onMouseWheel(wParam, lParam);
 #endif
+
+	onMouseWheelEx(wParam, lParam);
 }
 
 void EngineManager::onMouseUp(int mCode, int x, int y) {
@@ -160,6 +172,8 @@ void EngineManager::onMouseUp(int mCode, int x, int y) {
 #ifdef USE_YAGUI
 	m_pWidgetManager->onMouseUp(mCode, x, y);
 #endif
+
+	onMouseUpEx(mCode, x, y);
 }
 
 void EngineManager::setLMouseStatus(bool bPressed, int mouseX, int mouseY) {

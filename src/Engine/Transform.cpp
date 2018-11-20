@@ -214,7 +214,32 @@ Matrix4& Transform::getTransformedModelMatrix() {
 		if(bHasScaling || (m_iDirty & DIRTY_SCALE) == DIRTY_SCALE) {
 			m_Matrix.scale(m_vScale);
 		}
-
+		/*
+		if (bHasTranslation || (m_iDirty & DIRTY_TRANSLATION) == DIRTY_TRANSLATION)
+		{
+			m_Matrix.setTranslate(m_vTranslation);
+			if (bHasRotation || (m_iDirty & DIRTY_ROTATION) == DIRTY_ROTATION)
+			{
+				m_Matrix.rotate(m_vRotation);
+			}
+			if (bHasScaling || (m_iDirty & DIRTY_SCALE) == DIRTY_SCALE)
+			{
+				m_Matrix.scale(m_vScale);
+			}
+		}
+		else if (bHasRotation || (m_iDirty & DIRTY_ROTATION) == DIRTY_ROTATION)
+		{
+			m_Matrix.rotate(m_vRotation);
+			if (bHasScaling || (m_iDirty & DIRTY_SCALE) == DIRTY_SCALE)
+			{
+				m_Matrix.scale(m_vScale);
+			}
+		}
+		else if (bHasScaling || (m_iDirty & DIRTY_SCALE) == DIRTY_SCALE)
+		{
+			m_Matrix.scale(m_vScale);
+		}
+		*/
 		m_iDirty &= ~DIRTY_TRANSLATION & ~DIRTY_ROTATION & ~DIRTY_SCALE;
 	}
 

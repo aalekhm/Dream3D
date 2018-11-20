@@ -180,8 +180,10 @@ Matrix4& Node::getWorldMatrix() {
 	Node* parent = getParent();
 	if (parent) {
 		Matrix4::multiply(	(m_pCamera)?getTransformedViewMatrix():getTransformedModelMatrix(),
-							parent->getWorldMatrix(),
-							&m_MatrixWorld);
+									parent->getWorldMatrix(),
+									&m_MatrixWorld);
+
+		//Matrix4::multiply(parent->getWorldMatrix(), getTransformedModelMatrix(), &m_MatrixWorld);
 	}
 	else
 	{

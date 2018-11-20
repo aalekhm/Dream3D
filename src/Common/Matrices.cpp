@@ -693,6 +693,22 @@ void Matrix4::multiplyMatrix(const float* m, float scalar, float* dst) {
 	dst[15] = m[15] * scalar;
 }
 
+void Matrix4::transformVector(const Vector4& vector, Vector4* dst) const {
+
+	transformVector(vector.x, vector.y, vector.z, 0.0f, dst);
+}
+
+void Matrix4::transformVector(float x, float y, float z, float w, Vector4* dst) const {
+
+	if( dst == NULL)
+		return;
+
+	dst->x = x * m[0] + y * m[4] + z * m[8] + w * m[12];
+	dst->y = x * m[1] + y * m[5] + z * m[9] + w * m[13];
+	dst->z = x * m[2] + y * m[6] + z * m[10] + w * m[14];
+	dst->w = x * m[3] + y * m[7] + z * m[11] + w * m[15];
+}
+
 Matrix4 Matrix4::operator+(const Matrix4& rhs) const
 {
 	return Matrix4(m[0]+rhs[0],   m[1]+rhs[1],   m[2]+rhs[2],   m[3]+rhs[3],

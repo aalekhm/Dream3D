@@ -36,6 +36,7 @@ O -'        .'''       .'                                     "8b d8"   Veilleux
 #include "Engine/Texture.h"
 #include "Engine/TGA.h"
 #include "Engine/MeshObjLoader.h"
+#include "Engine/FrameBuffer.h"
 
 #include "Engine/Properties.h"
 #include "Engine/MD5Model.h"
@@ -82,10 +83,13 @@ Node* objModelNode;
 std::vector<MD5Model*>	v_pMD5Models;
 
 SpriteBatch* createSpriteBatch();
-SpriteBatch* spriteBatch;
+SpriteBatch* gSpriteBatch;
 
 Texture*  gTexture0;
 Texture*  gTexture1;
+
+FrameBuffer*	gFrameBuffer;
+SpriteBatch*		gFBOSpriteBatch;
 
 #ifdef USE_YAGUI
 Node* gCanvasCameraNode;
@@ -521,7 +525,7 @@ void Dream3DTest::initialize() {
 	m_pScene->addNode(objModelNode);
 
 	meshBatch = createMeshBatch();
-	spriteBatch = createSpriteBatch();
+	gSpriteBatch = createSpriteBatch();
 
 	gTexture0 = Texture::create(COLOURFUL_TGA, false);
 	gTexture1 = Texture::create(CORE_UI, false);
@@ -570,6 +574,10 @@ void Dream3DTest::initialize() {
 	addDummyWindows(GetWindowQ(0));
 	////////////////////////////////////////////
 #endif
+
+	gFrameBuffer = FrameBuffer::create("TEMP FBO_200x200", 512, 512);
+	gFBOSpriteBatch = SpriteBatch::create(gFrameBuffer->getRenderTarget(0)->getTexture());
+	GP_ASSERT( gFBOSpriteBatch );
 }
 
 void initMD5Models(Scene* pScene) {
@@ -1129,10 +1137,10 @@ MeshBatch* createMeshBatch() {
 }
 
 SpriteBatch* createSpriteBatch() {
-	SpriteBatch* spriteBatch = SpriteBatch::create(CARTOON_TGA);
-	GP_ASSERT( spriteBatch );
+	SpriteBatch* pSpriteBatch = SpriteBatch::create(CARTOON_TGA);
+	GP_ASSERT( pSpriteBatch );
 
-	return spriteBatch;
+	return pSpriteBatch;
 }
 
 static float rAngle = 0.0f;
@@ -1167,7 +1175,7 @@ void Dream3DTest::render3D(float deltaTimeMs) {
 	cubeModelNode->translateForward(0.0001f * deltaTimeMs);
 	quadModelNode->rotateY(0.001f * rAngle);
 	m_pScene->render();
-	
+
 	/*
 	glLoadMatrixf(pCamera->getNode()->getViewMatrix().getTranspose());
 	// Draw all of the triangles as one mesh batch.
@@ -1183,24 +1191,26 @@ void Dream3DTest::render2D(float deltaTimeMs) {
 	Camera* pCamera = m_pScene->getActiveCamera();
 	pCamera->setType(Camera::ORTHOGRAPHIC);
 
-	spriteBatch->setClip(0, 0, getWidth(), getHeight());
-	spriteBatch->start();
-		spriteBatch->setClip(0, 0, 100, 100);
-		Vector4 src(0, 0, spriteBatch->getTexture()->getWidth(), spriteBatch->getTexture()->getHeight());
-		//spriteBatch->draw(Rectangle(0, 0, 200.0f, 200.0f), Rectangle(0, 0, 900.0f, 695.0f), Vector4::fromColor(0xFFFFFF80));
-		spriteBatch->draw(Vector4(0, 0, 200.0f, 200.0f), src, Vector4::fromColor(0xFFFFFF80));
-		spriteBatch->setClip(0, 0, getWidth(), getHeight());
+	SpriteBatch * pSpriteBatch = gFBOSpriteBatch;//gSpriteBatch;//gFBOSpriteBatch;
 
-		spriteBatch->draw(Vector4(200, 0, 64, 64), src, Vector4::fromColor(0xF68B28FF));
-		spriteBatch->draw(Vector4(264, 0, 64, 64), src, Vector4::fromColor(0xDA2128FF));
-		spriteBatch->draw(Vector4(328, 0, 64, 64), src, Vector4::fromColor(0xE21B52FF));
+	pSpriteBatch->setClip(0, 0, getWidth(), getHeight());
+	pSpriteBatch->start();
+		pSpriteBatch->setClip(0, 0, 512, 512);
+		Vector4 src(0, 0, pSpriteBatch->getTexture()->getWidth(), pSpriteBatch->getTexture()->getHeight());
+		//pSpriteBatch->draw(Rectangle(0, 0, 200.0f, 200.0f), Rectangle(0, 0, 900.0f, 695.0f), Vector4::fromColor(0xFFFFFF80));
+		pSpriteBatch->draw(Vector4(0, 0, 200.0f, 200.0f), src, Vector4::fromColor(0xFFFFFF80));
+		pSpriteBatch->setClip(0, 0, getWidth(), getHeight());
 
-		spriteBatch->draw(Vector3(200, 64, 0), src, Vector2(100, 100), Vector4::fromColor(0xFFFFFFFF));
+		pSpriteBatch->draw(Vector4(200, 0, 64, 64), src, Vector4::fromColor(0xF68B28FF));
+		pSpriteBatch->draw(Vector4(264, 0, 64, 64), src, Vector4::fromColor(0xDA2128FF));
+		pSpriteBatch->draw(Vector4(328, 0, 64, 64), src, Vector4::fromColor(0xE21B52FF));
+
+		pSpriteBatch->draw(Vector3(200, 64, 0), src, Vector2(100, 100), Vector4::fromColor(0xFFFFFFFF));
 
 		/////// Rotation
-		spriteBatch->draw(Vector3(300, 64, 0), src, Vector2(100, 100), Vector4(1, 1, 1, 1), Vector2(0.5f, 0.5f), MATH_DEG_TO_RAD(rAngle));
-		spriteBatch->draw(Vector3(400, 64, 0), src, Vector2(128, 128), Vector4(1, 1, 1, 1), Vector2(0.5f, 0.5f), MATH_DEG_TO_RAD(135));
-	spriteBatch->stop();
+		pSpriteBatch->draw(Vector3(300, 64, 0), src, Vector2(100, 100), Vector4(1, 1, 1, 1), Vector2(0.5f, 0.5f), MATH_DEG_TO_RAD(rAngle));
+		pSpriteBatch->draw(Vector3(400, 64, 0), src, Vector2(128, 128), Vector4(1, 1, 1, 1), Vector2(0.5f, 0.5f), MATH_DEG_TO_RAD(135));
+	pSpriteBatch->stop();
 
 	rAngle += deltaTimeMs*ROTATION_PER_SECOND;
 	if(rAngle >= 360.0f) rAngle = 0.0f;
@@ -1226,7 +1236,43 @@ void Dream3DTest::render(float deltaTimeMs) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
 
 	render3D(deltaTimeMs);
+
+	gFrameBuffer->bind();
+		glClearColor(0.1f, 0.1f, 0.1f, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
+		m_pScene->render();
+	gFrameBuffer->bindDefault();
+
 	render2D(deltaTimeMs);
+}
+
+void Dream3DTest::keyPressedEx(unsigned int iVirtualKeycode, unsigned short ch) {
+
+}
+
+void Dream3DTest::keyReleasedEx(unsigned int iVirtualKeycode, unsigned short ch) {
+
+}
+
+void Dream3DTest::onMouseDownEx(int mCode, int x, int y) {
+
+	if( (mCode & MK_LBUTTON) != 0 ) {
+		
+		//Camera* pCamera = m_pScene->getActiveCamera();
+		//pCamera->pickRay(Rectangle_(0, 0, getWidth(), getHeight()), x, y);
+	}
+}
+
+void Dream3DTest::onMouseMoveEx(int mCode, int x, int y) {
+
+}
+
+void Dream3DTest::onMouseUpEx(int mCode, int x, int y){
+
+}
+
+void Dream3DTest::onMouseWheelEx(WPARAM wParam, LPARAM lParam) {
+
 }
 
 #ifdef USE_YAGUI
