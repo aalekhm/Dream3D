@@ -59,38 +59,42 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			}
 		case WM_LBUTTONDOWN:
 			{
-				m_pEngineManager->setLMouseStatus(true, LOWORD(lParam), HIWORD(lParam));
+				m_pEngineManager->onMouseDown(MK_LBUTTON, LOWORD(lParam), HIWORD(lParam));
 			}
 			break;
 		case WM_LBUTTONUP:
 			{
-				m_pEngineManager->setLMouseStatus(false, LOWORD(lParam), HIWORD(lParam));
+				m_pEngineManager->onMouseUp(MK_LBUTTON, LOWORD(lParam), HIWORD(lParam));
 			}
 			break;
 		case WM_MBUTTONDOWN:
 			{
-				m_pEngineManager->setMMouseStatus(true, LOWORD(lParam), HIWORD(lParam));
+				m_pEngineManager->onMouseDown(MK_MBUTTON, LOWORD(lParam), HIWORD(lParam));
 			}
 			break;
 		case WM_MBUTTONUP:
 			{
-				m_pEngineManager->setMMouseStatus(false, LOWORD(lParam), HIWORD(lParam));
+				m_pEngineManager->onMouseUp(MK_MBUTTON, LOWORD(lParam), HIWORD(lParam));
 			}
 			break;
 		case WM_RBUTTONDOWN:
 			{
-				m_pEngineManager->setRMouseStatus(true, LOWORD(lParam), HIWORD(lParam));
+				m_pEngineManager->onMouseDown(MK_RBUTTON, LOWORD(lParam), HIWORD(lParam));
 			}
 			break;
 		case WM_RBUTTONUP:
 			{
-				m_pEngineManager->setRMouseStatus(false, LOWORD(lParam), HIWORD(lParam));
+				m_pEngineManager->onMouseUp(MK_RBUTTON, LOWORD(lParam), HIWORD(lParam));
+			}
+			break;
+		case WM_MOUSEWHEEL:
+			{
+				m_pEngineManager->onMouseWheel(wParam, lParam);
 			}
 			break;
 		case WM_MOUSEMOVE:
-		case WM_MOUSEWHEEL:
 			{
-				m_pEngineManager->setMouseMove(wParam, LOWORD(lParam), HIWORD(lParam));
+				m_pEngineManager->onMouseMove((int)wParam, (int)LOWORD(lParam), (int)HIWORD(lParam));
 			}
 			break;
 	}
@@ -280,16 +284,15 @@ bool createGLWindow(char* title, int width, int height, int bits, bool isFullScr
 }
 
 int winMainLoop() {
-	if(MessageBox(NULL, "Would you like to run in FULLSCREEN mode?", "Start FullScreen", MB_YESNO) == IDNO)
+	//if(MessageBox(NULL, "Would you like to run in FULLSCREEN mode?", "Start FullScreen", MB_YESNO) == IDNO)
 		m_bFULLSCREEN = false;
 
 	if(!createGLWindow("Dream3D!!!", SCREEN_WIDTH, SCREEN_HEIGHT, 16, m_bFULLSCREEN))
 		return 0;
 
 	m_pEngineManager = EngineManager::getInstance();
-	m_pEngineManager->startup();
-	m_pEngineManager->setViewport(SCREEN_WIDTH, SCREEN_HEIGHT);
-
+	m_pEngineManager->startup(SCREEN_WIDTH, SCREEN_HEIGHT);
+	
 	MSG		msg;
 	bool	done = false;
 

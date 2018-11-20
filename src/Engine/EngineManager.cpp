@@ -9,7 +9,8 @@ EngineManager::EngineManager()
 	:	m_pTimer(NULL),
 		m_pKeyboardManager(NULL),
 		m_pMouseManager(NULL),
-		
+		m_pWidgetManager(NULL),
+
 		m_iViewportW(0),
 		m_iViewportH(0),
 		m_iState(UNINITIALIZED),
@@ -28,14 +29,17 @@ EngineManager* EngineManager::getInstance() {
 	return m_pEngineManager;
 }
 
-void EngineManager::startup() {
+void EngineManager::startup(int width, int height) {
 	m_pKeyboardManager = new KeyboardManager();
 	m_pMouseManager = new MouseManager();
+	m_pWidgetManager = WWidgetManager::getInstance();
 	m_pTimer = new Timer();
 
 	initTimer();
 
 	m_iState = RUNNING;
+
+	setViewport(width, height);
 }
 
 void EngineManager::shutdown() {
@@ -90,10 +94,38 @@ void EngineManager::frame() {
 		update((float)m_pTimer->getDeltaTimeMs());
 		render((float)m_pTimer->getDeltaTimeMs());
 
+		m_pWidgetManager->update((float)m_pTimer->getDeltaTimeMs());
+
 		updateFPS();
 
 		m_pTimer->endFrame();
 	}
+}
+
+void EngineManager::onMouseDown(int mCode, int x, int y) {
+	m_pMouseManager->onMouseDown(mCode, x, y);
+	m_pWidgetManager->onMouseDown(mCode, x, y);
+}
+
+void EngineManager::onMouseMove(int mCode, int x, int y) {
+	if(mCode == 0) {
+		m_pMouseManager->onMouseHover(mCode, x, y);
+		m_pWidgetManager->onMouseHover(mCode, x, y);
+	}
+	else {
+		m_pMouseManager->onMouseMove(mCode, x, y);
+		m_pWidgetManager->onMouseMove(mCode, x, y);
+	}
+}
+
+void EngineManager::onMouseWheel(WPARAM wParam, LPARAM lParam) {
+	//m_pMouseManager->onMouseWheel(wParam, lParam);
+	m_pWidgetManager->onMouseWheel(wParam, lParam);
+}
+
+void EngineManager::onMouseUp(int mCode, int x, int y) {
+	m_pMouseManager->onMouseUp(mCode, x, y);
+	m_pWidgetManager->onMouseUp(mCode, x, y);
 }
 
 void EngineManager::setLMouseStatus(bool bPressed, int mouseX, int mouseY) {
@@ -135,6 +167,13 @@ void EngineManager::updateFPS() {
 
 unsigned int EngineManager::getFPS() {
 	return m_iFrameRate;
+}
+
+void EngineManager::addUIListener(YAGUICallback callbackProc) {
+
+	if(callbackProc != NULL) {
+		m_pWidgetManager->setCallback(callbackProc);
+	}
 }
 
 EngineManager::~EngineManager() {

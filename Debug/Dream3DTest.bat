@@ -1,1 +1,0 @@
-Dream3DTest.exe > 2.txt

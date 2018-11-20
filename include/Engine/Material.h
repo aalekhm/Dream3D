@@ -1,8 +1,8 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include "RenderState.h"
-#include "Technique.h"
+#include "Engine/RenderState.h"
+#include "Engine/Technique.h"
 
 class Material : RenderState {
 

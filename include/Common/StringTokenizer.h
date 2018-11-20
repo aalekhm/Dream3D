@@ -2,8 +2,8 @@
 #ifndef _STRINGTOKENIZER_H_
 #define _STRINGTOKENIZER_H_
 
-#include "Token.h"
-#include "CCString.h"
+#include "Common/Token.h"
+#include "Common/CCString.h"
 
 #define SAFE_DELETE(p) { if(p) { delete p; p = NULL; } }
 #define SAFE_DELETE_ARRAY(p) { if(p) { delete[] p; p = NULL; } }

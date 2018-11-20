@@ -47,8 +47,8 @@
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;C:\Program Files\glew-1.9.0-win32\glew-1.9.0\include</IncludePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib;C:\Program Files\glew-1.9.0-win32\glew-1.9.0\lib;</LibraryPath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;C:\Program Files\glew-1.9.0-win32\glew-1.9.0\include;C:\Program Files\freetype2\include</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib;C:\Program Files\glew-1.9.0-win32\glew-1.9.0\lib;C:\Program Files\freetype2\lib\windows\x86\lib</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -62,7 +62,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;CCString.lib;RandomAccessFile.lib;StringTokenizer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;freetype245.lib;CCString.lib;RandomAccessFile.lib;StringTokenizer.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -98,6 +98,28 @@
     <ClCompile Include="..\src\Engine\SpriteBatch.cpp" />
     <ClCompile Include="..\src\Engine\Technique.cpp" />
     <ClCompile Include="..\src\Engine\Transform.cpp" />
+    <ClCompile Include="..\src\Engine\UI\TTFFontEncoder.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WButton.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WCheckbox.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WComboBox.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WComponent.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WComponentFactory.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WConsoleLog.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WContainer.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WDummy.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WFrame.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WInspector.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WInspectorTab.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WListBox.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WScrollbar.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WStatic.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WTabbedPane.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WTable.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WTextBox.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WTextField.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WTree.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WWidgetManager.cpp" />
+    <ClCompile Include="..\src\Engine\UI\WWindow.cpp" />
     <ClCompile Include="..\src\Engine\VertexAttributeBinding.cpp" />
     <ClCompile Include="..\src\WinMain.cpp" />
     <ClCompile Include="..\src\Engine\Camera.cpp" />
@@ -144,6 +166,31 @@
     <ClInclude Include="..\include\Engine\TGA.h" />
     <ClInclude Include="..\include\Engine\Timer.h" />
     <ClInclude Include="..\include\Engine\Transform.h" />
+    <ClInclude Include="..\include\Engine\UI\UIDefines.h" />
+    <ClInclude Include="..\include\Engine\UI\StringUtil.h" />
+    <ClInclude Include="..\include\Engine\UI\TTFFontEncoder.h" />
+    <ClInclude Include="..\include\Engine\UI\WButton.h" />
+    <ClInclude Include="..\include\Engine\UI\WCheckbox.h" />
+    <ClInclude Include="..\include\Engine\UI\WComboBox.h" />
+    <ClInclude Include="..\include\Engine\UI\WComponent.h" />
+    <ClInclude Include="..\include\Engine\UI\WComponentFactory.h" />
+    <ClInclude Include="..\include\Engine\UI\WConsoleLog.h" />
+    <ClInclude Include="..\include\Engine\UI\WContainer.h" />
+    <ClInclude Include="..\include\Engine\UI\WDummy.h" />
+    <ClInclude Include="..\include\Engine\UI\WFrame.h" />
+    <ClInclude Include="..\include\Engine\UI\widgetdef.h" />
+    <ClInclude Include="..\include\Engine\UI\WInspector.h" />
+    <ClInclude Include="..\include\Engine\UI\WInspectorTab.h" />
+    <ClInclude Include="..\include\Engine\UI\WListBox.h" />
+    <ClInclude Include="..\include\Engine\UI\WScrollbar.h" />
+    <ClInclude Include="..\include\Engine\UI\WStatic.h" />
+    <ClInclude Include="..\include\Engine\UI\WTabbedPane.h" />
+    <ClInclude Include="..\include\Engine\UI\WTable.h" />
+    <ClInclude Include="..\include\Engine\UI\WTextBox.h" />
+    <ClInclude Include="..\include\Engine\UI\WTextField.h" />
+    <ClInclude Include="..\include\Engine\UI\WTree.h" />
+    <ClInclude Include="..\include\Engine\UI\WWidgetManager.h" />
+    <ClInclude Include="..\include\Engine\UI\WWindow.h" />
     <ClInclude Include="..\include\Engine\VertexAttributeBinding.h" />
     <ClInclude Include="..\include\Engine\VertexFormat.h" />
     <ClInclude Include="..\include\Common\Matrices.h" />
