@@ -40,6 +40,11 @@ class Texture {
 			CLAMP_TO_EGDE = GL_CLAMP_TO_EDGE
 		};
 
+		/**
+		* Destructor.
+		*/
+		virtual ~Texture();
+
 		static Texture* create(const char* path, bool generateMipmaps = false);
 		static Texture* createEx(const char* path, bool generateMipmaps = false);
 		static Texture* create(Image* image, bool generateMipmaps = false);
@@ -72,11 +77,6 @@ class Texture {
 		* Copy constructor.
 		*/
 		//Texture(const &Texture copy);
-
-		/**
-		* Destructor.
-		*/
-		virtual ~Texture();
 
 		/**
 		* Hidden copy assignment operator.

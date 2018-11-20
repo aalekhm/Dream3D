@@ -139,9 +139,13 @@ void MeshBatch::setTexture(const char* path, bool generateMipmaps) {
 	GP_ASSERT( path );
 
 	Texture* texture = Texture::createEx(path, generateMipmaps);
-	GP_ASSERT( path );
+	setTexture(texture);
+}
 
-	m_pTexture = texture;
+void MeshBatch::setTexture(Texture* pTexture, bool generateMipmaps) {
+	GP_ASSERT( pTexture );
+
+	m_pTexture = pTexture;
 }
 
 void MeshBatch::bindTexture() {

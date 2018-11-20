@@ -18,6 +18,8 @@ class Camera {
 		void		update(float deltaTimeMs);
 		void		translate(Matrix4 &mat, Vector3 camPos);
 
+		void			setType(Camera::Type camType);
+
 		static Camera*	createPerspective(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane);
 		void			setPerspective(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane);
 		void			setFrustum(float fovY, float aspectRatio, float front, float back);

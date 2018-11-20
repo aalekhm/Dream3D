@@ -1,7 +1,19 @@
+﻿/*
+███████████████ ▒		███████████████░   	  ███████████████		 ██████████
+	█████   ██████ 		  ███████████████     ████████			    ████	████
+	█████░   █████ 		░  █████  ░ █████     ██				   ████		█████
+	░█████ ░  ██████	 ░ █████████████·░	  ████████			   ████	  ██  ████
+	░█████   ▒██████	   ████████████░░     ██████			  ████	███	  ████
+	░░▒█████   ███████	   █████   █████·░    ██				  ██████	   ████
+	███████████████ 	░ ███████ ░██████     ███████			 ████		   ████
+	███████████████ ▒ 	███████████ ███████   ████████████		████		    ████
+*/
+
 #include "Dream3DTest.h"
 #include "Engine/Mesh.h"
 #include "Engine/MeshPart.h"
 #include "Engine/MeshBatch.h"
+#include "Engine/SpriteBatch.h"
 #include "Engine/VertexAttributeBinding.h"
 #include "Engine/Texture.h"
 #include "Engine/TGA.h"
@@ -27,6 +39,9 @@ Mesh* lineMesh;
 
 Mesh* createCubeMeshIndexed(float size);
 Mesh* cubeMeshIndexed;
+
+SpriteBatch* createSpriteBatch();
+SpriteBatch* spriteBatch;
 
 GLuint texID[2];
 GLuint textureWH[2][2];
@@ -107,18 +122,10 @@ void Dream3DTest::initialize() {
 	cubeMeshIndexed = createCubeMeshIndexed(0.25f);
 
 	meshBatch = createMeshBatch();
+	spriteBatch = createSpriteBatch();
 
 	loadTexture("data/ColorFul_2048x1300.tga", texID[0], textureWH[0]);
 	loadTexture("data/core.tga", texID[1], textureWH[1]);
-
-	
-}
-
-void Dream3DTest::update(float deltaTimeMs) {
-	if(isKeyPressed(VK_ESCAPE))
-		exit();
-
-	m_pCamera->update(deltaTimeMs);
 }
 
 void drawGrid(int iSize, float fStep) {
@@ -431,9 +438,28 @@ MeshBatch* createMeshBatch() {
 	return mb;
 }
 
+SpriteBatch* createSpriteBatch() {
+	SpriteBatch* spriteBatch = SpriteBatch::create("data/cartoon.tga");
+	GP_ASSERT( spriteBatch );
+
+	return spriteBatch;
+}
+
+void Dream3DTest::update(float deltaTimeMs) {
+	if(isKeyPressed(VK_ESCAPE))
+		exit();
+
+	m_pCamera->update(deltaTimeMs);
+}
+
+static float rAngle = 0.0f;
+const float ROTATION_PER_SECOND = 0.25*0.36f;//360deg/sec = 360/1000;
+
 void Dream3DTest::render(float deltaTimeMs) {
 	glClearColor(0.1f, 0.1f, 0.1f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
+
+	m_pCamera->setType(Camera::PERSPECTIVE);
 
 	//No Transformations to the World(grid) & triangle hence load the 'view matrix'.
 	glLoadMatrixf(m_pCamera->getViewMatrix().getTranspose());
@@ -476,6 +502,30 @@ void Dream3DTest::render(float deltaTimeMs) {
 	meshBatch->stop();
 	meshBatch->draw();
 	////////////////////////////////////////////////////////////////
+
+	m_pCamera->setType(Camera::ORTHOGRAPHIC);
+	Vector4 src(0, 0, 900.0f, 695.0f);
+
+	spriteBatch->setClip(0, 0, getWidth(), getHeight());
+	spriteBatch->start();
+		spriteBatch->setClip(0, 0, 100, 100);
+		//spriteBatch->draw(Rectangle(0, 0, 200.0f, 200.0f), Rectangle(0, 0, 900.0f, 695.0f), Vector4::fromColor(0xFFFFFF80));
+		spriteBatch->draw(Vector4(0, 0, 200.0f, 200.0f), src, Vector4::fromColor(0xFFFFFF80));
+		spriteBatch->setClip(0, 0, getWidth(), getHeight());
+
+		spriteBatch->draw(Vector4(200, 0, 64, 64), src, Vector4::fromColor(0xF68B28FF));
+		spriteBatch->draw(Vector4(264, 0, 64, 64), src, Vector4::fromColor(0xDA2128FF));
+		spriteBatch->draw(Vector4(328, 0, 64, 64), src, Vector4::fromColor(0xE21B52FF));
+
+		spriteBatch->draw(Vector3(200, 64, 0), src, Vector2(100, 100), Vector4::fromColor(0xFFFFFFFF));
+
+		/////// Rotation
+		spriteBatch->draw(Vector3(300, 64, 0), src, Vector2(100, 100), Vector4(1, 1, 1, 1), Vector2(0.5f, 0.5f), MATH_DEG_TO_RAD(rAngle));
+		spriteBatch->draw(Vector3(400, 64, 0), src, Vector2(128, 128), Vector4(1, 1, 1, 1), Vector2(0.5f, 0.5f), MATH_DEG_TO_RAD(135));
+	spriteBatch->stop();
+
+	rAngle += deltaTimeMs*ROTATION_PER_SECOND;
+	if(rAngle >= 360.0f) rAngle = 0.0f;
 }
 
 

@@ -69,5 +69,6 @@ static GLenum __gl_error_code;
 typedef GLuint TextureHandle;
 
 #define MATH_RANDOM_0_1()           ((float)rand()/RAND_MAX)                    // Returns a random float between 0 and 1.
-
+#define MATH_DEG_TO_RAD(x)          ((x) * 0.0174532925f)
+#define MATH_RAD_TO_DEG(x)          ((x)* 57.29577951f)
 #endif

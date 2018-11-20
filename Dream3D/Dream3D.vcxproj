@@ -82,8 +82,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\Common\Rectangle.cpp" />
     <ClCompile Include="..\src\Engine\MeshBatch.cpp" />
     <ClCompile Include="..\src\Engine\MeshPart.cpp" />
+    <ClCompile Include="..\src\Engine\SpriteBatch.cpp" />
     <ClCompile Include="..\src\Engine\VertexAttributeBinding.cpp" />
     <ClCompile Include="..\src\WinMain.cpp" />
     <ClCompile Include="..\src\Engine\Camera.cpp" />
@@ -100,6 +102,7 @@
     <ClCompile Include="..\src\Common\Vectors.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\Common\Rectangle.h" />
     <ClInclude Include="..\include\Engine\Base.h" />
     <ClInclude Include="..\include\Engine\Camera.h" />
     <ClInclude Include="..\include\Engine\EngineManager.h" />
@@ -109,6 +112,7 @@
     <ClInclude Include="..\include\Engine\MeshBatch.h" />
     <ClInclude Include="..\include\Engine\MeshPart.h" />
     <ClInclude Include="..\include\Engine\MouseManager.h" />
+    <ClInclude Include="..\include\Engine\SpriteBatch.h" />
     <ClInclude Include="..\include\Engine\Texture.h" />
     <ClInclude Include="..\include\Engine\TGA.h" />
     <ClInclude Include="..\include\Engine\Timer.h" />

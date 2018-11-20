@@ -26,12 +26,14 @@ class MeshBatch {
 		void draw();
 
 		void					setTexture(const char* path, bool generateMipmaps = false);
+		void					setTexture(Texture* pTexture, bool generateMipmaps = false);
 		void					bindTexture();
 		void					unbindTexture();
+
+		~MeshBatch();
 	private:
 		MeshBatch(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, /*Material* material, */ bool bIndexed, unsigned int iInitialCapacity, unsigned int iGrowSize);
-		~MeshBatch();
-
+		
 		bool resize(unsigned int iCapacity);
 
 		void updateVertexAttributeBinding();

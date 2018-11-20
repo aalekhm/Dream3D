@@ -81,6 +81,22 @@ Camera* Camera::createOrthographic(int x, int y, int w, int h, float fNearPlane,
 	return cam;
 }
 
+void Camera::setType(Camera::Type camType) {
+	m_iCameraType = camType;
+	m_iDirty |= CAMERA_DIRTY_PROJ;
+
+	if(m_iDirty & CAMERA_DIRTY_PROJ) {
+		if(m_iCameraType == PERSPECTIVE) {
+			setPerspective(m_iViewX, m_iViewY, m_iViewW, m_iViewH, m_fFieldOfView, m_fNearPlane, m_fFarPlane);
+		}
+		else {
+			setOrthographic(m_iViewX, m_iViewY, m_iViewW, m_iViewH, m_fNearPlane, m_fFarPlane);
+		}
+
+		m_iDirty &= ~CAMERA_DIRTY_PROJ;
+	}
+}
+
 Matrix4& Camera::getProjectionMatrix() {
 	if(m_iDirty & CAMERA_DIRTY_PROJ) {
 		
