@@ -1,7 +1,7 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include "Base.h"
+#include "Engine/Base.h"
 #include "Engine/VertexFormat.h"
 
 class MeshPart;
@@ -40,16 +40,6 @@ class Mesh {
 		MeshPart*				addMeshPart(Mesh::PrimitiveType primitiveType, Mesh::IndexFormat indexFormat, unsigned int indexCount, bool isDynamic = false);
 		unsigned int			getMeshPartCount() const;
 		MeshPart*				getMeshPart(unsigned int index);
-
-		///////////////////////////////////// TO BE PUT IN 'MODEL' /////////////////////////////////////
-		void					draw(bool bWireframe = false);
-		void					setVertexAttributeBinding(VertexAttributeBinding* vaBinding);
-		VertexAttributeBinding*	m_pVertexAttributeBinding;
-		///////////////////////////////////// TO BE PUT IN 'MODEL' /////////////////////////////////////
-
-		void					setTexture(const char* path, bool generateMipmaps = false);
-		void					bindTexture();
-		void					unbindTexture();
 	private:
 		Mesh(const VertexFormat& vertexFormat);
 		Mesh(const Mesh& copy);
@@ -62,8 +52,6 @@ class Mesh {
 
 		MeshPart**			m_ppMeshParts;
 		unsigned int		m_iPartCount;
-
-		Texture*			m_pTexture;
 };
 
 #endif

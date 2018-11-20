@@ -136,8 +136,12 @@ float Transform::getRotateZ() {
 }
 
 Matrix4& Transform::getMatrix() {
-	if(m_iDirty) {
+	if(m_iDirty) 
+	{
 		m_Matrix.identity();
+		//m_Matrix.translate(-m_vTranslation);
+		//m_Matrix.rotate(-m_vRotation);
+		//m_Matrix.scale(m_vScale);
 
 		bool bHasTranslation = !m_vTranslation.isZero();
 		bool bHasScaling = !m_vScale.isOne();

@@ -85,6 +85,7 @@
     <ClCompile Include="..\src\Common\Rectangle.cpp" />
     <ClCompile Include="..\src\Engine\MeshBatch.cpp" />
     <ClCompile Include="..\src\Engine\MeshPart.cpp" />
+    <ClCompile Include="..\src\Engine\Model.cpp" />
     <ClCompile Include="..\src\Engine\SpriteBatch.cpp" />
     <ClCompile Include="..\src\Engine\Transform.cpp" />
     <ClCompile Include="..\src\Engine\VertexAttributeBinding.cpp" />
@@ -112,6 +113,7 @@
     <ClInclude Include="..\include\Engine\Mesh.h" />
     <ClInclude Include="..\include\Engine\MeshBatch.h" />
     <ClInclude Include="..\include\Engine\MeshPart.h" />
+    <ClInclude Include="..\include\Engine\Model.h" />
     <ClInclude Include="..\include\Engine\MouseManager.h" />
     <ClInclude Include="..\include\Engine\SpriteBatch.h" />
     <ClInclude Include="..\include\Engine\Texture.h" />

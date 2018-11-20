@@ -10,6 +10,7 @@
 */
 
 #include "Dream3DTest.h"
+#include "Engine/Model.h"
 #include "Engine/Mesh.h"
 #include "Engine/MeshPart.h"
 #include "Engine/MeshBatch.h"
@@ -25,20 +26,20 @@ void drawTriangle(const Vector3& p1, const Vector3& p2, const Vector3& p3);
 void drawGrid(int iSize, float fStep);
 void drawLine(const Vector3& p1, const Vector3& p2);
 
-Mesh* createTriangleMesh();
-Mesh* triangleMesh;
+Model* createTriangleModel();
+Model* triangleModel;
 
-Mesh* createTriangleStripMesh();
-Mesh* triangleStripMesh;
+Model* createTriangleStripModel();
+Model* triangleStripModel;
 
-Mesh* createLineStripMesh();
-Mesh* lineStripMesh;
+Model* createLineStripModel();
+Model* lineStripModel;
 
-Mesh* createLineMesh();
-Mesh* lineMesh;
+Model* createLineModel();
+Model* lineModel;
 
-Mesh* createCubeMeshIndexed(float size);
-Mesh* cubeMeshIndexed;
+Model* createCubeModelIndexed(float size);
+Model* cubeModel;
 
 SpriteBatch* createSpriteBatch();
 SpriteBatch* spriteBatch;
@@ -114,12 +115,14 @@ void Dream3DTest::initialize() {
 
 	glEnable(GL_DEPTH_TEST);
 
-	triangleMesh = createTriangleMesh();
-	triangleStripMesh = createTriangleStripMesh();
+	triangleModel = createTriangleModel();
+	triangleStripModel = createTriangleStripModel();
 	
-	lineStripMesh = createLineStripMesh();
-	lineMesh = createLineMesh();
-	cubeMeshIndexed = createCubeMeshIndexed(0.25f);
+	lineStripModel = createLineStripModel();
+
+	lineModel = createLineModel();
+
+	cubeModel = createCubeModelIndexed(0.25f);
 
 	meshBatch = createMeshBatch();
 	spriteBatch = createSpriteBatch();
@@ -172,7 +175,7 @@ void drawLine(const Vector3& p1, const Vector3& p2) {
 	glEnd();
 }
 
-Mesh* createTriangleMesh()
+Model* createTriangleModel()
 {
 	// Calculate the vertices of the triangle.
 	Vector3 p1(-0.5f,	0.5f,	-1.0f);
@@ -204,16 +207,13 @@ Mesh* createTriangleMesh()
 	mesh->setPrimitiveType(Mesh::TRIANGLES);
 	mesh->setVertexData(vertices, 0, vertexCount);
 
-	VertexAttributeBinding* b = VertexAttributeBinding::create(mesh);
-	GL_ASSERT( b );
+	Model* pModel = Model::create(mesh);
+	pModel->setTexture("data/ColorFul_2048x1300.tga");
 
-	mesh->setVertexAttributeBinding(b);
-	mesh->setTexture("data/ColorFul_2048x1300.tga");
-
-	return mesh;
+	return pModel;
 }
 
-Mesh* createTriangleStripMesh() {
+Model* createTriangleStripModel() {
 	// Calculate the vertices of the equilateral triangle.
 	Vector3 p1(0.0f,	0.5f,	-1.0f);
 	Vector3 p2(0.0f,	0.0f,	-1.0f);
@@ -272,16 +272,13 @@ Mesh* createTriangleStripMesh() {
 	mesh->setPrimitiveType(Mesh::TRIANGLE_STRIP);
 	mesh->setVertexData(vertices, 0, vertexCount);
 
-	VertexAttributeBinding* b = VertexAttributeBinding::create(mesh);
-	GL_ASSERT( b );
+	Model* pModel = Model::create(mesh);
+	pModel->setTexture("data/cartoon.tga");
 
-	mesh->setVertexAttributeBinding(b);
-	mesh->setTexture("data/cartoon.tga");
-
-	return mesh;
+	return pModel;
 }
 
-Mesh* createLineStripMesh() {
+Model* createLineStripModel() {
 	float vertices[] =
 	{
 		0.0f,	0.25f,	-1.0f,		1.0f, 0.0f, 0.0f,
@@ -305,15 +302,11 @@ Mesh* createLineStripMesh() {
 	mesh->setPrimitiveType(Mesh::LINE_STRIP);
 	mesh->setVertexData(vertices, 0, vertexCount);
 
-	VertexAttributeBinding* b = VertexAttributeBinding::create(mesh);
-	GL_ASSERT( b );
-
-	mesh->setVertexAttributeBinding(b);
-
-	return mesh;
+	Model* pModel = Model::create(mesh);
+	return pModel;
 }
 
-Mesh* createLineMesh() {
+Model* createLineModel() {
 
 	float vertices[] = 
 	{
@@ -338,15 +331,12 @@ Mesh* createLineMesh() {
 	mesh->setPrimitiveType(Mesh::LINES);
 	mesh->setVertexData(vertices, 0, vertexCount);
 
-	VertexAttributeBinding* b = VertexAttributeBinding::create(mesh);
-	GL_ASSERT( b );
+	Model* pModel = Model::create(mesh);
 
-	mesh->setVertexAttributeBinding(b);
-
-	return mesh;
+	return pModel;
 }
 
-Mesh* createCubeMeshIndexed(float size = 1.0f) {
+Model* createCubeModelIndexed(float size = 1.0f) {
 	float a = size * 0.5f;
 	float vertices[] =
 	{
@@ -403,11 +393,10 @@ Mesh* createCubeMeshIndexed(float size = 1.0f) {
 	MeshPart* meshPart = mesh->addMeshPart(Mesh::TRIANGLES, Mesh::INDEX16, indexCount, false);
 	meshPart->setIndexData(indices, 0, indexCount);
 
-	VertexAttributeBinding* b = VertexAttributeBinding::create(mesh);
-	mesh->setVertexAttributeBinding(b);
-	mesh->setTexture("data/cartoon.tga");
+	Model* pModel = Model::create(mesh);
+	pModel->setTexture("data/cartoon.tga");
 
-	return mesh;
+	return pModel;
 }
 
 MeshBatch* createMeshBatch() {
@@ -486,15 +475,15 @@ void Dream3DTest::render(float deltaTimeMs) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 	////////////////////////////////////////////////////////////////
-	triangleMesh->draw(!true);
+	triangleModel->draw(!true);
 
-	triangleStripMesh->draw(!true);
+	triangleStripModel->draw(!true);
 
-	lineStripMesh->draw();
+	lineStripModel->draw();
 
-	lineMesh->draw();
+	lineModel->draw();
 
-	cubeMeshIndexed->draw(!true);
+	cubeModel->draw(!true);
 	
 	// Draw all of the triangles as one mesh batch.
 	meshBatch->start();
