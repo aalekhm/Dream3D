@@ -11,7 +11,6 @@ EngineManager::EngineManager()
 		m_pMouseManager(NULL),
 		m_pWidgetManager(NULL),
 		m_pHWnd(NULL),
-		m_pYAGUICameraNode(NULL),
 
 		m_iViewportW(0),
 		m_iViewportH(0),
@@ -184,19 +183,6 @@ void EngineManager::addUIListener(YAGUICallback callbackProc) {
 
 	if(callbackProc != NULL) {
 		m_pWidgetManager->setCallback(callbackProc);
-	}
-}
-
-void EngineManager::setUICameraNode(Node* pCameraNode) {
-	GP_ASSERT( pCamera );
-
-	m_pYAGUICameraNode = pCameraNode;
-}
-
-Camera* EngineManager::getUICamera() {
-
-	if(m_pYAGUICameraNode != NULL) {
-		return m_pYAGUICameraNode->getCamera();
 	}
 }
 

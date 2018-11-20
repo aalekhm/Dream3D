@@ -170,8 +170,8 @@ H_FONT WWidgetManager::loadFont(const char* sFontFile, unsigned int iFontSize, u
 }
 
 void WWidgetManager::setGLStates() {
-	Camera* pCamera = EngineManager::getInstance()->getUICamera();
-	pCamera->setType(Camera::ORTHOGRAPHIC);
+	//clearScreen();
+	setupOrthogonalProjection();
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
@@ -534,12 +534,6 @@ int WWidgetManager::getWidgetAlignInt(char* sAlign) {
 	else
 	if(strcmp(sAlign, "RELATIVE_Y") == 0)
 		return RELATIVE_Y;
-	else
-	if(strcmp(sAlign, "LeftRightStretch") == 0)
-		return LEFTRIGHT_STRETCH;
-	else
-	if(strcmp(sAlign, "TopBottomStretch") == 0)
-		return TOPBOTTOM_STRETCH;
 
 	return LEFT;
 }
@@ -724,17 +718,6 @@ void WWidgetManager::getDestinationRect(RectF& destRect, float parentW, float pa
 				destRect.Width = wW - idealRect->X;
 			}
 			break;
-		case LEFTRIGHT_STRETCH:
-			{
-				int XX1 = idealRect->X;
-				int XX2 = idealRect->Width;
-
-				int x1 = wndRect->X + XX1;
-				int x2 = wndRect->X + wndRect->Width - (parentW - XX2);
-
-				destRect.Width = x2 - x1;
-			}
-			break;
 	}
 
 	switch(vAlign) {
@@ -752,21 +735,8 @@ void WWidgetManager::getDestinationRect(RectF& destRect, float parentW, float pa
 			}
 			break;
 		case VCENTER:
-			{
-				destRect.Y = (wndRect->Y + wndRect->Height) - ((parentH - idealRect->Y)/2);
-				destRect.Height = idealRect->Height;
-			}
-			break;
-		case TOPBOTTOM_STRETCH:
-			{
-				int YY1 = idealRect->Y;
-				int YY2 = idealRect->Height;
-
-				int y1 = wndRect->Y + YY1;
-				int y2 = wndRect->Y + wndRect->Height - (parentH - YY2);
-
-				destRect.Height = y2 - y1;
-			}
+			destRect.Y = (wndRect->Y + wndRect->Height) - ((parentH - idealRect->Y)/2);
+			destRect.Height = idealRect->Height;
 			break;
 	}
 }
@@ -877,6 +847,34 @@ void WWidgetManager::drawQuadU(	Texture* pTexture,
 		
 		m_SpriteCount += 4;
 	}
+}
+
+void WWidgetManager::setupOrthogonalProjection() {
+	// Setup and orthogonal, pixel-to-pixel projection matrix
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	//int left = ((WContainer*)WWidgetManager::getInstance()->m_pBaseWindow)->getLeft();
+	//int right = left + ((WContainer*)WWidgetManager::getInstance()->m_pBaseWindow)->getWidth();
+	//int top = ((WContainer*)WWidgetManager::getInstance()->m_pBaseWindow)->getTop();
+	//int bottom = top + ((WContainer*)WWidgetManager::getInstance()->m_pBaseWindow)->getHeight();
+
+	//glOrtho(	left,
+	//				right, 
+	//				bottom, 
+	//				top, 
+	//				0.0, 
+	//				1.0);
+
+	glOrtho(	0,
+					1024, 
+					768, 
+					0, 
+					0.0, 
+					1.0);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 
 int WWidgetManager::getStringWidthTillPos(const char* cStr, int iPos) {
@@ -1064,10 +1062,10 @@ void WWidgetManager::setCallback(YAGUICallback wndProc) {
 		m_lpfnWWndProc = wndProc;
 }
 
-L_RESULT WWidgetManager::onEvent(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+void WWidgetManager::onEvent(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	if(m_lpfnWWndProc != NULL)
-		return m_lpfnWWndProc(hWnd, msg, wParam, lParam);
+		m_lpfnWWndProc(hWnd, msg, wParam, lParam);
 }
 
 H_WND WWidgetManager::GetWindow(int ID_WINDOW) {

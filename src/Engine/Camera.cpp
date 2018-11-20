@@ -19,7 +19,6 @@ Camera::Camera(int x, int y, int w, int h, float iFieldOfView, float fNearPlane,
 		
 		m_MatrixView(),
 		m_MatrixProjection(),
-		m_MatrixProjectionT(),
 		m_MatrixViewProjection(),
 
 		m_pNode(NULL)
@@ -44,7 +43,6 @@ Camera::Camera(int x, int y, int w, int h, float fNearPlane, float fFarPlane)
 
 		m_MatrixView(),
 		m_MatrixProjection(),
-		m_MatrixProjectionT(),
 		m_MatrixViewProjection(),
 
 		m_pNode(NULL)
@@ -74,11 +72,6 @@ Camera* Camera::createOrthographic(int x, int y, int w, int h, float fNearPlane,
 	cam->setOrthographic(x, y, w, h, fNearPlane, fFarPlane);
 	
 	return cam;
-}
-
-void Camera::forceType(Camera::Type camType) {
-	m_iCameraType = NONE;
-	setType(camType);
 }
 
 void Camera::setType(Camera::Type camType) {
@@ -147,44 +140,14 @@ Matrix4& Camera::getViewMatrix() {
 ///////////////////////////////////////////////////////////////////////////////
 void Camera::setPerspective(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane) {
 	// set viewport
-
-	int xViewport = x;
-	int yViewport = EngineManager::getInstance()->getHeight() - (y + h);
-	int wViewport = w;
-	int hViewport = h;
-
-	//glEnable(GL_SCISSOR_TEST);
-	glViewport(xViewport, yViewport, wViewport, hViewport);
-	//glScissor(xViewport, yViewport, wViewport, hViewport);
+	glViewport(x, y, w, h);
 
 	// set perspective viewing frustum
 	setFrustum(iFieldOfView, (float)(w)/h, fNearPlane, fFarPlane); // FOV, AspectRatio, NearClip, FarClip
 	
 	// copy projection matrix to OpenGL
 	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(m_MatrixProjectionT.get());
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-}
-
-void Camera::setPerspectiveWindow(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane) {
-	// set viewport
-
-	int xViewport = x;
-	int yViewport = EngineManager::getInstance()->getHeight() - (y + h);
-	int wViewport = w;
-	int hViewport = h;
-
-	glEnable(GL_SCISSOR_TEST);
-	glViewport(xViewport, yViewport, wViewport, hViewport);
-	glScissor(xViewport, yViewport, wViewport, hViewport);
-
-	// set perspective viewing frustum
-	setFrustum(iFieldOfView, (float)(w)/h, fNearPlane, fFarPlane); // FOV, AspectRatio, NearClip, FarClip
-
-	// copy projection matrix to OpenGL
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+	glLoadMatrixf(m_MatrixProjection.getTranspose());
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
@@ -217,38 +180,14 @@ void Camera::setPerspectiveFrustum(float l, float r, float b, float t, float n, 
 	m_MatrixProjection[11] = -(2 * f * n) / (f - n);
 	m_MatrixProjection[14] = -1;
 	m_MatrixProjection[15] =  0;
-
-	m_MatrixProjectionT = m_MatrixProjection;
-	m_MatrixProjectionT.transpose();
 }
 
 void Camera::setOrthographic(int x, int y, int w, int h, float iNearPlane, float iFarPlane) {
-
-	int left = x;
-	int right = (x + w);
-	int bottom = (y + h);
-	int top = y;
-
-	setOrthogonalFrustum((float)left, (float)right, (float)bottom, (float)top, 0.0f, 1.0f);
+	setOrthogonalFrustum((float)x, (float)x+w, (float)y+h, (float)y, 0.0f, 1.0f);
 	
 	glMatrixMode(GL_PROJECTION);						// Setup and orthogonal, pixel-to-pixel projection matrix
-	glLoadMatrixf(m_MatrixProjectionT.get());	// copy projection matrix to OpenGL
+	glLoadMatrixf(m_MatrixProjection.getTranspose());	// copy projection matrix to OpenGL
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-}
-
-void Camera::setOrthographicWindow(int x, int y, int w, int h, float iNearPlane, float iFarPlane) {
-
-	int left = x;
-	int right = (x + w);
-	int bottom = (y + h);
-	int top = y;
-
-	setOrthogonalFrustum((float)left, (float)right, (float)bottom, (float)top, 0.0f, 1.0f);
-
-	glMatrixMode(GL_PROJECTION);						// Setup and orthogonal, pixel-to-pixel projection matrix
-	glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
@@ -266,9 +205,6 @@ void Camera::setOrthogonalFrustum(float l, float r, float b, float t, float n, f
 	m_MatrixProjection[7]  =  -(t + b) / (t - b);
 	m_MatrixProjection[10] = -2 / (f - n);
 	m_MatrixProjection[11] = -(f + n) / (f - n);
-
-	m_MatrixProjectionT = m_MatrixProjection;
-	m_MatrixProjectionT.transpose();
 }
 
 void Camera::setCamera(float posX, float posY, float posZ, float targetX, float targetY, float targetZ) {

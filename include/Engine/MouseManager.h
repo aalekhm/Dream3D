@@ -22,8 +22,6 @@ class MouseManager {
 
 		int		getMousePosX();
 		int		getMousePosY();
-
-		void		setCursorPosition(int x, int y);
 	private:
 		bool	m_bLMouseDown;
 		bool	m_bMMouseDown;

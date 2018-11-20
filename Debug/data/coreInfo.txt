@@ -795,11 +795,11 @@ WIDGET TextField {
 
 WIDGET TextBox {
 	
-	size	"29 29"
+	size	"29 26"
 
 	Child {
 		skin		TextArea
-		posOffset	"0 0 29 29"
+		posOffset	"0 0 29 26"
 		align		HStretch VStretch
 	}
 	Child {
@@ -809,13 +809,13 @@ WIDGET TextBox {
 	}
 	Child {
 		skin		HScroll
-		posOffset	"2 10 5 15"
+		posOffset	"2 7 8 15"
 		align		HStretch Bottom
 	}
 	ClientArea {
 		skin		EditClient
-		posOffset	"2 2 9 9"
-		align		LeftRightStretch TopBottomStretch
+		posOffset	"2 2 7 4"
+		align		HStretch VStretch
 	}
 }
 
@@ -1262,11 +1262,11 @@ WIDGET ListBox {
 		posOffset	"2 7 8 15"
 		align		HStretch Bottom
 	}
-	ClientArea {
-		skin		EditClient
-		posOffset	"2 2 10 12"
-		align		HStretch VStretch
-	}
+	//ClientArea {
+		//skin		EditClient
+		//posOffset	"2 2 25 22"
+		//align		HStretch VStretch
+	//}
 }
 
 WIDGET ComboBox {
