@@ -9,11 +9,11 @@ class KeyboardManager {
 		KeyboardManager();
 		~KeyboardManager();
 
-		bool isKeyPressed(int iKeyID);
+		static bool isKeyPressed(int iKeyID);
 		void setKeyPressed(int iKeyID);
 		void setKeyReleased(int iKeyID);
 	private:
-		bool		m_bKeys[DEF_MAX_KEYS];	// Array Used For The Keyboard Routine
+		static bool		m_bKeys[DEF_MAX_KEYS];	// Array Used For The Keyboard Routine
 };
 
 #endif

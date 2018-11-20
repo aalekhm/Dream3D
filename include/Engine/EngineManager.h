@@ -4,15 +4,31 @@
 #include "Engine/KeyboardManager.h"
 #include "Engine/MouseManager.h"
 #include "Engine/Timer.h"
+#include "Engine/Camera.h"
 
 class EngineManager {
 
 	public:
+		enum State {
+			UNINITIALIZED,
+			RUNNING,
+			PAUSED
+		};
+
 		EngineManager();
 		~EngineManager();
 		
+		static EngineManager* getInstance();
+
+		void	startup();
+		void	shutdown();
+		void	exit();
+		State	getState();
+
+		void	setViewport(int w, int h);
 		void	initTimer();
-		bool	isKeyPressed(int iKeyID);
+		Timer*	getTimer();
+		static bool	isKeyPressed(int iKeyID);
 		void	setKeyPressed(int iKeyID);
 		void	setKeyReleased(int iKeyID);
 
@@ -20,12 +36,24 @@ class EngineManager {
 		void	setRMouseStatus(bool bPressed, int mouseX, int mouseY);
 		void	setMouseMove(WPARAM keyState, int mouseX, int mouseY);
 
-		void	update();
-		void	render();
+		unsigned int getWidth();
+		unsigned int getHeight();
+		
+		void	frame();
+		virtual void initialize() = 0;
+		virtual void update(float elapsedTime) = 0;
+		virtual void render(float elapsedTime) = 0;
 	private:
-		Timer*				m_pTimer;
-		KeyboardManager*	m_pKeyboardManager;
-		MouseManager*		m_pMouseManager;
+		static EngineManager*	m_pEngineManager;
+		Timer*					m_pTimer;
+		KeyboardManager*		m_pKeyboardManager;
+		MouseManager*			m_pMouseManager;
+
+		int						m_iViewportW;
+		int						m_iViewportH;
+
+		State					m_iState;
+		bool					m_bInitialized;
 };
 
 #endif

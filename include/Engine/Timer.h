@@ -36,6 +36,7 @@ public:
     double getElapsedTimeInSec();               // get elapsed time in second (same as getElapsedTime)
     double getElapsedTimeInMilliSec();          // get elapsed time in milli-second
     double getElapsedTimeInMicroSec();          // get elapsed time in micro-second
+	double getDeltaTimeMs();
 
 	void	initTimer();
 	void	startFrame();

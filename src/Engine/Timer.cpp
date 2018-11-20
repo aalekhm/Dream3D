@@ -117,6 +117,10 @@ double Timer::getElapsedTime()
     return this->getElapsedTimeInSec();
 }
 
+double Timer::getDeltaTimeMs() {
+	return m_dDeltaTimeMs;
+}
+
 void Timer::initTimer() {
 	m_dElapsedTimeMs = m_dLastElapsedTimeMs = getElapsedTimeInMilliSec();
 	m_dElapasedGameTimeMs = 0;

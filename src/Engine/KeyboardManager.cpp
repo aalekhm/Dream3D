@@ -1,5 +1,7 @@
 #include "Engine\KeyboardManager.h"
 
+bool KeyboardManager::m_bKeys[DEF_MAX_KEYS];
+
 KeyboardManager::KeyboardManager() {
 	for(int i = 0; i < DEF_MAX_KEYS; i++)
 		m_bKeys[i] = false;

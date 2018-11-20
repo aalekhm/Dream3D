@@ -18,59 +18,108 @@ bool		m_bFULLSCREEN = true;		// Fullscreen Flag Set To TRUE By Default
 EngineManager* m_pEngineManager;
 //////////////////////////////////////////////////////////
 
-LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-GLvoid killGLWindow(GLvoid);
-bool createGLWindow(char* title, int width, int height, int bits, bool isFullScreen);
+LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	switch(uMsg) {
+		case WM_ACTIVATE:
+			{
+				if(!HIWORD(wParam))
+					m_bActive = true;
+				else
+					m_bActive = false;
 
-int WINAPI WinMain(	HINSTANCE	hInstance, 
-					HINSTANCE	hPrevInstance,
-					LPSTR		lpCmdLine,
-					int			nCmdShow
-) {
-	MSG		msg;
-	bool	done = false;
-
-	//if(MessageBox(NULL, "Would you like to run in FULLSCREEN mode?", "Start FullScreen", MB_YESNO) == IDNO)
-		m_bFULLSCREEN = false;
-
-	if(!createGLWindow("openGL Window...Press F1 to toogle between windowed & Fullscreen Mode.", SCREEN_WIDTH, SCREEN_HEIGHT, 16, m_bFULLSCREEN))
-		return 0;
-
-	m_pEngineManager = new EngineManager();
-	m_pEngineManager->initTimer();
-
-	while(!done) {
-		if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
-			if(msg.message == WM_QUIT)
-				done = true;
-			else  {
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
+				return 0;
 			}
-		}
-		else {
-			if(m_bActive) {
-				if(m_pEngineManager->isKeyPressed(VK_ESCAPE))
-					done = true;
-				else {
-					m_pEngineManager->update();
-					SwapBuffers(m_pHDC);
+		case WM_SYSCOMMAND:
+			{
+				switch(wParam) {
+		case SC_SCREENSAVE:
+		case SC_MONITORPOWER:
+			return 0;
 				}
 			}
-
-			if(m_pEngineManager->isKeyPressed(VK_F1)) {
-				m_pEngineManager->setKeyPressed(VK_F1);
-				killGLWindow();
-				m_bFULLSCREEN = !m_bFULLSCREEN;
-				if(!createGLWindow("NeHe's First Polygon Tutorial", SCREEN_WIDTH, SCREEN_HEIGHT, 16, m_bFULLSCREEN)) {
-					return 0;
-				}
+			break;
+		case WM_CLOSE:
+			{
+				PostQuitMessage(0);
+				return 0;
 			}
-		}
+		case WM_KEYDOWN:
+			{
+				m_pEngineManager->setKeyPressed(wParam);
+				return 0;
+			}
+		case WM_KEYUP:
+			{
+				m_pEngineManager->setKeyReleased(wParam);
+				return 0;
+			}
+		case WM_SIZE:
+			{
+				// set viewport
+
+				return 0;
+			}
+		case WM_LBUTTONDOWN:
+			{
+				m_pEngineManager->setLMouseStatus(true, LOWORD(lParam), HIWORD(lParam));
+			}
+			break;
+		case WM_LBUTTONUP:
+			{
+				m_pEngineManager->setLMouseStatus(false, LOWORD(lParam), HIWORD(lParam));
+			}
+			break;
+		case WM_RBUTTONDOWN:
+			{
+				m_pEngineManager->setRMouseStatus(true, LOWORD(lParam), HIWORD(lParam));
+			}
+			break;
+		case WM_RBUTTONUP:
+			{
+				m_pEngineManager->setRMouseStatus(false, LOWORD(lParam), HIWORD(lParam));
+			}
+			break;
+		case WM_MOUSEMOVE:
+			{
+				m_pEngineManager->setMouseMove(wParam, LOWORD(lParam), HIWORD(lParam));
+			}
+			break;
+
 	}
-	
-	killGLWindow();
-	return msg.wParam;
+
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+GLvoid killGLWindow() {
+	if(m_bFULLSCREEN) {
+		ChangeDisplaySettings(NULL, 0);
+		ShowCursor(true);
+	}
+
+	if(m_pHRC) {
+		if(!wglMakeCurrent(NULL, NULL))
+			MessageBox(NULL, "Release of DC and RC failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
+
+		if(!wglDeleteContext(m_pHRC))
+			MessageBox(NULL, "Release of DC and RC failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
+
+		m_pHRC = NULL;
+	}
+
+	if(m_pHDC && !ReleaseDC(m_pHWnd, m_pHDC)) {
+		MessageBox(NULL, "Release of Device Context failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
+		m_pHDC = NULL;
+	}
+
+	if(m_pHWnd && !DestroyWindow(m_pHWnd)) {
+		MessageBox(NULL, "Release of mHWnd failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
+		m_pHWnd = NULL;
+	}
+
+	if(!UnregisterClass("OpenGL", m_pHInstance)) {
+		MessageBox(NULL, "UnRegisterClass failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
+		m_pHInstance = NULL;
+	}
 }
 
 bool createGLWindow(char* title, int width, int height, int bits, bool isFullScreen) {
@@ -88,7 +137,7 @@ bool createGLWindow(char* title, int width, int height, int bits, bool isFullScr
 	m_bFULLSCREEN = isFullScreen;
 
 	m_pHInstance		= GetModuleHandle(NULL);
-	
+
 	wc.cbClsExtra		= 0;
 	wc.cbWndExtra		= 0;
 	wc.hbrBackground	= NULL;
@@ -99,7 +148,7 @@ bool createGLWindow(char* title, int width, int height, int bits, bool isFullScr
 	wc.lpszClassName	= "OpenGL";
 	wc.lpszMenuName		= NULL;
 	wc.style			= CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	
+
 	if(!RegisterClass(&wc)) {
 		MessageBox(NULL, "Failed to Register the Window Class.", "ERROR", MB_OK | MB_ICONEXCLAMATION);
 		return false;
@@ -137,22 +186,22 @@ bool createGLWindow(char* title, int width, int height, int bits, bool isFullScr
 	AdjustWindowRectEx(&windowRect, dwStyle, false, dwExStyle);
 
 	if(!(m_pHWnd = CreateWindowEx(	dwExStyle,
-									"OpenGL",
-									title,
-									dwStyle | 
-									WS_CLIPSIBLINGS |
-									WS_CLIPCHILDREN,
-									0, 0,
-									windowRect.right - windowRect.left,
-									windowRect.bottom - windowRect.top,
-									NULL,
-									NULL,
-									m_pHInstance,
-									NULL))
-	) {
-		killGLWindow();								// Reset The Display
-		MessageBox(NULL,"Window Creation Error.","ERROR",MB_OK|MB_ICONEXCLAMATION);
-		return false;								// Return FALSE
+		"OpenGL",
+		title,
+		dwStyle | 
+		WS_CLIPSIBLINGS |
+		WS_CLIPCHILDREN,
+		0, 0,
+		windowRect.right - windowRect.left,
+		windowRect.bottom - windowRect.top,
+		NULL,
+		NULL,
+		m_pHInstance,
+		NULL))
+		) {
+			killGLWindow();								// Reset The Display
+			MessageBox(NULL,"Window Creation Error.","ERROR",MB_OK|MB_ICONEXCLAMATION);
+			return false;								// Return FALSE
 	}
 
 	if(!(m_pHDC = GetDC(m_pHWnd))) {
@@ -160,7 +209,7 @@ bool createGLWindow(char* title, int width, int height, int bits, bool isFullScr
 		MessageBox(NULL,"Unable to get Device Context.","ERROR",MB_OK|MB_ICONEXCLAMATION);
 		return false;								// Return FALSE
 	}
-	
+
 	static PIXELFORMATDESCRIPTOR pfd = 
 	{
 		sizeof(PIXELFORMATDESCRIPTOR),
@@ -206,7 +255,7 @@ bool createGLWindow(char* title, int width, int height, int bits, bool isFullScr
 		MessageBox(NULL,"Unable to make wgl context","ERROR",MB_OK|MB_ICONEXCLAMATION);
 		return false;								// Return FALSE
 	}
-								
+
 	ShowWindow(m_pHWnd, true);
 	SetForegroundWindow(m_pHWnd);
 	SetFocus(m_pHWnd);
@@ -214,106 +263,52 @@ bool createGLWindow(char* title, int width, int height, int bits, bool isFullScr
 	return true;
 }
 
-GLvoid killGLWindow() {
-	if(m_bFULLSCREEN) {
-		ChangeDisplaySettings(NULL, 0);
-		ShowCursor(true);
-	}
+extern "C" int APIENTRY WinMain(	HINSTANCE	hInstance, 
+					HINSTANCE	hPrevInstance,
+					LPSTR		lpCmdLine,
+					int			nCmdShow
+) {
+	MSG		msg;
+	bool	done = false;
 
-	if(m_pHRC) {
-		if(!wglMakeCurrent(NULL, NULL))
-			MessageBox(NULL, "Release of DC and RC failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
+	//if(MessageBox(NULL, "Would you like to run in FULLSCREEN mode?", "Start FullScreen", MB_YESNO) == IDNO)
+		m_bFULLSCREEN = false;
 
-		if(!wglDeleteContext(m_pHRC))
-			MessageBox(NULL, "Release of DC and RC failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
+	if(!createGLWindow("openGL Window...Press F1 to toogle between windowed & Fullscreen Mode.", SCREEN_WIDTH, SCREEN_HEIGHT, 16, m_bFULLSCREEN))
+		return 0;
 
-		m_pHRC = NULL;
-	}
+	m_pEngineManager = EngineManager::getInstance();
+	m_pEngineManager->startup();
+	m_pEngineManager->setViewport(SCREEN_WIDTH, SCREEN_HEIGHT);
+	
+	while(true) {
+		if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
 
-	if(m_pHDC && !ReleaseDC(m_pHWnd, m_pHDC)) {
-		MessageBox(NULL, "Release of Device Context failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
-		m_pHDC = NULL;
-	}
-
-	if(m_pHWnd && !DestroyWindow(m_pHWnd)) {
-		MessageBox(NULL, "Release of mHWnd failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
-		m_pHWnd = NULL;
-	}
-
-	if(!UnregisterClass("OpenGL", m_pHInstance)) {
-		MessageBox(NULL, "UnRegisterClass failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
-		m_pHInstance = NULL;
-	}
-}
-
-LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	switch(uMsg) {
-		case WM_ACTIVATE:
-		{
-			if(!HIWORD(wParam))
-				m_bActive = true;
-			else
-				m_bActive = false;
-
-			return 0;
-		}
-		case WM_SYSCOMMAND:
-		{
-			switch(wParam) {
-				case SC_SCREENSAVE:
-				case SC_MONITORPOWER:
-					return 0;
+			if(msg.message == WM_QUIT) {
+				m_pEngineManager->exit();
+				return msg.wParam;
 			}
 		}
-		break;
-		case WM_CLOSE:
-		{
-			PostQuitMessage(0);
-			return 0;
-		}
-		case WM_KEYDOWN:
-		{
-			m_pEngineManager->setKeyPressed(wParam);
-			return 0;
-		}
-		case WM_KEYUP:
-		{
-			m_pEngineManager->setKeyReleased(wParam);
-			return 0;
-		}
-		case WM_SIZE:
-		{
-			// set viewport
+		else {
+			m_pEngineManager->frame();
+			SwapBuffers(m_pHDC);
 
-			return 0;
-		}
-		case WM_LBUTTONDOWN:
-		{
-			m_pEngineManager->setLMouseStatus(true, LOWORD(lParam), HIWORD(lParam));
-		}
-		break;
-		case WM_LBUTTONUP:
-		{
-			m_pEngineManager->setLMouseStatus(false, LOWORD(lParam), HIWORD(lParam));
-		}
-		break;
-		case WM_RBUTTONDOWN:
-		{
-			m_pEngineManager->setRMouseStatus(true, LOWORD(lParam), HIWORD(lParam));
-		}
-		break;
-		case WM_RBUTTONUP:
-		{
-			m_pEngineManager->setRMouseStatus(false, LOWORD(lParam), HIWORD(lParam));
-		}
-		break;
-		case WM_MOUSEMOVE:
-		{
-			m_pEngineManager->setMouseMove(wParam, LOWORD(lParam), HIWORD(lParam));
-		}
-		break;
+			if(m_pEngineManager->getState() == EngineManager::UNINITIALIZED)
+				break;
 
+			if(EngineManager::isKeyPressed(VK_F1)) {
+				m_pEngineManager->setKeyPressed(VK_F1);
+				killGLWindow();
+				m_bFULLSCREEN = !m_bFULLSCREEN;
+				if(!createGLWindow("NeHe's First Polygon Tutorial", SCREEN_WIDTH, SCREEN_HEIGHT, 16, m_bFULLSCREEN)) {
+					return 0;
+				}
+			}
+		}
 	}
-
-	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+	
+	killGLWindow();
+	return msg.wParam;
 }
