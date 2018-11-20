@@ -12,8 +12,6 @@ struct WListBox : public WContainer {
 
 		static H_WND __stdcall Create(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 		
-		H_WND				createWindow(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
-		//void					create(WComponent* parent, int x, int y, int w, int h, int LISTBOX_ID, bool STRETCH_TO_PARENTS_WIDTH);
 		void					addItem(LISTBOX_ITEM* item);
 		void					insertItemAt(int pos, LISTBOX_ITEM* item);
 		void					removeItemAt(int pos);
@@ -38,7 +36,8 @@ struct WListBox : public WContainer {
 			ID_VERTICAL_SCROLLBAR = 0,
 			ID_HORIZONTAL_SCROLLBAR
 		};
-
+	
+		virtual void		onCreateEx(LPVOID lpVoid);
 		virtual void		onUpdate();
 		virtual void		onRender();
 		
@@ -62,8 +61,6 @@ struct WListBox : public WContainer {
 		void				calculateMaxLineWidth();
 		void				updateStretch();
 		
-		//WComponent*							m_pParent;
-		int										m_HwndID;
 		WScrollbar*							m_sbHorizontal;
 		int										m_iHorizontalBarHeight;
 		WScrollbar*							m_sbVertical;

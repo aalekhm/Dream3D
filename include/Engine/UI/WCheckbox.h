@@ -33,16 +33,16 @@ struct WCheckbox : public WComponent {
 
 		static H_WND __stdcall Create(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 		
-		H_WND			createWindow(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 		LRESULT		OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam);
-		//void			create(WComponent* parent, int x, int y, int w, int h, const char* sTitle);
+
 		void			setTitle(const char* sTitle) { sprintf(m_pTitle, "%s", sTitle); }
 		void			setChecked(bool bCheck) { m_bChecked = bCheck; }
 		bool			isChecked() { return m_bChecked; }
 
 		void			activate();
 		void			deactivate();
-
+		
+		virtual void	onCreateEx(LPVOID lpVoid);
 		virtual void	onUpdate();
 		virtual void	onRender();
 		virtual void	onMouseDown(int x, int y, int iButton);

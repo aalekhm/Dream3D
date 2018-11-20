@@ -310,7 +310,23 @@ public:
         return !c.IsEmptyArea();
     }
 
-    BOOL IsEmptyArea() const
+	static BOOL Union(OUT RectF& c,
+		IN const RectF& a,
+		IN const RectF& b)
+	{
+		REAL right = max(a.GetRight(), b.GetRight());
+		REAL bottom = max(a.GetBottom(), b.GetBottom());
+		REAL left = min(a.GetLeft(), b.GetLeft());
+		REAL top = min(a.GetTop(), b.GetTop());
+
+		c.X = left;
+		c.Y = top;
+		c.Width = right - left;
+		c.Height = bottom - top;
+		return !c.IsEmptyArea();
+	}
+    
+	BOOL IsEmptyArea() const
     {
         return (Width <= REAL_EPSILON) || (Height <= REAL_EPSILON);
     }

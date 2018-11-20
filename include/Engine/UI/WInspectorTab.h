@@ -32,7 +32,7 @@ struct WInspectorTab : public WContainer {
 		int				m_iState;
 		int				m_iRate;
 
-		virtual void onCreate();
+		virtual void onCreateEx(LPVOID lpVoid);
 		virtual void onUpdate();
 		virtual void onRender();
 
@@ -49,9 +49,6 @@ struct WInspectorTab : public WContainer {
 		virtual ~WInspectorTab();
 
 		static H_WND __stdcall Create(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
-
-		H_WND	createWindow(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
-		//void		create(WComponent* parent, int left, int top, int width, int height, const std::string &title);
 
 		const char* getTitle() { return m_title.c_str(); }
 };

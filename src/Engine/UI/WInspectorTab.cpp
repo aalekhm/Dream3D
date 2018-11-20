@@ -27,49 +27,23 @@ H_WND WInspectorTab::Create(		const char* lpClassName,
 													LPVOID lpVoid
 ) {
 	WInspectorTab* pWInspectorTab = new WInspectorTab();
-	return pWInspectorTab->createWindow(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpVoid);
+	((WContainer*)pWInspectorTab)->Create(	lpClassName, 
+																lpWindowName, 
+																dwStyle, 
+																x, 
+																y, 
+																width, 
+																height, 
+																hwndParent, 
+																hMenu, 
+																lpVoid,
+																true, 
+																true);
+
+	return pWInspectorTab;
 }
 
-H_WND WInspectorTab::createWindow(	const char* lpClassName, 
-														const char* lpWindowName, 
-														DWORD dwStyle, 
-														int x, 
-														int y, 
-														int width, 
-														int height, 
-														H_WND hwndParent, 
-														HMENU hMenu, 
-														LPVOID lpParam
-	) {
-		sprintf(m_pClassName, "%s", lpClassName);
-
-		m_pParent = (WComponent*)hwndParent;
-
-		m_iOffsetX = x;
-		m_iOffsetY = y;
-
-		if(m_pParent) {
-			m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_iMainX;
-			m_iTop = m_pParent->getTop() + m_iOffsetY + m_iMainY;
-		}
-
-		m_iRight = m_iLeft + width;
-		m_iBottom = m_iTop + height;
-
-		m_title = lpWindowName;
-		m_InspectorTabCWidget = WWidgetManager::getWidget("InspectorTabC_Scroll");
-
-		// custom initialization
-		onCreate();
-
-		setComponentID((int)hMenu);
-		setComponentAsChild(true);
-		((WContainer*)m_pParent)->addComponent(this);
-
-		return this;
-}
-
-void WInspectorTab::onCreate() {
+void WInspectorTab::onCreateEx(LPVOID lpVoid) {
 	
 	H_WND hWnd = NULL;
 
@@ -77,6 +51,8 @@ void WInspectorTab::onCreate() {
 	RectF hDestRect;
 	RectF wndRect;
 	RectF idealRect;
+
+	m_InspectorTabCWidget = WWidgetManager::getWidget("InspectorTabC_Scroll");
 
 	///////////////////////////////////////////////////
 	CHILD* btnChild = m_InspectorTabCWidget->getChild("ButtonPlus");
@@ -167,7 +143,6 @@ void WInspectorTab::onCreate() {
 }
 
 void WInspectorTab::onUpdate() {
-	updateComponentPosition();
 
 	m_iMaxWidthPixels = m_iMaxHeightPixels = 0;
 	for(int i = 0; i < m_pChildren.size(); i++) {

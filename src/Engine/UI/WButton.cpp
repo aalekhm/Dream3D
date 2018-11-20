@@ -23,99 +23,53 @@ H_WND WButton::Create(		const char* lpClassName,
 										LPVOID lpVoid
 ) {
 	WButton* pWButton = new WButton();
-	return pWButton->createWindow(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpVoid);
+	((WContainer*)pWButton)->Create(	lpClassName, 
+														lpWindowName, 
+														dwStyle, 
+														x, 
+														y, 
+														width, 
+														height, 
+														hwndParent, 
+														hMenu, 
+														lpVoid,
+														false, 
+														true);
+
+	return pWButton;
 }
 
-H_WND WButton::createWindow(	const char* lpClassName, 
-												const char* lpWindowName, 
-												DWORD dwStyle, 
-												int x, 
-												int y, 
-												int width, 
-												int height, 
-												H_WND hwndParent, 
-												HMENU hMenu, 
-												LPVOID lpParam
-	) {
-		sprintf(m_pClassName, "%s", lpClassName);
+void WButton::onCreateEx(LPVOID lpVoid) {
+	m_pTitle = new char[255];
+	memset(m_pTitle, 0, 255);
+	sprintf(m_pTitle, "%s", getWindowName());
 
-		m_pTitle = new char[255];
-		memset(m_pTitle, 0, 255);
-		sprintf(m_pTitle, "%s", lpWindowName);
+	BUTTON_TEXT_HEIGHT = WWidgetManager::CHARACTER_HEIGHT + (BUTTON_TOP_GUTTER << 1);
 
-		m_pParent = (WContainer*)hwndParent;
+	bool bHasText = (strlen(m_pTitle) > 0);
 
-		m_iOffsetX = x;
-		m_iOffsetY = y;
+	m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_pParent->m_iMainX;
+	m_iTop = m_pParent->getTop() + m_iOffsetY + m_pParent->m_iMainY;
+	m_iRight = m_iLeft + (bHasText ? (WWidgetManager::getStringWidthTillPos(m_pTitle, strlen(m_pTitle)) + (BUTTON_GUTTER_X << 1)) : getWidth());
+	m_iBottom = m_iTop + (bHasText ? BUTTON_TEXT_HEIGHT : getHeight());
 
-		BUTTON_TEXT_HEIGHT = WWidgetManager::CHARACTER_HEIGHT + (BUTTON_TOP_GUTTER << 1);
+	m_State = NORMAL;
 
-		bool bHasText = (strlen(m_pTitle) > 0);
+	m_pButtonStateNameNormal = new char[32];
+	sprintf(m_pButtonStateNameNormal, "%s_Normal", (const char*)lpVoid);
 
-		m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_pParent->m_iMainX;
-		m_iTop = m_pParent->getTop() + m_iOffsetY + m_pParent->m_iMainY;
-		m_iRight = m_iLeft + (bHasText ? (WWidgetManager::getStringWidthTillPos(m_pTitle, strlen(m_pTitle)) + (BUTTON_GUTTER_X << 1)) : width);
-		m_iBottom = m_iTop + (bHasText ? BUTTON_TEXT_HEIGHT : height);
+	m_pButtonStateNameHighlighted = new char[32];
+	sprintf(m_pButtonStateNameHighlighted, "%s_Highlighted", (const char*)lpVoid);
 
-		m_State = NORMAL;
+	m_pButtonStateNamePushed = new char[32];
+	sprintf(m_pButtonStateNamePushed, "%s_Pushed", (const char*)lpVoid);
 
-		m_pButtonStateNameNormal = new char[32];
-		sprintf(m_pButtonStateNameNormal, "%s_Normal", (const char*)lpParam);
-
-		m_pButtonStateNameHighlighted = new char[32];
-		sprintf(m_pButtonStateNameHighlighted, "%s_Highlighted", (const char*)lpParam);
-
-		m_pButtonStateNamePushed = new char[32];
-		sprintf(m_pButtonStateNamePushed, "%s_Pushed", (const char*)lpParam);
-
-		m_pButtonStateNameDisabled = new char[32];
-		sprintf(m_pButtonStateNameDisabled, "%s_Disabled", (const char*)lpParam);
-
-		setComponentID((int)hMenu);
-		setComponentAsChild(true);
-		((WContainer*)m_pParent)->addComponent(this);
-		return this;
+	m_pButtonStateNameDisabled = new char[32];
+	sprintf(m_pButtonStateNameDisabled, "%s_Disabled", (const char*)lpVoid);
 }
-
-//void WButton::create(WComponent* parent, int x, int y, int w, int h, const char* sTitle, const char* sIdentifier, int HWND_ID) {
-//	
-//	m_pTitle = new char[255];
-//	memset(m_pTitle, 0, 255);
-//	sprintf(m_pTitle, "%s", sTitle);
-//
-//	m_pParent = (WContainer*)parent;
-//
-//	m_iOffsetX = x;
-//	m_iOffsetY = y;
-//
-//	setComponentAsChild(true);
-//
-//	BUTTON_TEXT_HEIGHT = WWidgetManager::CHARACTER_HEIGHT + (BUTTON_TOP_GUTTER << 1);
-//
-//	bool bHasText = (strlen(m_pTitle) > 0);
-//
-//	m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_pParent->m_iMainX;
-//	m_iTop = m_pParent->getTop() + m_iOffsetY + m_pParent->m_iMainY;
-//	m_iRight = m_iLeft + (bHasText ? (WWidgetManager::getStringWidthTillPos(m_pTitle, strlen(m_pTitle)) + (BUTTON_GUTTER_X << 1)) : w);
-//	m_iBottom = m_iTop + (bHasText ? BUTTON_TEXT_HEIGHT : h);
-//
-//	m_State = NORMAL;
-//
-//	m_pButtonStateNameNormal = new char[32];
-//	sprintf(m_pButtonStateNameNormal, "%s_Normal", sIdentifier);
-//	
-//	m_pButtonStateNameHighlighted = new char[32];
-//	sprintf(m_pButtonStateNameHighlighted, "%s_Highlighted", sIdentifier);
-//
-//	m_pButtonStateNamePushed = new char[32];
-//	sprintf(m_pButtonStateNamePushed, "%s_Pushed", sIdentifier);
-//
-//	m_pButtonStateNameDisabled = new char[32];
-//	sprintf(m_pButtonStateNameDisabled, "%s_Disabled", sIdentifier);
-//}
 
 void WButton::onUpdate() {
-	updateComponentPosition();
+
 }
 
 void WButton::frameRender() {
@@ -202,6 +156,13 @@ void WButton::onMouseEnter(int mCode, int x, int y, int prevX, int prevY) {
 void WButton::onMouseHover(int mCode, int x, int y, int prevX, int prevY) {
 	m_State = HOVER;
 	WWidgetManager::setCursor(IDC__ARROW);
+
+	if(m_pParent) {
+		int dwDiffX = (-(prevX-x) & 0xffff);
+		int dwDiffY = (-(prevY-y) & 0xffff);
+		DWORD dwDiff = (dwDiffX <<16) | dwDiffY;
+		m_pParent->onMessage(MOUSE_HOVER, (mCode<<16)|(getComponentID()), (LPARAM)&dwDiff);
+	}
 }
 
 void WButton::onMouseLeave(int mCode, int x, int y, int prevX, int prevY) {

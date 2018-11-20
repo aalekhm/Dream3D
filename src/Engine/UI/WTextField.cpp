@@ -29,35 +29,26 @@ H_WND WTextField::Create(		const char* lpClassName,
 											LPVOID lpVoid
 ) {
 	WTextField* pWTextField = new WTextField();
-	return pWTextField->createWindow(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpVoid);
+	pWTextField->setText(lpWindowName);
+
+	((WContainer*)pWTextField)->Create(	lpClassName, 
+															"WTextField", 
+															dwStyle, 
+															x, 
+															y, 
+															width, 
+															height, 
+															hwndParent, 
+															hMenu, 
+															lpVoid,
+															true, 
+															true);
+
+	return pWTextField;
 }
 
-H_WND WTextField::createWindow(	const char* lpClassName, 
-													const char* lpWindowName, 
-													DWORD dwStyle, 
-													int x, 
-													int y, 
-													int width, 
-													int height, 
-													H_WND hwndParent, 
-													HMENU hMenu, 
-													LPVOID lpParam
-) {
-	sprintf(m_pClassName, "%s", lpClassName);
-
+void WTextField::onCreateEx(LPVOID lpVoid) {
 	LINE_HEIGHT = WWidgetManager::CHARACTER_HEIGHT + (TB_TOP_GUTTER << 1);
-	setText(lpWindowName);
-
-	m_pParent = (WContainer*)hwndParent;
-	m_HwndID = (int)hMenu;
-	
-	m_iOffsetX = x;
-	m_iOffsetY = y;
-
-	m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_pParent->m_iMainX;
-	m_iTop = m_pParent->getTop() + m_iOffsetY + m_pParent->m_iMainY;
-	m_iRight = m_iLeft + width;
-	m_iBottom = m_iTop + LINE_HEIGHT;
 
 	mState = NORMAL;
 	m_CaretPosX = m_CaretPosY = 0;
@@ -77,51 +68,9 @@ H_WND WTextField::createWindow(	const char* lpClassName,
 	m_maxY = getBottom();
 
 	updateMains();
-
-	setComponentID((int)hMenu);
-	setComponentAsChild(true);
-	((WContainer*)m_pParent)->addComponent(this);
-
-	return this;
 }
 
-//void WTextField::create(WComponent* parent, int x, int y, int w, int h, const char* sText, int TEXTFIELD_ID) {
-//	LINE_HEIGHT = WWidgetManager::CHARACTER_HEIGHT + (TB_TOP_GUTTER << 1);
-//	setText(sText);
-//	
-//	m_pParent = (WContainer*)parent;
-//	m_HwndID = TEXTFIELD_ID;
-//	setID(TEXTFIELD_ID);
-//
-//	m_iOffsetX = x;
-//	m_iOffsetY = y;
-//
-//	m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_pParent->m_iMainX;
-//	m_iTop = m_pParent->getTop() + m_iOffsetY + m_pParent->m_iMainY;
-//	m_iRight = m_iLeft + w;
-//	m_iBottom = m_iTop + LINE_HEIGHT;
-//
-//	mState = NORMAL;
-//	m_CaretPosX = m_CaretPosY = 0;
-//	m_mainX = 0;
-//	m_mainY = 0;
-//	
-//	m_bIsSelecting = false;
-//	setBorderVisibility(true);
-//	
-//	m_TextBoxWidget = WWidgetManager::getWidget("TextBox");
-//	SEL_COLUMN_NO = COLUMN_NO = 0;
-//	mState = NORMAL;
-//	
-//	m_minX = getLeft() + TB_LEFT_GUTTER;
-//	m_minY = getTop() + TB_TOP_GUTTER;
-//	m_maxX = getRight() - TB_RIGHT_GUTTER;
-//	m_maxY = getBottom();
-//
-//	updateMains();
-//}
-
-const char*	WTextField::getText() {
+const char* WTextField::getText() {
 	return m_Lines[0].c_str();
 }
 
@@ -289,7 +238,6 @@ void WTextField::getCaretPos(int x, int y) {
 }
 
 void WTextField::onUpdate() {
-	updateComponentPosition();
 
 	m_minX = getLeft() + TB_LEFT_GUTTER;
 	m_minY = getTop() + TB_TOP_GUTTER;
@@ -758,7 +706,7 @@ void WTextField::onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch) {
 	}
 
 	if(m_pParent)
-		m_pParent->onMessage(KEY_DOWN, this->m_HwndID, (iVirtualKeycode<<32) | ch);
+		m_pParent->onMessage(KEY_DOWN, getComponentID(), (iVirtualKeycode<<32) | ch);
 
 //printf("Ex onKeyBDown\n");
 }

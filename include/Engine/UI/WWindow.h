@@ -7,34 +7,27 @@
 #include "Engine/UI/WContainer.h"
 #include "Engine/UI/WScrollbar.h"
 #include "Engine/UI/WButton.h"
-//#include <string.h>
 
 #define WINDOW_TITLEBAR_HEIGHT	31
 
 struct WWindow : public WContainer {
 	private:
-		std::string		m_title;
-
 		bool			m_bResizable;
-
 	public:
 		WWindow();
 		virtual ~WWindow();
 
 		static H_WND __stdcall Create(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 	
-		H_WND			createWindow(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 		LRESULT		OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam);
-		//void create(WComponent* parent, int left, int top, int width, int height, int iType, const std::string &title);
 
-		void setResizable(bool bResizable)	{ m_bResizable = bResizable; }
-		const char* getTitle() { return m_title.c_str(); }
+		void				setResizable(bool bResizable)	{ m_bResizable = bResizable; }
 		
 		void				onResize(int width, int height);
 		void				resizeWidth(int iDiffWidth);
 		void				resizeHeight(int iDiffHeight);
 
-		virtual void onCreate();
+		virtual void onCreateEx(LPVOID lpVoid);
 		virtual void onUpdate();
 		virtual void onRender();
 

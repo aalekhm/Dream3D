@@ -10,8 +10,6 @@
 
 struct WDummy : public WContainer {
 	private:
-		std::string		m_title;
-
 		bool			m_bResizable;
 
 	public:
@@ -20,22 +18,18 @@ struct WDummy : public WContainer {
 
 		static H_WND __stdcall Create(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 
-		H_WND			createWindow(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 		LRESULT		OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam);
-		//void create(WComponent* parent, int left, int top, int width, int height, bool bHasScrollBars, const std::string &title);
 
 		void setResizable(bool bResizable)	{ m_bResizable = bResizable; }
 		void setScrollbars(bool bHasScroll)	{ m_bHasScrollBars = bHasScroll; }
 		void setBorderVisibility(bool bHasBorder)	{ m_bShowBorder = bHasBorder; }
 		bool getBorderVisibility()					{ return m_bShowBorder; }
-		const char* getTitle() { return m_title.c_str(); }
-		void			 setTitle(const char* sTitle) { m_title = sTitle; }
 		
 		void				onResize(int width, int height);
 		void				resizeWidth(int iDiffWidth);
 		void				resizeHeight(int iDiffHeight);
 
-		virtual void onCreate();
+		virtual void onCreateEx(LPVOID lpVoid);
 		virtual void onUpdate();
 		virtual void onRender();
 

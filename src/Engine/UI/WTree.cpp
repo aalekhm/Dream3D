@@ -46,125 +46,179 @@ H_WND WTree::Create(		const char* lpClassName,
 										LPVOID lpVoid
 ) {
 	WTree* pWTree = new WTree();
-	return pWTree->createWindow(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpVoid);
+
+	((WContainer*)pWTree)->Create(	lpClassName, 
+													lpWindowName, 
+													dwStyle, 
+													x, 
+													y, 
+													width, 
+													height, 
+													hwndParent, 
+													hMenu, 
+													lpVoid,
+													true, 
+													true);
+
+	return pWTree;
 }
 
-H_WND WTree::createWindow(	const char* lpClassName, 
-											const char* lpWindowName, 
-											DWORD dwStyle, 
-											int x, 
-											int y, 
-											int width, 
-											int height, 
-											H_WND hwndParent, 
-											HMENU hMenu, 
-											LPVOID lpParam
-) {	
-		sprintf(m_pClassName, "%s", lpClassName);
+void WTree::onCreateEx(LPVOID lpVoid) {
 
-		m_pParent = (WComponent*)hwndParent;
+	H_WND hWnd = NULL;
 
-		m_iOffsetX = x;
-		m_iOffsetY = y;
+	RectF vDestRect;
+	RectF hDestRect;
+	RectF wndRect;
+	RectF idealRect;
 
-		if(m_pParent) {
-			m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_iMainX;
-			m_iTop = m_pParent->getTop() + m_iOffsetY + m_iMainY;
-		}
+	m_TreeWidget = WWidgetManager::getWidget("Tree");
+	LEAF_SPACING_Y = WWidgetManager::CHARACTER_HEIGHT + (LEAF_TEXT_Y << 1);
 
-		m_iRight = m_iLeft + width;
-		m_iBottom = m_iTop + height;
+	///////////////////////////////////////////////////
+	CHILD* verticalSBChild = m_TreeWidget->getChild("VScroll");
+	wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
+	idealRect.X = verticalSBChild->posOffsets.x;
+	idealRect.Y = verticalSBChild->posOffsets.y;
+	idealRect.Width = verticalSBChild->posOffsets.w; 
+	idealRect.Height = verticalSBChild->posOffsets.h;
+	WWidgetManager::getDestinationRect(	vDestRect,
+		m_TreeWidget->widgetSize.width,
+		m_TreeWidget->widgetSize.height,
+		&wndRect,
+		&idealRect,
+		verticalSBChild->align.iHAlign,
+		verticalSBChild->align.iVAlign
+		);
+	hWnd = 
+		CreateComponent(	"WScrollbar", 
+		"", 
+		0, 
+		vDestRect.X - m_iLeft, 
+		vDestRect.Y - m_iTop,
+		vDestRect.Width, 
+		vDestRect.Height,
+		this, 
+		HMENU(ID_VERTICAL_SCROLLBAR), 
+		(LPVOID)1);
+	m_sbVertical = (WScrollbar*)hWnd;
+	m_sbVertical->hasBG(true);
+	m_sbVertical->setPostRender(true);
+	m_iMaxVScrollbarHeight = vDestRect.Height;
+	///////////////////////////////////////////////////
+	///////////////////////////////////////////////////
+	CHILD* horizontalSBChild = m_TreeWidget->getChild("HScroll");
+	wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
+	idealRect.X = horizontalSBChild->posOffsets.x;
+	idealRect.Y = horizontalSBChild->posOffsets.y;
+	idealRect.Width = horizontalSBChild->posOffsets.w; 
+	idealRect.Height = horizontalSBChild->posOffsets.h;
+	WWidgetManager::getDestinationRect(	hDestRect,
+		m_TreeWidget->widgetSize.width,
+		m_TreeWidget->widgetSize.height,
+		&wndRect,
+		&idealRect,
+		horizontalSBChild->align.iHAlign,
+		horizontalSBChild->align.iVAlign
+		);
+	hWnd = 
+		CreateComponent(	"WScrollbar", 
+		"", 
+		0, 
+		hDestRect.X - m_iLeft, 
+		hDestRect.Y - m_iTop,
+		hDestRect.Width, 
+		hDestRect.Height,
+		this, 
+		HMENU(ID_HORIZONTAL_SCROLLBAR), 
+		(LPVOID)0);
+	m_sbHorizontal = (WScrollbar*)hWnd;
+	m_sbHorizontal->hasBG(true);
+	m_sbHorizontal->setPostRender(true);
+	m_iMaxHScrollbarWidth = hDestRect.Width;
+	///////////////////////////////////////////////////
 
-		m_title = lpWindowName;
-		m_TreeWidget = WWidgetManager::getWidget("Tree");
+	bool bHasClientArea = (m_TreeWidget->clientAreas.size() > 0);
+	if(bHasClientArea) {
+		CLIENT_AREA* clientArea = m_TreeWidget->getClientAreaAt(0);
+		RectF destRect;
+		wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
+		idealRect.X = clientArea->posOffsets.x;
+		idealRect.Y = clientArea->posOffsets.y;
+		idealRect.Width = clientArea->posOffsets.w; 
+		idealRect.Height = clientArea->posOffsets.h;
+		WWidgetManager::getDestinationRect(	destRect,
+			m_TreeWidget->widgetSize.width,
+			m_TreeWidget->widgetSize.height,
+			&wndRect,
+			&idealRect,
+			clientArea->align.iHAlign,
+			clientArea->align.iVAlign
+			);
+		m_ClientRect.X = destRect.X - getLeft();
+		m_ClientRect.Y = destRect.Y - getTop();
+		m_ClientRect.Width = destRect.Width;
+		m_ClientRect.Height = destRect.Height;
 
-		LEAF_SPACING_Y = WWidgetManager::CHARACTER_HEIGHT + (LEAF_TEXT_Y << 1);
+		m_iClientRectW = m_ClientRect.Width;
+		m_iClientRectH = m_ClientRect.Height;
+	}
 
-		// custom initialization
-		onCreate();
+	m_IsVScrolling = m_IsHScrolling = false;
+	m_minX = getLeft() + m_ClientRect.X;
+	m_maxX = m_minX + m_ClientRect.Width;
+	m_minY = getTop() + m_ClientRect.Y;
+	m_maxY = m_minY + m_ClientRect.Height;
 
-		m_pRoot = new TREEITEM();
-		m_pRoot->setParent(NULL);
-		m_pRoot->m_bIsLeaf = false;
-		m_pRoot->m_iDepth = 0;
-		m_pRoot->setName("Root...");
+	m_wRoot = m_TreeWidget->getChild("Tree_Root");
+	m_wFolderClosed = m_TreeWidget->getChild("Tree_FolderClosed");
+	m_wFolderOpen = m_TreeWidget->getChild("Tree_FolderOpen");
+	m_wFolderOpenBranch = m_TreeWidget->getChild("Tree_FolderOpenBranch");
+	m_wFolderFirstOpenBranch = m_TreeWidget->getChild("Tree_FolderFirstOpenBranch");
+	m_wFolderClosedBranch = m_TreeWidget->getChild("Tree_FolderClosedBranch");
+	m_wFolderFirstClosedBranch = m_TreeWidget->getChild("Tree_FolderFirstClosedBranch");
+	m_wFolderFirstChildBranch = m_TreeWidget->getChild("Tree_FirstChildBranch");
+	m_wFolderChildBranch = m_TreeWidget->getChild("Tree_ChildBranch");
+	m_wFolderChildLineBranch = m_TreeWidget->getChild("Tree_ChildLineBranch");
+	m_wFolderHalfLineBranch = m_TreeWidget->getChild("Tree_FolderHalfLineBranch");
+	m_wChild1 = m_TreeWidget->getChild("Tree_Child1");
+	m_wChild2 = m_TreeWidget->getChild("Tree_Child2");
 
-		m_pCopyItem = NULL;
-		m_iListCounter = 0;
-		m_vLeafList.insert(m_vLeafList.begin() + m_iListCounter, m_pRoot);
-		m_iListCounter++;
+	///////////////////////////////////////////
 
-		H_WND hWnd = 
-		CreateComponent(	"WTextField", 
-									"_______", 
-									0, 
-									0,
-									0, 
-									100, 
-									23,
-									this, 
-									HMENU(111), 
-									NULL);
-		m_pTextField = (WTextField*)hWnd;
-		m_pTextField->setVisible(false);
+	m_pRoot = new TREEITEM();
+	m_pRoot->setParent(NULL);
+	m_pRoot->m_bIsLeaf = false;
+	m_pRoot->m_iDepth = 0;
+	m_pRoot->setName("Root...");
 
-		addDefaultList();
+	m_pCopyItem = NULL;
+	m_iListCounter = 0;
+	m_vLeafList.insert(m_vLeafList.begin() + m_iListCounter, m_pRoot);
+	m_iListCounter++;
 
-		populateLeafList(m_pRoot);
-		calculateDeepestLeaf();
-		setPositionInTree();
+	hWnd = 
+	CreateComponent(	"WTextField", 
+								"_______", 
+								0, 
+								0,
+								0, 
+								100, 
+								23,
+								this, 
+								HMENU(111), 
+								NULL);
+	m_pTextField = (WTextField*)hWnd;
+	m_pTextField->setVisible(false);
 
-		//printLeafList();
-		
-		setComponentID((int)hMenu);
-		setComponentAsChild(true);
-		((WContainer*)m_pParent)->addComponent(this);
+	addDefaultList();
 
-		return this;
+	populateLeafList(m_pRoot);
+	calculateDeepestLeaf();
+	setPositionInTree();
+
+	//printLeafList();
 }
-
-//void WTree::create(WComponent* parent, int x, int y, int w, int h, const std::string &title) {
-//	setComponentAsChild(true);
-//
-//	m_pParent = parent;
-//
-//	m_iOffsetX = x;
-//	m_iOffsetY = y;
-//
-//	if(m_pParent) {
-//		m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_iMainX;
-//		m_iTop = m_pParent->getTop() + m_iOffsetY + m_iMainY;
-//	}
-//
-//	m_iRight = m_iLeft + w;
-//	m_iBottom = m_iTop + h;
-//
-//	m_title = title;
-//	m_TreeWidget = WWidgetManager::getWidget("Tree");
-//
-//	LEAF_SPACING_Y = WWidgetManager::CHARACTER_HEIGHT + (LEAF_TEXT_Y << 1);
-//
-//	// custom initialization
-//	onCreate();
-//
-//	m_pRoot = new ITEM();
-//		m_pRoot->setParent(NULL);
-//		m_pRoot->m_bIsLeaf = false;
-//		m_pRoot->m_iDepth = 0;
-//		m_pRoot->setName("Root...");
-//
-//		addDefaultList();
-//
-//	m_pCopyItem = NULL;
-//	m_iListCounter = 0;
-//	m_vLeafList.insert(m_vLeafList.begin() + m_iListCounter, m_pRoot);
-//	m_iListCounter++;
-//	populateLeafList(m_pRoot);
-//	calculateDeepestLeaf();
-//	setPositionInTree();
-//
-//	//printLeafList();
-//}
 
 void WTree::populateLeafList(TREEITEM* iLeaf) {
 	
@@ -227,129 +281,7 @@ void WTree::setPositionInTree() {
 	}
 }
 
-void WTree::onCreate() {
-
-	H_WND hWnd = NULL;
-
-	RectF vDestRect;
-	RectF hDestRect;
-	RectF wndRect;
-	RectF idealRect;
-
-	///////////////////////////////////////////////////
-	CHILD* verticalSBChild = m_TreeWidget->getChild("VScroll");
-		wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
-		idealRect.X = verticalSBChild->posOffsets.x;
-		idealRect.Y = verticalSBChild->posOffsets.y;
-		idealRect.Width = verticalSBChild->posOffsets.w; 
-		idealRect.Height = verticalSBChild->posOffsets.h;
-	WWidgetManager::getDestinationRect(	vDestRect,
-											m_TreeWidget->widgetSize.width,
-											m_TreeWidget->widgetSize.height,
-											&wndRect,
-											&idealRect,
-											verticalSBChild->align.iHAlign,
-											verticalSBChild->align.iVAlign
-											);
-	hWnd = 
-	CreateComponent(	"WScrollbar", 
-								"", 
-								0, 
-								vDestRect.X - m_iLeft, 
-								vDestRect.Y - m_iTop,
-								vDestRect.Width, 
-								vDestRect.Height,
-								this, 
-								HMENU(ID_VERTICAL_SCROLLBAR), 
-								(LPVOID)1);
-	m_sbVertical = (WScrollbar*)hWnd;
-	m_sbVertical->hasBG(true);
-	m_sbVertical->setPostRender(true);
-	m_iMaxVScrollbarHeight = vDestRect.Height;
-	///////////////////////////////////////////////////
-	///////////////////////////////////////////////////
-	CHILD* horizontalSBChild = m_TreeWidget->getChild("HScroll");
-		wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
-		idealRect.X = horizontalSBChild->posOffsets.x;
-		idealRect.Y = horizontalSBChild->posOffsets.y;
-		idealRect.Width = horizontalSBChild->posOffsets.w; 
-		idealRect.Height = horizontalSBChild->posOffsets.h;
-	WWidgetManager::getDestinationRect(	hDestRect,
-											m_TreeWidget->widgetSize.width,
-											m_TreeWidget->widgetSize.height,
-											&wndRect,
-											&idealRect,
-											horizontalSBChild->align.iHAlign,
-											horizontalSBChild->align.iVAlign
-											);
-	hWnd = 
-	CreateComponent(	"WScrollbar", 
-								"", 
-								0, 
-								hDestRect.X - m_iLeft, 
-								hDestRect.Y - m_iTop,
-								hDestRect.Width, 
-								hDestRect.Height,
-								this, 
-								HMENU(ID_HORIZONTAL_SCROLLBAR), 
-								(LPVOID)0);
-	m_sbHorizontal = (WScrollbar*)hWnd;
-	m_sbHorizontal->hasBG(true);
-	m_sbHorizontal->setPostRender(true);
-	m_iMaxHScrollbarWidth = hDestRect.Width;
-	///////////////////////////////////////////////////
-
-	bool bHasClientArea = (m_TreeWidget->clientAreas.size() > 0);
-	if(bHasClientArea) {
-		CLIENT_AREA* clientArea = m_TreeWidget->getClientAreaAt(0);
-		RectF destRect;
-		wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
-		idealRect.X = clientArea->posOffsets.x;
-		idealRect.Y = clientArea->posOffsets.y;
-		idealRect.Width = clientArea->posOffsets.w; 
-		idealRect.Height = clientArea->posOffsets.h;
-		WWidgetManager::getDestinationRect(	destRect,
-												m_TreeWidget->widgetSize.width,
-												m_TreeWidget->widgetSize.height,
-												&wndRect,
-												&idealRect,
-												clientArea->align.iHAlign,
-												clientArea->align.iVAlign
-												);
-		m_ClientRect.X = destRect.X - getLeft();
-		m_ClientRect.Y = destRect.Y - getTop();
-		m_ClientRect.Width = destRect.Width;
-		m_ClientRect.Height = destRect.Height;
-
-		m_iClientRectW = m_ClientRect.Width;
-		m_iClientRectH = m_ClientRect.Height;
-	}
-
-	m_IsVScrolling = m_IsHScrolling = false;
-	m_minX = getLeft() + m_ClientRect.X;
-	m_maxX = m_minX + m_ClientRect.Width;
-	m_minY = getTop() + m_ClientRect.Y;
-	m_maxY = m_minY + m_ClientRect.Height;
-
-	m_wRoot = m_TreeWidget->getChild("Tree_Root");
-	m_wFolderClosed = m_TreeWidget->getChild("Tree_FolderClosed");
-	m_wFolderOpen = m_TreeWidget->getChild("Tree_FolderOpen");
-	m_wFolderOpenBranch = m_TreeWidget->getChild("Tree_FolderOpenBranch");
-	m_wFolderFirstOpenBranch = m_TreeWidget->getChild("Tree_FolderFirstOpenBranch");
-	m_wFolderClosedBranch = m_TreeWidget->getChild("Tree_FolderClosedBranch");
-	m_wFolderFirstClosedBranch = m_TreeWidget->getChild("Tree_FolderFirstClosedBranch");
-	m_wFolderFirstChildBranch = m_TreeWidget->getChild("Tree_FirstChildBranch");
-	m_wFolderChildBranch = m_TreeWidget->getChild("Tree_ChildBranch");
-	m_wFolderChildLineBranch = m_TreeWidget->getChild("Tree_ChildLineBranch");
-	m_wFolderHalfLineBranch = m_TreeWidget->getChild("Tree_FolderHalfLineBranch");
-	m_wChild1 = m_TreeWidget->getChild("Tree_Child1");
-	m_wChild2 = m_TreeWidget->getChild("Tree_Child2");
-
-	///////////////////////////////////////////
-}
-
 void WTree::onUpdate() {
-	updateComponentPosition();
 
 	if(!m_IsVScrolling)
 		updateVBarPosition();

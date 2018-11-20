@@ -38,120 +38,100 @@ H_WND WListBox::Create(		const char* lpClassName,
 											LPVOID lpVoid
 ) {
 	WListBox* pWListBox = new WListBox();
-	return pWListBox->createWindow(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpVoid);
+
+	((WContainer*)pWListBox)->Create(	lpClassName, 
+														lpWindowName, 
+														dwStyle, 
+														x, 
+														y, 
+														width, 
+														height, 
+														hwndParent, 
+														hMenu, 
+														lpVoid,
+														true, 
+														true);
+
+	return pWListBox;
 }
 
-H_WND WListBox::createWindow(	const char* lpClassName, 
-												const char* lpWindowName, 
-												DWORD dwStyle, 
-												int x, 
-												int y, 
-												int width, 
-												int height, 
-												H_WND hwndParent, 
-												HMENU hMenu, 
-												LPVOID lpParam
-) {
-		sprintf(m_pClassName, "%s", lpClassName);
+void WListBox::onCreateEx(LPVOID lpVoid) {
+	H_WND hWnd = NULL;
 
-		H_WND hWnd = NULL;
+	m_ListBoxWidget = WWidgetManager::getWidget("ListBox");
+	m_minX = getLeft() + TB_LEFT_GUTTER;
+	m_minY = getTop() + TB_TOP_GUTTER;
+	LINE_HEIGHT = WWidgetManager::CHARACTER_HEIGHT;
 
-		m_ListBoxWidget = WWidgetManager::getWidget("ListBox");
+	///////////////////////////////////////////////////
+	RectF destRect;
+	RectF wndRect;
+	RectF idealRect;
 
-		m_pParent = (WComponent*)hwndParent;
-		m_HwndID = (int)hMenu;
+	CHILD* verticalSBChild = m_ListBoxWidget->getChild("VScroll");
+	wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
+	idealRect.X = verticalSBChild->posOffsets.x;
+	idealRect.Y = verticalSBChild->posOffsets.y;
+	idealRect.Width = verticalSBChild->posOffsets.w; 
+	idealRect.Height = verticalSBChild->posOffsets.h;
+	WWidgetManager::getDestinationRect(	destRect,
+															m_ListBoxWidget->widgetSize.width, m_ListBoxWidget->widgetSize.height,
+															&wndRect,
+															&idealRect,
+															verticalSBChild->align.iHAlign,
+															verticalSBChild->align.iVAlign
+															);
+	hWnd = 
+	CreateComponent(	"WScrollbar", 
+								"", 
+								0, 
+								destRect.X - m_iLeft, 
+								destRect.Y - m_iTop,
+								destRect.Width, 
+								destRect.Height,
+								this, 
+								HMENU(ID_VERTICAL_SCROLLBAR), 
+								(LPVOID)1);
+	m_sbVertical = (WScrollbar*)hWnd;
+	m_sbVertical->hasBG(true);
+	m_maxX = getRight() - m_sbVertical->getWidth() - TB_RIGHT_GUTTER;
+	///////////////////////////////////////////////////
+	///////////////////////////////////////////////////
+	CHILD* horizontalSBChild = m_ListBoxWidget->getChild("HScroll");
+	wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
+	idealRect.X = horizontalSBChild->posOffsets.x;
+	idealRect.Y = horizontalSBChild->posOffsets.y;
+	idealRect.Width = horizontalSBChild->posOffsets.w; 
+	idealRect.Height = horizontalSBChild->posOffsets.h;
+	WWidgetManager::getDestinationRect(	destRect,
+															m_ListBoxWidget->widgetSize.width, m_ListBoxWidget->widgetSize.height,
+															&wndRect,
+															&idealRect,
+															horizontalSBChild->align.iHAlign,
+															horizontalSBChild->align.iVAlign
+															);
+	hWnd = 
+	CreateComponent(	"WScrollbar", 
+								"", 
+								0, 
+								destRect.X - m_iLeft, 
+								destRect.Y - m_iTop,
+								destRect.Width, 
+								destRect.Height,
+								this, 
+								HMENU(ID_HORIZONTAL_SCROLLBAR), 
+								(LPVOID)0);
+	m_sbHorizontal = (WScrollbar*)hWnd;
+	m_sbHorizontal->hasBG(true);
+	m_sbHorizontal->setVisible(false);
+	///////////////////////////////////////////////////
 
-		m_iOffsetX = x;
-		m_iOffsetY = y;
+	setProportionalToParent(true);//STRETCH_TO_PARENTS_WIDTH);
 
-		m_iLeft = m_pParent->getLeft() + m_iOffsetX;
-		m_iTop = m_pParent->getTop() + m_iOffsetY;
-		m_iRight = m_iLeft + width;
-		m_iBottom = m_iTop + height;
+	updateVBarPosition();
 
-		m_mainX = 0;
-		m_mainY = 0;
-
-		m_minX = getLeft() + TB_LEFT_GUTTER;
-		m_minY = getTop() + TB_TOP_GUTTER;
-
-		LINE_HEIGHT = WWidgetManager::CHARACTER_HEIGHT;
-
-		///////////////////////////////////////////////////
-		RectF destRect;
-		RectF wndRect;
-		RectF idealRect;
-
-		CHILD* verticalSBChild = m_ListBoxWidget->getChild("VScroll");
-		wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
-		idealRect.X = verticalSBChild->posOffsets.x;
-		idealRect.Y = verticalSBChild->posOffsets.y;
-		idealRect.Width = verticalSBChild->posOffsets.w; 
-		idealRect.Height = verticalSBChild->posOffsets.h;
-		WWidgetManager::getDestinationRect(	destRect,
-			m_ListBoxWidget->widgetSize.width, m_ListBoxWidget->widgetSize.height,
-			&wndRect,
-			&idealRect,
-			verticalSBChild->align.iHAlign,
-			verticalSBChild->align.iVAlign
-			);
-		hWnd = 
-		CreateComponent(	"WScrollbar", 
-									"", 
-									0, 
-									destRect.X - m_iLeft, 
-									destRect.Y - m_iTop,
-									destRect.Width, 
-									destRect.Height,
-									this, 
-									HMENU(ID_VERTICAL_SCROLLBAR), 
-									(LPVOID)1);
-		m_sbVertical = (WScrollbar*)hWnd;
-		m_sbVertical->hasBG(true);
-		m_maxX = getRight() - m_sbVertical->getWidth() - TB_RIGHT_GUTTER;
-		///////////////////////////////////////////////////
-		///////////////////////////////////////////////////
-		CHILD* horizontalSBChild = m_ListBoxWidget->getChild("HScroll");
-		wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
-		idealRect.X = horizontalSBChild->posOffsets.x;
-		idealRect.Y = horizontalSBChild->posOffsets.y;
-		idealRect.Width = horizontalSBChild->posOffsets.w; 
-		idealRect.Height = horizontalSBChild->posOffsets.h;
-		WWidgetManager::getDestinationRect(	destRect,
-			m_ListBoxWidget->widgetSize.width, m_ListBoxWidget->widgetSize.height,
-			&wndRect,
-			&idealRect,
-			horizontalSBChild->align.iHAlign,
-			horizontalSBChild->align.iVAlign
-			);
-		hWnd = 
-		CreateComponent(	"WScrollbar", 
-									"", 
-									0, 
-									destRect.X - m_iLeft, 
-									destRect.Y - m_iTop,
-									destRect.Width, 
-									destRect.Height,
-									this, 
-									HMENU(ID_HORIZONTAL_SCROLLBAR), 
-									(LPVOID)0);
-		m_sbHorizontal = (WScrollbar*)hWnd;
-		m_sbHorizontal->hasBG(true);
-		m_sbHorizontal->setVisible(false);
-		///////////////////////////////////////////////////
-
-		setProportionalToParent(true);//STRETCH_TO_PARENTS_WIDTH);
-
-		updateVBarPosition();
-
-		updateScrollBarVisibility();
-		updateMains();
-
-		setComponentID((int)hMenu);
-		setComponentAsChild(false);
-		((WContainer*)m_pParent)->addComponent(this);
-
-		return this;
+	updateScrollBarVisibility();
+	updateMains();
 }
 
 void WListBox::calculateMaxLineWidth() {
@@ -439,7 +419,6 @@ void WListBox::getCaretPos(int x, int y) {
 }
 
 void WListBox::onUpdate() {
-	updateComponentPosition();
 
 	m_minX = getLeft() + TB_LEFT_GUTTER;
 	m_minY = getTop() + TB_TOP_GUTTER;
@@ -554,7 +533,7 @@ void WListBox::onMouseDownEx(int x, int y, int iButton) {
 	setCaretDrawPosition();
 	
 	if(m_pParent) {
-		m_pParent->onMessage(MOUSE_DOWN, this->m_HwndID, 0);
+		m_pParent->onMessage(MOUSE_DOWN, getComponentID(), 0);
 	}
 
 //printf("Ex onMouseDown\n");
@@ -572,7 +551,7 @@ void WListBox::onMouseUpEx(int x, int y, int iButton) {
 	}
 
 	if(m_pParent)
-		m_pParent->onMessage(MOUSE_UP, this->m_HwndID, 0);
+		m_pParent->onMessage(MOUSE_UP, getComponentID(), 0);
 }
 
 void WListBox::onMouseMoveEx(int mCode, int x, int y, int prevX, int prevY) {

@@ -13,9 +13,8 @@ struct WTextField : public WContainer {
 
 		static H_WND __stdcall Create(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 
-		H_WND			createWindow(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 		LRESULT		OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam);
-		//void				create(WComponent* parent, int x, int y, int w, int h, const char* sText, int TEXTFIELD_ID);
+
 		void				setReadOnly(bool bRd);
 		bool				getReadOnly();
 		const char*	getText();
@@ -34,7 +33,8 @@ struct WTextField : public WContainer {
 			NORMAL,
 			READONLY
 		};
-		
+	
+		virtual void	onCreateEx(LPVOID lpVoid);
 		virtual void	onUpdate();
 		virtual void	onRender();
 
@@ -64,7 +64,6 @@ struct WTextField : public WContainer {
 		void			pasteText();
 		void			deleteSelectedText();
 		
-		int								m_HwndID;
 		TextBoxState					mState;
 		WIDGET*						m_TextBoxWidget;
 		std::vector<std::string>	m_Lines;

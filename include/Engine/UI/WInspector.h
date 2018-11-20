@@ -16,8 +16,6 @@
 
 struct WInspector : public WContainer {
 	private:
-		std::string		m_title;
-
 		bool			m_bResizing;
 		bool			m_bMoving;
 		bool			m_bResizable;
@@ -29,15 +27,11 @@ struct WInspector : public WContainer {
 
 		static H_WND __stdcall Create(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 
-		H_WND		createWindow(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
-		//void create(WComponent* parent, int left, int top, int width, int height, const std::string &title, bool bHasScrollBars);
-
 		void setResizable(bool bResizable)	{ m_bResizable = bResizable; }
 		void setScrollbars(bool bHasScroll)	{ m_bHasScrollBars = bHasScroll; }
 		void setBorderVisibility(bool bHasBorder)	{ m_bShowBorder = bHasBorder; }
-		const char* getTitle() { return m_title.c_str(); }
 		
-		virtual void onCreate();
+		virtual void onCreateEx(LPVOID lpVoid);
 		virtual void onUpdate();
 		virtual void onRender();
 

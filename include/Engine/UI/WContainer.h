@@ -12,12 +12,15 @@ struct WContainer : public WComponent {
 		WContainer();
 		virtual ~WContainer();
 
+		virtual	H_WND	Create(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam, bool bIsContainer = false, bool bIsChild = false);
+
 		void					addComponent(WComponent* pC);
 		void					removeComponent(WComponent* pC);
 		int					getNumChildren() {	return (int)m_pChildren.size(); }
 		WComponent*		getChild(int pos) { return m_pChildren[pos]; }
 		
 		// overridables
+		virtual		void		onCreateEx(LPVOID lpVoid) { };
 		virtual		void		onMouseDownEx(int x, int y, int iButton) { };
 		virtual		void		onMouseUpEx(int x, int y, int iButton) { };
 		virtual		void		onMouseEnterEx(int mCode, int x, int y, int prevX, int prevY) { };

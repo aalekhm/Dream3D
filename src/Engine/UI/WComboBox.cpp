@@ -46,40 +46,29 @@ H_WND WComboBox::Create(		const char* lpClassName,
 												LPVOID lpVoid
 ) {
 	WComboBox* pWComboBox = new WComboBox();
-	return pWComboBox->createWindow(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpVoid);
+
+	((WContainer*)pWComboBox)->Create(	lpClassName, 
+															lpWindowName, 
+															dwStyle, 
+															x, 
+															y, 
+															width, 
+															height, 
+															hwndParent, 
+															hMenu, 
+															lpVoid,
+															true, 
+															true);
+
+	return pWComboBox;
 }
 
-H_WND WComboBox::createWindow(	const char* lpClassName, 
-													const char* lpWindowName, 
-													DWORD dwStyle, 
-													int x, 
-													int y, 
-													int width, 
-													int height, 
-													H_WND hwndParent, 
-													HMENU hMenu, 
-													LPVOID lpParam
-) {
-	sprintf(m_pClassName, "%s", lpClassName);
+void WComboBox::onCreateEx(LPVOID lpVoid) {
 
-	H_WND hwnd = NULL;
+	H_WND hWnd = NULL;
 
 	m_ComboBoxWidget = WWidgetManager::getWidget("ComboBox");
-
-	m_pParent = (WComponent*)hwndParent;
-
 	TB_HEIGHT = WWidgetManager::CHARACTER_HEIGHT + (TB_TEXT_Y << 1);
-
-	m_iOffsetX = x;
-	m_iOffsetY = y;
-
-	m_mainX = 0;
-	m_mainY = 0;
-	m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_pParent->m_iMainX;
-	m_iTop = m_pParent->getTop() + m_iOffsetY + m_pParent->m_iMainY;
-	m_iRight = m_iLeft + width;
-	m_iBottom = m_iTop + height + TB_HEIGHT;
-
 	m_minX = getLeft() + TB_LEFT_GUTTER;
 	m_minY = getTop() + TB_TOP_GUTTER;
 
@@ -94,14 +83,14 @@ H_WND WComboBox::createWindow(	const char* lpClassName,
 	idealRect.Width = cbTextField->posOffsets.w; 
 	idealRect.Height = cbTextField->posOffsets.h;
 	WWidgetManager::getDestinationRect(	vDestRect,
-		m_ComboBoxWidget->widgetSize.width, 
-		m_ComboBoxWidget->widgetSize.height,
-		&wndRect,
-		&idealRect,
-		cbTextField->align.iHAlign,
-		cbTextField->align.iVAlign
-		);
-	hwnd = 
+															m_ComboBoxWidget->widgetSize.width, 
+															m_ComboBoxWidget->widgetSize.height,
+															&wndRect,
+															&idealRect,
+															cbTextField->align.iHAlign,
+															cbTextField->align.iVAlign
+															);
+	hWnd = 
 	CreateComponent(	"WTextField", 
 								"Sample text", 
 								0, 
@@ -112,7 +101,7 @@ H_WND WComboBox::createWindow(	const char* lpClassName,
 								this, 
 								HMENU(ID_TEXTFIELD), 
 								NULL);
-	m_cbTextField = ((WTextField*)hwnd);
+	m_cbTextField = ((WTextField*)hWnd);
 	m_cbTextField->setReadOnly(!true);
 	m_cbTextField->setBorderVisibility(false);
 
@@ -129,7 +118,7 @@ H_WND WComboBox::createWindow(	const char* lpClassName,
 															cbButton->align.iHAlign,
 															cbButton->align.iVAlign
 														);
-	hwnd = 
+	hWnd = 
 	CreateComponent(	"WButton", 
 								"", 
 								0, 
@@ -140,7 +129,7 @@ H_WND WComboBox::createWindow(	const char* lpClassName,
 								this, 
 								HMENU(ID_BUTTON), 
 								"ButtonDown");
-	m_cbButton = (WButton*)hwnd;
+	m_cbButton = (WButton*)hWnd;
 
 	CHILD* cbListBox = m_ComboBoxWidget->getChild("ListBox");
 	wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
@@ -149,13 +138,13 @@ H_WND WComboBox::createWindow(	const char* lpClassName,
 	idealRect.Width = cbListBox->posOffsets.w; 
 	idealRect.Height = cbListBox->posOffsets.h;
 	WWidgetManager::getDestinationRect(	vDestRect,
-		m_ComboBoxWidget->widgetSize.width, m_ComboBoxWidget->widgetSize.height,
-		&wndRect,
-		&idealRect,
-		cbListBox->align.iHAlign,
-		cbListBox->align.iVAlign
-		);
-	hwnd = 
+															m_ComboBoxWidget->widgetSize.width, m_ComboBoxWidget->widgetSize.height,
+															&wndRect,
+															&idealRect,
+															cbListBox->align.iHAlign,
+															cbListBox->align.iVAlign
+															);
+	hWnd = 
 	CreateComponent(	"WListBox", 
 								"", 
 								0, 
@@ -166,18 +155,11 @@ H_WND WComboBox::createWindow(	const char* lpClassName,
 								this, 
 								HMENU(ID_LISTBOX), 
 								(LPVOID)true);
-	m_cbListBox = (WListBox*)hwnd;
+	m_cbListBox = (WListBox*)hWnd;
 	m_cbListBox->setVisible(false);
-
-	setComponentID((int)hMenu);
-	setComponentAsChild(true);
-	((WContainer*)m_pParent)->addComponent(this);
-
-	return this;
 }
 
 void WComboBox::onUpdate() {
-	updateComponentPosition();
 
 	if(!isActive()) {
 		if(m_cbListBox->isVisible())

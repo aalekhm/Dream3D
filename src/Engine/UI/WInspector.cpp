@@ -29,53 +29,24 @@ H_WND WInspector::Create(		const char* lpClassName,
 											LPVOID lpVoid
 ) {
 	WInspector* pWInspector = new WInspector();
-	return pWInspector->createWindow(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpVoid);
+
+	((WContainer*)pWInspector)->Create(	lpClassName, 
+															lpWindowName, 
+															dwStyle, 
+															x, 
+															y, 
+															width, 
+															height, 
+															hwndParent, 
+															hMenu, 
+															lpVoid,
+															true, 
+															true);
+
+	return pWInspector;
 }
 
-H_WND WInspector::createWindow(	const char* lpClassName, 
-													const char* lpWindowName, 
-													DWORD dwStyle, 
-													int x, 
-													int y, 
-													int width, 
-													int height, 
-													H_WND hwndParent, 
-													HMENU hMenu, 
-													LPVOID lpParam
-) {
-		sprintf(m_pClassName, "%s", lpClassName);
-
-		m_iMainX = m_iMainY = 0;
-		m_pParent = (WComponent*)hwndParent;
-
-		m_iOffsetX = x;
-		m_iOffsetY = y;
-
-		m_bHasScrollBars = (bool)lpParam;
-
-		if(m_pParent) {
-			m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_iMainX;
-			m_iTop = m_pParent->getTop() + m_iOffsetY + m_iMainY;
-		}
-
-		m_iRight = m_iLeft + width;
-		m_iBottom = m_iTop + height;
-
-		m_title = lpWindowName;
-		m_FrameWidget = WWidgetManager::getWidget("InspectorC_Scroll");
-
-		// custom initialization
-		onCreate();
-
-		setComponentID((int)hMenu);
-		setIsContainer(true);
-		setComponentAsChild(true);
-		((WContainer*)m_pParent)->addComponent(this);
-
-		return this;
-}
-
-void WInspector::onCreate() {
+void WInspector::onCreateEx(LPVOID lpVoid) {
 	
 	H_WND hWnd = NULL;
 
@@ -83,6 +54,9 @@ void WInspector::onCreate() {
 	RectF hDestRect;
 	RectF wndRect;
 	RectF idealRect;
+
+	m_bHasScrollBars = (bool)lpVoid;
+	m_FrameWidget = WWidgetManager::getWidget("InspectorC_Scroll");
 
 	///////////////////////////////////////////////////
 	if(m_bHasScrollBars) {
@@ -239,8 +213,6 @@ void WInspector::onUpdate() {
 	if(!m_bHasScrollBars)
 		return;
 
-	updateComponentPosition();
-
 	//////////////////////////////////
 	WInspectorTab* inspChild = 0;
 	int yy = TOP_MARGIN_WIDTH;
@@ -338,55 +310,6 @@ void WInspector::updateHBarCursorPosition() {
 
 	m_sbHorizontal->setCursorPositionInPercent(_percentage);
 }
-
-//void WInspector::updateScrollBarPosition() {
-//	updateHScrollBarPosition();
-//	updateVScrollBarPosition();
-//}
-//
-//void WInspector::updateHScrollBarPosition() {
-//	RectF vDestRect;
-//	RectF wndRect;
-//	RectF idealRect;
-//
-//	CHILD* verticalSBChild = m_FrameWidget->getChild("VScroll");
-//		wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
-//		idealRect.X = verticalSBChild->posOffsets.x;
-//		idealRect.Y = verticalSBChild->posOffsets.y;
-//		idealRect.Width = verticalSBChild->posOffsets.w; 
-//		idealRect.Height = verticalSBChild->posOffsets.h;
-//	WWidgetManager::getDestinationRect(	vDestRect,
-//											m_FrameWidget->widgetSize.width,
-//											m_FrameWidget->widgetSize.height,
-//											&wndRect,
-//											&idealRect,
-//											verticalSBChild->align.iHAlign,
-//											verticalSBChild->align.iVAlign
-//										);
-//	m_sbVertical->setPosition(vDestRect.X - m_iLeft, vDestRect.Y - m_iTop);
-//}
-//
-//void WInspector::updateVScrollBarPosition() {
-//	RectF hDestRect;
-//	RectF wndRect;
-//	RectF idealRect;
-//
-//	CHILD* horizontalSBChild = m_FrameWidget->getChild("HScroll");
-//		wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
-//		idealRect.X = horizontalSBChild->posOffsets.x;
-//		idealRect.Y = horizontalSBChild->posOffsets.y;
-//		idealRect.Width = horizontalSBChild->posOffsets.w; 
-//		idealRect.Height = horizontalSBChild->posOffsets.h;
-//	WWidgetManager::getDestinationRect(	hDestRect,
-//											m_FrameWidget->widgetSize.width,
-//											m_FrameWidget->widgetSize.height,
-//											&wndRect,
-//											&idealRect,
-//											horizontalSBChild->align.iHAlign,
-//											horizontalSBChild->align.iVAlign
-//										);
-//	m_sbHorizontal->setPosition(hDestRect.X - m_iLeft, hDestRect.Y - m_iTop);
-//}
 
 void WInspector::onRender() {
 	if(!m_bHasScrollBars)

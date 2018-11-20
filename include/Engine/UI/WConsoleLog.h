@@ -14,9 +14,8 @@ struct WConsoleLog : public WContainer {
 
 		static H_WND __stdcall Create(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 
-		H_WND			createWindow(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 		LRESULT		OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam);
-		//void			create(WComponent* parent, int x, int y, int w, int h, const char* sText);
+
 		void			showLineNumbers(bool bShow);
 		bool			getReadOnly();
 		void			setReadOnly(bool bRd);
@@ -32,6 +31,7 @@ struct WConsoleLog : public WContainer {
 			ID_HORIZONTAL_SCROLLBAR
 		};
 
+		virtual void	onCreateEx(LPVOID lpVoid);
 		virtual void	onUpdate();
 		virtual void	onRender();
 

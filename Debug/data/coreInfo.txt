@@ -1,0 +1,2893 @@
+
+
+WIDGET RadioButton {
+
+	size	"19 20"
+
+	BaseSkin {
+		posOffset	"0 0 19 20" 
+		skinOffset	"27 23 19 20"
+		align		Left Top
+		Description	""
+	}
+
+	BaseSkin {
+		posOffset	"0 0 19 20" 
+		skinOffset	"27 107 19 20"
+		align		Left Top
+	}
+}
+
+WIDGET CheckBox_Normal {
+
+	size	"100 21"
+
+	BaseSkin {
+		name 		sCheckBox
+		posOffset	"0 0 21 21" 
+		skinOffset	"2 24 21 21"
+		align		Left Top
+		Description	""
+	}
+}
+
+WIDGET CheckBox_Normal_Checked {
+
+	size	"100 21"
+
+	BaseSkin {
+		posOffset	"0 0 21 21" 
+		skinOffset	"2 112 21 21"
+		align		Left Top
+	}	
+}
+
+WIDGET CheckBox_Inactive {
+
+	size	"100 21"
+
+	BaseSkin {
+		posOffset	"0 0 21 21" 
+		skinOffset	"2 2 21 21"
+		align		Left Top
+		Description	""
+	}
+}
+
+WIDGET CheckBox_Inactive_Checked {
+
+	size	"100 21"
+
+	BaseSkin {
+		posOffset	"0 0 21 21" 
+		skinOffset	"2 90 21 21"
+		align		Left Top
+	}	
+}
+
+WIDGET CheckBox_Highlighted {
+
+	size	"100 21"
+
+	BaseSkin {
+		posOffset	"0 0 21 21" 
+		skinOffset	"2 46 21 21"
+		align		Left Top
+		Description	""
+	}
+}
+
+WIDGET CheckBox_Highlighted_Checked {
+
+	size	"100 21"
+
+	BaseSkin {
+		posOffset	"0 0 21 21" 
+		skinOffset	"2 134 21 21"
+		align		Left Top
+	}	
+}
+
+WIDGET CheckBox_Pushed {
+
+	size	"100 21"
+
+	BaseSkin {
+		posOffset	"0 0 21 21" 
+		skinOffset	"2 68 21 21"
+		align		Left Top
+		Description	""
+	}
+}
+
+WIDGET CheckBox_Pushed_Checked {
+
+	size	"100 21"
+
+	BaseSkin {
+		posOffset	"0 0 21 21" 
+		skinOffset	"2 156 21 21"
+		align		Left Top
+	}	
+}
+
+WIDGET TabPatch {
+
+	size	"26 5"
+
+	BaseSkin {
+		posOffset	"0 0 26 5" 
+		skinOffset	"528 64 26 5"
+		align		HStretch Top
+		Description	""
+	}
+}
+
+WIDGET TabPatchSelected {
+	
+	size	"53 21"
+
+	BaseSkin {
+		posOffset	"0 0 11 21" 
+		skinOffset	"545 2 11 21"
+		align		Left VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"11 0 29 21" 
+		skinOffset	"556 2 29 21"
+		align		HStretch VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"40 0 13 21" 
+		skinOffset	"582 2 13 21"
+		align		Right VStretch
+		Description	""
+	}
+
+	//ClientArea {
+		//skin		Default
+		//posOffset	"1 1 26 20"
+		//align		HStretch VStretch
+	//}
+}
+
+WIDGET TabPatchUnSelected {
+	
+	size	"53 21"
+
+	BaseSkin {
+		posOffset	"0 0 11 21" 
+		skinOffset	"597 2 11 21"
+		align		Left VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"11 0 29 21" 
+		skinOffset	"608 2 29 21"
+		align		HStretch VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"40 0 13 21" 
+		skinOffset	"634 2 13 21"
+		align		Right VStretch
+		Description	""
+	}
+
+	//ClientArea {
+		//skin		Default
+		//posOffset	"1 1 26 20"
+		//align		HStretch VStretch
+	//}
+}
+
+WIDGET Tab_Body {
+
+	size	"62 60"
+	
+	BaseSkin {
+		posOffset	"0 21 4 5" 
+		skinOffset	"524 64 4 5"
+		align		Left Top
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"0 26 4 29" 
+		skinOffset	"524 69 4 29"
+		align		Left VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"0 55 4 5" 
+		skinOffset	"524 98 4 5"
+		align		Left Bottom
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"4 26 52 29" 
+		skinOffset	"528 69 26 29"
+		align		HStretch VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"4 55 52 5" 
+		skinOffset	"528 98 26 5"
+		align		HStretch Bottom
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"56 55 6 5" 
+		skinOffset	"561 98 6 5"
+		align		Right Bottom
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"56 26 6 29" 
+		skinOffset	"561 70 6 29"
+		align		Right VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"4 21 52 5" 
+		skinOffset	"528 64 10 5"
+		align		HStretch Top
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"56 21 6 5" 
+		skinOffset	"561 64 6 5"
+		align		Right Top
+		Description	""
+	}
+}
+
+WIDGET Tab {
+	
+	size	"64 60"
+
+	Child {
+		skin		TabPatchSelected
+		posOffset	"4 0 53 21"
+		align		HStretch Top
+	}
+	Child {
+		skin		TabPatchUnSelected
+		posOffset	"53 0 53 21" 
+		align		HStretch Top
+	}
+	Child {
+		skin		ButtonLeft
+		posOffset	"30 5 12 14"
+		align		Right Top
+	}
+	Child {
+		skin		ButtonRight
+		posOffset	"44 5 14 13"
+		align		Right Top
+	}
+	
+	Child {
+		skin		Tab_Body
+		posOffset	"0 0 64 60" 
+		align		HStretch VStretch
+	}
+
+	ClientArea {
+		skin		Default
+		posOffset	"0 21 64 34"
+		align		HStretch VStretch
+	}
+}
+
+WIDGET ScrollView {
+
+	size "11 11"
+
+	Child {
+		skin		VScroll
+		posOffset	"-9 3 15 -12"
+		align		Right VStretch
+	}
+	Child {
+		skin		HScroll
+		posOffset	"3 -9 -12 15"
+		align		HStretch Bottom
+	}
+	Child {
+		skin		DefaultClient
+		posOffset	"3 3 -12 -12"
+		align		HStretch VStretch
+	}
+
+	BaseSkin {
+		posOffset	"0 0 3 3" 
+		skinOffset	"429 70 3 3"
+		align		Left Top
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"3 0 3 3" 
+		skinOffset	"435 70 3 3"
+		align		HStretch Top
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"6 0 5 3" 
+		skinOffset	"447 70 5 3"
+		align		Right Top
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"0 3 3 3" 
+		skinOffset	"429 76 3 3"
+		align		Left VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"3 3 3 3" 
+		skinOffset	"432 5 65 57"
+		align		HStretch VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"6 3 5 3" 
+		skinOffset	"447 76 5 3"
+		align		Right VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"0 6 3 5" 
+		skinOffset	"429 87 3 5"
+		align		Left Bottom
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"3 6 3 5" 
+		skinOffset	"435 87 3 5"
+		align		HStretch Bottom
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"6 6 5 5" 
+		skinOffset	"447 87 5 5"
+		align		Right Bottom
+		Description	""
+	}
+
+	//ClientArea {
+		//skin		Default
+		//posOffset	"3 3 -12 -12"
+		//align		HStretch VStretch
+	//}
+}
+
+WIDGET HScrollTrack_Normal {
+	
+	size	"19 14"
+
+	BaseSkin {
+		posOffset	"0 0 7 14" 
+		skinOffset	"146 95 7 14"
+		align		Left VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"7 0 3 14" 
+		skinOffset	"153 95 3 14"
+		align		HStretch VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"10 0 9 14" 
+		skinOffset	"156 95 9 14"
+		align		Right VStretch
+		Description	""
+	}
+}
+
+WIDGET HScrollTrack_Disabled {
+	
+	size	"19 14"
+
+	BaseSkin {
+		posOffset	"0 0 7 14" 
+		skinOffset	"146 80 7 14"
+		align		Left VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"7 0 3 14" 
+		skinOffset	"153 80 3 14"
+		align		HStretch VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"10 0 9 14" 
+		skinOffset	"156 80 9 14"
+		align		Right VStretch
+		Description	""
+	}
+}
+
+WIDGET HScrollTrack_Highlighted {
+	
+	size	"19 14"
+
+	BaseSkin {
+		posOffset	"0 0 7 14" 
+		skinOffset	"146 110 7 14"
+		align		Left VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"7 0 3 14" 
+		skinOffset	"153 110 3 14"
+		align		HStretch VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"10 0 9 14" 
+		skinOffset	"156 110 9 14"
+		align		Right VStretch
+		Description	""
+	}
+}
+
+WIDGET HScrollTrack_Pushed {
+	
+	size	"19 14"
+
+	BaseSkin {
+		posOffset	"0 0 7 14" 
+		skinOffset	"146 140 7 14"
+		align		Left VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"7 0 3 14" 
+		skinOffset	"153 140 3 14"
+		align		HStretch VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"10 0 9 14" 
+		skinOffset	"156 140 9 14"
+		align		Right VStretch
+		Description	""
+	}
+}
+
+WIDGET HScrollRightPart {
+	
+	size	"6 15"
+
+	BaseSkin {
+		posOffset	"0 0 6 15" 
+		skinOffset	"0 0 0 0"
+		align		HStretch VStretch
+		Description	""
+	}
+}
+
+WIDGET HScrollLeftPart {
+	
+	size	"6 15"
+
+	BaseSkin {
+		posOffset	"0 0 6 15" 
+		skinOffset	"0 0 0 0"
+		align		HStretch VStretch
+		Description	""
+	}
+}
+
+WIDGET HScroll {
+	
+	size	"49 15"
+
+	Child {
+		skin		HScrollLeftPart
+		posOffset	"15 0 6 15"
+		align		HStretch VStretch
+	}
+	Child {
+		skin		HScrollRightPart
+		posOffset	"21 0 6 15"
+		align		Right VStretch
+	}
+	Child {
+		skin		ButtonLeft
+		posOffset	"2 1 14 13"
+		align		Left VStretch
+	}
+	Child {
+		skin		ButtonRight
+		posOffset	"35 1 14 13"
+		align		Right VStretch
+	}
+	Child {
+		skin		HScrollTrack
+		posOffset	"18 1 19 14"
+		align		Left VStretch
+	}
+	
+	BaseSkin {
+		posOffset	"0 0 6 15" 
+		skinOffset	"301 2 6 15"
+		align		Left VStretch
+		Description	""
+		name		HSB_LEFT_BG
+	}
+	BaseSkin {
+		posOffset	"6 0 37 15" 
+		skinOffset	"307 2 37 15"
+		align		HStretch VStretch
+		Description	""
+		name		HSB_CENTER_BG
+	}
+	BaseSkin {
+		posOffset	"43 0 6 15" 
+		skinOffset	"344 2 6 15"
+		align		Right VStretch
+		Description	""
+		name		HSB_RIGHT_BG
+	}
+}
+
+WIDGET VScrollTrack_Normal {
+
+	size	"14 19"
+
+	BaseSkin {
+		posOffset	"0 0 14 7" 
+		skinOffset	"128 65 14 7"
+		align		HStretch Top
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"0 7 14 3" 
+		skinOffset	"128 72 14 3"
+		align		HStretch VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"0 10 14 9" 
+		skinOffset	"128 75 14 9"
+		align		HStretch Bottom
+		Description	""
+	}
+}
+
+WIDGET VScrollTrack_Disabled {
+
+	size	"14 19"
+
+	BaseSkin {
+		posOffset	"0 0 14 7" 
+		skinOffset	"128 45 14 7"
+		align		HStretch Top
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"0 7 14 3" 
+		skinOffset	"128 52 14 3"
+		align		HStretch VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"0 10 14 9" 
+		skinOffset	"128 55 14 9"
+		align		HStretch Bottom
+		Description	""
+	}
+}
+
+WIDGET VScrollTrack_Highlighted {
+
+	size	"14 19"
+
+	BaseSkin {
+		posOffset	"0 0 14 7" 
+		skinOffset	"128 85 14 7"
+		align		HStretch Top
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"0 7 14 3" 
+		skinOffset	"128 92 14 3"
+		align		HStretch VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"0 10 14 9" 
+		skinOffset	"128 95 14 9"
+		align		HStretch Bottom
+		Description	""
+	}
+}
+
+WIDGET VScrollTrack_Pushed {
+
+	size	"14 19"
+
+	BaseSkin {
+		posOffset	"0 0 14 7" 
+		skinOffset	"128 125 14 7"
+		align		HStretch Top
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"0 7 14 3" 
+		skinOffset	"128 132 14 3"
+		align		HStretch VStretch
+		Description	""
+	}
+	BaseSkin {
+		posOffset	"0 10 14 9" 
+		skinOffset	"128 135 14 9"
+		align		HStretch Bottom
+		Description	""
+	}
+}
+WIDGET VScrollBottomPart {
+	
+	size	"15 6"
+
+	BaseSkin {
+		posOffset	"0 0 15 6" 
+		skinOffset	"0 0 0 0"
+		align		HStretch VStretch
+		Description	""
+	}
+}
+
+WIDGET VScrollTopPart {
+	
+	size	"15 6"
+
+	BaseSkin {
+		posOffset	"0 0 15 6" 
+		skinOffset	"0 0 0 0"
+		align		HStretch VStretch
+		Description	""
+	}
+}
+
+WIDGET VScroll {
+
+	size	"15 49"
+
+	Child {
+		skin		VScrollTopPart
+		posOffset	"0 15 15 6"
+		align		HStretch VStretch
+	}
+	Child {
+		skin		VScrollBottomPart
+		posOffset	"0 21 15 6"
+		align		HStretch Bottom
+	}
+	Child {
+		skin		ButtonUp
+		posOffset	"1 2 14 12"
+		align		HStretch Top
+	}
+	Child {
+		skin		ButtonDown
+		posOffset	"1 37 14 12"
+		align		HStretch Bottom
+	}
+	Child {
+		skin		VScrollTrack
+		posOffset	"1 18 14 19"
+		align		HStretch Top
+	}
+	
+	BaseSkin {
+		posOffset	"0 0 15 6" 
+		skinOffset	"301 55 15 6"
+		align		HStretch Top
+		Description	""
+		name		HSB_LEFT_BG
+	}
+	BaseSkin {
+		posOffset	"0 6 15 37" 
+		skinOffset	"301 61 15 37"
+		align		HStretch VStretch
+		Description	""
+		name		HSB_CENTER_BG
+	}
+	BaseSkin {
+		posOffset	"0 43 15 6" 
+		skinOffset	"301 98 15 6"
+		align		HStretch Bottom
+		Description	""
+		name		HSB_RIGHT_BG
+	}
+}
+
+WIDGET TextArea {
+	
+	size	"29 26"
+
+	BaseSkin {
+		posOffset	"0 0 10 8" 
+		skinOffset	"235 29 10 8"
+		align		Left Top
+		Description	""
+	}
+	
+	BaseSkin {
+		posOffset	"10 0 7 8" 
+		skinOffset	"245 29 7 8"
+		align		HStretch Top
+		Description	""
+	}
+	
+	BaseSkin {
+		posOffset	"17 0 12 8" 
+		skinOffset	"252 29 12 8"
+		align		Right Top
+		Description	""
+	}
+	
+	BaseSkin {
+		posOffset	"0 8 10 8" 
+		skinOffset	"235 37 10 8"
+		align		Left VStretch
+		Description	""
+	}
+	
+	BaseSkin {
+		posOffset	"10 8 7 8" 
+		skinOffset	"245 37 7 8"
+		align		HStretch VStretch
+		Description	""
+	}
+	
+	BaseSkin {
+		posOffset	"17 8 12 8" 
+		skinOffset	"252 37 12 8"
+		align		Right VStretch
+		Description	""
+	}
+
+	BaseSkin {
+		posOffset	"0 16 10 10" 
+		skinOffset	"235 45 10 10"
+		align		Left Bottom
+		Description	""
+	}
+
+	BaseSkin {
+		posOffset	"10 16 7 10" 
+		skinOffset	"245 45 7 10"
+		align		HStretch Bottom
+		Description	""
+	}
+
+	BaseSkin {
+		posOffset	"17 16 12 10" 
+		skinOffset	"252 45 12 10"
+		align		Right Bottom
+		Description	""
+	}
+
+}
+
+WIDGET TextField {
+
+	size	"29 26"
+
+	Child {
+		skin		TextArea
+		posOffset	"0 0 29 26"
+		align		HStretch VStretch
+	}
+	//ClientArea {
+		//skin		EditClient
+		//posOffset	"2 1 23 22"
+		//align		HStretch VStretch
+	//}
+}
+
+WIDGET TextBox {
+	
+	size	"29 26"
+
+	Child {
+		skin		TextArea
+		posOffset	"0 0 29 26"
+		align		HStretch VStretch
+	}
+	Child {
+		skin		VScroll
+		posOffset	"10 2 15 5"
+		align		Right VStretch
+	}
+	Child {
+		skin		HScroll
+		posOffset	"2 7 8 15"
+		align		HStretch Bottom
+	}
+	ClientArea {
+		skin		EditClient
+		posOffset	"2 2 7 4"
+		align		HStretch VStretch
+	}
+}
+
+WIDGET Tree_Root {
+	size 	"16 15"
+	BaseSkin {
+		posOffset	"0 0 16 15" 
+		skinOffset	"2 176 16 15"
+		align		Left Top
+		Description	""
+	}	
+}
+WIDGET Tree_FolderClosed {
+	size 	"15 12"
+	BaseSkin {
+		posOffset	"0 0 15 12" 
+		skinOffset	"40 176 15 12"
+		align		Left Top
+		Description	""
+	}	
+}
+WIDGET Tree_FolderOpen {
+	size 	"16 12"
+	BaseSkin {
+		posOffset	"0 0 16 12" 
+		skinOffset	"59 176 16 12"
+		align		Left Top
+		Description	""
+	}	
+}
+WIDGET Tree_FolderOpenBranch {
+	size 	"15 28"
+	BaseSkin {
+		posOffset	"-19 0 15 13" 
+		skinOffset	"232 176 15 13"
+		align		Left Top
+		Description	""
+	}	
+	BaseSkin {
+		posOffset	"-15 -8 1 8" 
+		skinOffset	"273 176 1 8"
+		align		Left Top
+		Description	""
+	}
+}
+WIDGET Tree_FolderFirstOpenBranch {
+	size 	"15 17"
+	BaseSkin {
+		posOffset	"-19 0 15 13" 
+		skinOffset	"232 176 15 13"
+		align		Left Top
+		Description	""
+	}	
+	BaseSkin {
+		posOffset	"-15 -4 1 4" 
+		skinOffset	"273 176 1 4"
+		align		Left Top
+		Description	""
+	}
+}
+WIDGET Tree_FolderClosedBranch {
+	size 	"15 28"
+	BaseSkin {
+		posOffset	"-19 0 15 13" 
+		skinOffset	"214 176 15 13"
+		align		Left Top
+		Description	""
+	}	
+	BaseSkin {
+		posOffset	"-15 -8 1 8" 
+		skinOffset	"273 176 1 8"
+		align		Left Top
+		Description	""
+	}
+}
+WIDGET Tree_FolderFirstClosedBranch {
+	size 	"15 15"
+	BaseSkin {
+		posOffset	"-19 0 15 13" 
+		skinOffset	"214 176 15 13"
+		align		Left Top
+		Description	""
+	}	
+	BaseSkin {
+		posOffset	"-15 -4 1 4" 
+		skinOffset	"273 176 1 4"
+		align		Left Top
+		Description	""
+	}
+}
+WIDGET Tree_FirstChildBranch {
+	size 	"11 13"
+	BaseSkin {
+		posOffset	"-19 0 11 9" 
+		skinOffset	"252 176 11 9"
+		align		Left Top
+		Description	""
+	}	
+	BaseSkin {
+		posOffset	"-15 -4 1 4" 
+		skinOffset	"273 176 1 4"
+		align		Left Top
+		Description	""
+	}	
+}
+WIDGET Tree_ChildBranch {
+	size 	"11 17"
+	BaseSkin {
+		posOffset	"-19 0 11 9" 
+		skinOffset	"252 176 11 9"
+		align		Left Top
+		Description	""
+	}	
+	BaseSkin {
+		posOffset	"-15 -8 1 8" 
+		skinOffset	"273 176 1 8"
+		align		Left Top
+		Description	""
+	}	
+}
+WIDGET Tree_ChildLineBranch {
+	size 	"1 18"
+	BaseSkin {
+		posOffset	"-15 0 1 18"
+		skinOffset	"135 176 1 18"
+		align		Left Top
+		Description	""
+	}	
+}
+WIDGET Tree_FolderHalfLineBranch {
+	size 	"1 8"
+	BaseSkin {
+		posOffset	"-15 12 1 8"
+		skinOffset	"135 176 1 8"
+		align		Left Top
+		Description	""
+	}	
+}
+WIDGET Tree_Child1 {
+	size 	"15 15"
+	BaseSkin {
+		posOffset	"0 0 15 15" 
+		skinOffset	"154 176 15 15"
+		align		Left Top
+		Description	""
+	}
+}
+WIDGET Tree_Child2 {
+	size 	"12 15"
+	BaseSkin {
+		posOffset	"0 0 12 15" 
+		skinOffset	"173 176 12 15"
+		align		Left Top
+		Description	""
+	}
+}
+WIDGET Tree {
+	
+	size	"29 26"
+
+	Child {
+		skin		TextArea
+		posOffset	"0 0 29 26"
+		align		HStretch VStretch
+	}
+	Child {
+		skin		VScroll
+		posOffset	"10 2 15 5"
+		align		Right VStretch
+	}
+	Child {
+		skin		HScroll
+		posOffset	"2 7 8 15"
+		align		HStretch Bottom
+	}
+	Child {
+		skin		Tree_Root
+		posOffset	"0 0 16 15"
+		align		Left Top
+	}
+	Child {
+		skin		Tree_FolderClosed
+		posOffset	"0 0 15 12"
+		align		Left Top
+	}
+	Child {
+		skin		Tree_FolderOpen
+		posOffset	"0 0 16 12"
+		align		Left Top
+	}
+	Child {
+		skin		Tree_FolderOpenBranch
+		posOffset	"0 0 15 21"
+		align		Left Top
+	}
+	Child {
+		skin		Tree_FolderFirstOpenBranch
+		posOffset	"0 0 15 15"
+		align		Left Top
+	}	
+	Child {
+		skin		Tree_FolderClosedBranch
+		posOffset	"0 0 15 21"
+		align		Left Top
+	}
+	Child {
+		skin		Tree_FolderFirstClosedBranch
+		posOffset	"0 0 15 15"
+		align		Left Top
+	}
+	Child {
+		skin		Tree_FirstChildBranch
+		posOffset	"0 0 11 13"
+		align		Left Top
+	}
+	Child {
+		skin		Tree_ChildBranch
+		posOffset	"0 0 11 17"
+		align		Left Top
+	}
+	Child {
+		skin		Tree_ChildLineBranch
+		posOffset	"0 0 1 17"
+		align		Left Top
+	}
+	Child {
+		skin		Tree_FolderHalfLineBranch
+		posOffset	"0 0 1 8"
+		align		Left Top
+	}
+	Child {
+		skin		Tree_Child1
+		posOffset	"0 0 15 15"
+		align		Left Top
+	}
+	Child {
+		skin		Tree_Child2
+		posOffset	"0 0 15 15"
+		align		Left Top
+	}
+	
+	ClientArea {
+		skin		EditClient
+		posOffset	"2 2 7 4"
+		align		HStretch VStretch
+	}
+}
+
+WIDGET GreyTop {
+	size	"66 29"
+
+	BaseSkin {
+		posOffset	"0 0 2 29" 
+		skinOffset	"356 2 2 29"
+		align		Left VStretch
+		Description	""
+	}
+	
+	BaseSkin {
+		posOffset	"2 0 62 29" 
+		skinOffset	"358 2 62 29"
+		align		HStretch VStretch
+		Description	""
+	}
+	
+	BaseSkin {
+		posOffset	"64 0 2 29" 
+		skinOffset	"420 2 2 29"
+		align		Right VStretch
+		Description	""
+	}
+}
+
+WIDGET DummyWindow {
+	
+	size	"29 26"
+
+	Child {
+		skin		TextArea
+		posOffset	"0 0 29 26"
+		align		HStretch VStretch
+	}
+	Child {
+		skin		VScroll
+		posOffset	"10 2 15 5"
+		align		Right VStretch
+	}
+	Child {
+		skin		HScroll
+		posOffset	"2 7 8 15"
+		align		HStretch Bottom
+	}
+	Child {
+		skin		WindowResizeLeft
+		posOffset	"0 17 9 9"
+		align		Left Bottom
+	}
+	Child {
+		skin		WindowResizeRight
+		posOffset	"20 17 9 9" 
+		align		Right Bottom
+	}
+	ClientArea {
+		skin		EditClient
+		posOffset	"2 2 7 4"
+		align		HStretch VStretch
+	}
+}
+
+WIDGET Table {
+	
+	size	"29 26"
+
+	Child {
+		skin		TextArea
+		posOffset	"0 0 29 26"
+		align		HStretch VStretch
+	}
+	Child {
+		skin		VScroll
+		posOffset	"10 2 15 5"
+		align		Right VStretch
+	}
+	Child {
+		skin		HScroll
+		posOffset	"2 7 8 15"
+		align		HStretch Bottom
+	}
+	Child {
+		skin		GreyTop
+		posOffset	"0 0 29 26"
+		align		HStretch VStretch
+	}
+	Child {
+		skin		Tree_FolderClosedBranch
+		posOffset	"0 0 15 21"
+		align		Left Top
+	}
+
+	ClientArea {
+		skin		EditClient
+		posOffset	"2 2 7 4"
+		align		HStretch VStretch
+	}
+}
+
+WIDGET ListBoxOrig {
+	size	"11 11"
+	Child {
+		skin		VScroll
+		posOffset	"-9 3 15 3"
+		align		Right VStretch
+	}
+	Child {
+		skin 		ListBoxClient
+		posOffset	"0 0 11 11"
+		align		HStretch VStretch		
+	}
+
+	Child {
+		skin		DefaultClient
+		posOffset	"3 3 -12 3"
+		align		HStretch VStretch
+	}
+
+	BaseSkin {
+		posOffset	"0 0 3 3" 
+		skinOffset	"429 70 3 3"
+		align		Left Top
+		Description	""
+	}
+	
+	BaseSkin {
+		posOffset	"3 0 3 3" 
+		skinOffset	"435 70 3 3"
+		align		HStretch Top
+		Description	""
+	}
+	
+	BaseSkin {
+		posOffset	"6 0 5 3"
+		skinOffset	"447 70 5 3"
+		align		Right Top
+		Description	""
+	}
+
+	BaseSkin {
+		posOffset	"0 3 3 3"
+		skinOffset	"429 76 3 3"
+		align		Left VStretch
+		Description	""
+	}
+
+	BaseSkin {
+		posOffset	"6 3 5 3"
+		skinOffset	"447 76 5 3"
+		align		Right VStretch
+		Description	""
+	}
+
+	BaseSkin {
+		posOffset	"0 6 3 5"
+		skinOffset	"429 87 3 5"
+		align		Left Bottom
+		Description	""
+	}
+
+	BaseSkin {
+		posOffset	"3 6 3 5"
+		skinOffset	"435 87 3 5"
+		align		HStretch Bottom
+		Description	""
+	}
+
+	BaseSkin {
+		posOffset	"6 6 5 5"
+		skinOffset	"447 87 5 5"
+		align		Right Bottom
+		Description	""
+	}
+	//ClientArea {
+		//skin		DefaultClient
+		//posOffset	"3 3 -12 3"
+		//align		HStretch VStretch
+	//}
+}
+
+WIDGET ListBox {
+	
+	size	"29 26"
+
+	Child {
+		skin		TextArea
+		posOffset	"0 0 29 26"
+		align		HStretch VStretch
+	}
+	Child {
+		skin		VScroll
+		posOffset	"10 2 15 20"
+		align		Right VStretch
+	}
+	Child {
+		skin		HScroll
+		posOffset	"2 7 8 15"
+		align		HStretch Bottom
+	}
+	//ClientArea {
+		//skin		EditClient
+		//posOffset	"2 2 25 22"
+		//align		HStretch VStretch
+	//}
+}
+
+WIDGET ComboBox {
+
+	size	"80 23"
+	
+	Child {
+		skin		ListBox
+		posOffset	"0 20 80 70"
+		align		HStretch Top
+	}	
+	Child {
+		skin		TextArea
+		posOffset	"0 0 80 23"
+		align		HStretch VStretch
+	}	
+	Child {
+		skin		ButtonDown
+		posOffset	"62 4 14 12"
+		align		Right Top
+	}
+	Child {
+		skin		TextField
+		posOffset	"0 0 60 23"
+		align		HStretch Top
+	}
+	//ClientArea {
+		//skin		DefaultClient
+		//posOffset	"1 1 78 91"
+		//align		HStretch VStretch
+	//}
+}
+
+WIDGET WindowResizeLeft {
+	
+	size	"9 9"
+
+	BaseSkin {
+		posOffset	"0 0 9 9" 
+		skinOffset	"356 185 9 9" 
+		align		HStretch VStretch
+		Description	"Window Client Area Left Stretch Button"
+	}
+}
+
+WIDGET WindowResizeLeft_Normal {
+	
+	size	"9 9"
+
+	BaseSkin {
+		posOffset	"0 0 9 9" 
+		skinOffset	"356 185 9 9" 
+		align		HStretch VStretch
+		Description	"Window Client Area Left Stretch Button"
+	}
+}
+
+WIDGET WindowResizeLeft_Disabled {
+	
+	size	"9 9"
+
+	BaseSkin {
+		posOffset	"0 0 9 9" 
+		skinOffset	"356 185 9 9" 
+		align		HStretch VStretch
+		Description	"Window Client Area Left Stretch Button"
+	}
+}
+
+WIDGET WindowResizeLeft_Highlighted {
+	
+	size	"9 9"
+
+	BaseSkin {
+		posOffset	"0 0 9 9" 
+		skinOffset	"356 172 9 9" 
+		align		HStretch VStretch
+		Description	"Window Client Area Left Stretch Button"
+	}
+}
+
+WIDGET WindowResizeLeft_Pushed {
+	
+	size	"9 9"
+
+	BaseSkin {
+		posOffset	"0 0 9 9" 
+		skinOffset	"356 172 9 9" 
+		align		HStretch VStretch
+		Description	"Window Client Area Left Stretch Button"
+	}
+}
+
+WIDGET WindowResizeRight {
+	
+	size	"9 9"
+
+	BaseSkin {
+		posOffset	"0 0 9 9" 
+		skinOffset	"369 185 9 9" 
+		align		HStretch VStretch
+		Description	"Window Client Area Right Stretch Button"
+	}
+}
+
+WIDGET WindowResizeRight_Normal {
+	
+	size	"9 9"
+
+	BaseSkin {
+		posOffset	"0 0 9 9" 
+		skinOffset	"369 185 9 9" 
+		align		HStretch VStretch
+		Description	"Window Client Area Right Stretch Button"
+	}
+}
+
+WIDGET WindowResizeRight_Disabled {
+	
+	size	"9 9"
+
+	BaseSkin {
+		posOffset	"0 0 9 9" 
+		skinOffset	"369 185 9 9" 
+		align		HStretch VStretch
+		Description	"Window Client Area Right Stretch Button"
+	}
+}
+
+WIDGET WindowResizeRight_Highlighted {
+	
+	size	"9 9"
+
+	BaseSkin {
+		posOffset	"0 0 9 9" 
+		skinOffset	"369 172 9 9" 
+		align		HStretch VStretch
+		Description	"Window Client Area Right Stretch Button"
+	}
+}
+
+WIDGET WindowResizeRight_Pushed {
+	
+	size	"9 9"
+
+	BaseSkin {
+		posOffset	"0 0 9 9" 
+		skinOffset	"369 172 9 9" 
+		align		HStretch VStretch
+		Description	"Window Client Area Right Stretch Button"
+	}
+}
+
+WIDGET Button_Normal {
+
+	size		"29 26"
+	textAlign	HCENTER VCENTER
+
+	BaseSkin {
+		posOffset	"0 0 10 26" 
+		skinOffset	"202 29 10 26" 
+		align		Left VStretch
+		Description	"Window Left Button"
+	}
+
+	BaseSkin {
+		posOffset	"10 0 7 26" 
+		skinOffset	"212 29 7 26" 
+		align		HStretch VStretch
+		Description	"Window Left Button"
+	}
+
+	BaseSkin {
+		posOffset	"17 0 12 26" 
+		skinOffset	"219 29 12 26" 
+		align		Right VStretch
+		Description	"Window Left Button"
+	}
+}
+
+WIDGET Button_Disabled {
+
+	size		"29 26"
+	textAlign	HCENTER VCENTER
+
+	BaseSkin {
+		posOffset	"0 0 10 26" 
+		skinOffset	"202 2 10 26" 
+		align		Left VStretch
+		Description	"Window Left Button"
+	}
+
+	BaseSkin {
+		posOffset	"10 0 7 26" 
+		skinOffset	"212 2 7 26" 
+		align		HStretch VStretch
+		Description	"Window Left Button"
+	}
+
+	BaseSkin {
+		posOffset	"17 0 12 26" 
+		skinOffset	"219 2 12 26" 
+		align		Right VStretch
+		Description	"Window Left Button"
+	}
+}
+
+WIDGET Button_Highlighted {
+
+	size		"29 26"
+	textAlign	HCENTER VCENTER
+
+	BaseSkin {
+		posOffset	"0 0 10 26" 
+		skinOffset	"202 56 10 26" 
+		align		Left VStretch
+		Description	"Window Left Button"
+	}
+
+	BaseSkin {
+		posOffset	"10 0 7 26" 
+		skinOffset	"212 56 7 26" 
+		align		HStretch VStretch
+		Description	"Window Left Button"
+	}
+
+	BaseSkin {
+		posOffset	"17 0 12 26" 
+		skinOffset	"219 56 12 26" 
+		align		Right VStretch
+		Description	"Window Left Button"
+	}
+}
+
+WIDGET Button_Pushed {
+
+	size		"29 26"
+	textAlign	HCENTER VCENTER
+
+	BaseSkin {
+		posOffset	"0 0 10 26" 
+		skinOffset	"202 83 10 26" 
+		align		Left VStretch
+		Description	"Window Left Button"
+	}
+
+	BaseSkin {
+		posOffset	"10 0 7 26" 
+		skinOffset	"212 83 7 26" 
+		align		HStretch VStretch
+		Description	"Window Left Button"
+	}
+
+	BaseSkin {
+		posOffset	"17 0 12 26" 
+		skinOffset	"219 83 12 26" 
+		align		Right VStretch
+		Description	"Window Left Button"
+	}
+}
+
+WIDGET ButtonLeft_Normal {
+
+	size	"14 13"
+
+	BaseSkin {
+		posOffset	"0 0 14 13" 
+		skinOffset	"112 18 14 13" 
+		align		HStretch VStretch
+		Description	"Window Left Button"
+	}
+}
+
+WIDGET ButtonLeft_Disabled {
+
+	size	"14 13"
+
+	BaseSkin {
+		posOffset	"0 0 14 13" 
+		skinOffset	"112 2 14 13" 
+		align		HStretch VStretch
+		Description	"Window Left Button"
+	}
+}
+
+WIDGET ButtonLeft_Highlighted {
+
+	size	"14 13"
+
+	BaseSkin {
+		posOffset	"0 0 14 13" 
+		skinOffset	"112 34 14 13" 
+		align		HStretch VStretch
+		Description	"Window Left Button"
+	}
+}
+
+WIDGET ButtonLeft_Pushed {
+
+	size	"14 13"
+
+	BaseSkin {
+		posOffset	"0 0 14 13" 
+		skinOffset	"112 66 14 13" 
+		align		HStretch VStretch
+		Description	"Window Left Button"
+	}
+}
+
+WIDGET ButtonRight_Normal {
+
+	size	"14 13"
+
+	BaseSkin {
+		posOffset	"0 0 14 13" 
+		skinOffset	"112 100 14 13" 
+		align		HStretch VStretch
+		Description	"Window Left Button"
+	}
+}
+
+WIDGET ButtonRight_Disabled {
+
+	size	"14 13"
+
+	BaseSkin {
+		posOffset	"0 0 14 13" 
+		skinOffset	"112 84 14 13" 
+		align		HStretch VStretch
+		Description	"Window Left Button"
+	}
+}
+
+WIDGET ButtonRight_Highlighted {
+
+	size	"14 13"
+
+	BaseSkin {
+		posOffset	"0 0 14 13" 
+		skinOffset	"112 116 14 13" 
+		align		HStretch VStretch
+		Description	"Window Left Button"
+	}
+}
+
+WIDGET ButtonRight_Pushed {
+
+	size	"14 13"
+
+	BaseSkin {
+		posOffset	"0 0 14 13" 
+		skinOffset	"112 148 14 13" 
+		align		HStretch VStretch
+		Description	"Window Left Button"
+	}
+}
+
+WIDGET ButtonUp_Normal {
+
+	size	"14 12"
+
+	BaseSkin {
+		posOffset	"0 0 14 12" 
+		skinOffset	"95 82 14 12" 
+		align		HStretch VStretch
+		Description	"Window Up Button"
+	}
+}
+
+WIDGET ButtonUp_Disabled {
+
+	size	"14 12"
+
+	BaseSkin {
+		posOffset	"0 0 14 12" 
+		skinOffset	"95 68 14 12" 
+		align		HStretch VStretch
+		Description	"Window Up Button"
+	}
+}
+
+WIDGET ButtonUp_Highlighted {
+
+	size	"14 12"
+
+	BaseSkin {
+		posOffset	"0 0 14 12" 
+		skinOffset	"95 96 14 12" 
+		align		HStretch VStretch
+		Description	"Window Up Button"
+	}
+}
+
+WIDGET ButtonUp_Pushed {
+
+	size	"14 12"
+
+	BaseSkin {
+		posOffset	"0 0 14 12" 
+		skinOffset	"95 124 14 12" 
+		align		HStretch VStretch
+		Description	"Window Up Button"
+	}
+}
+
+WIDGET ButtonDown_Normal {
+
+	size	"14 12"
+
+	BaseSkin {
+		posOffset	"0 0 14 12" 
+		skinOffset	"95 15 14 12" 
+		align		HStretch VStretch
+		Description	"Window Down Button"
+	}
+}
+
+WIDGET ButtonDown_Disabled {
+
+	size	"14 12"
+
+	BaseSkin {
+		posOffset	"0 0 14 12" 
+		skinOffset	"95 2 14 12" 
+		align		HStretch VStretch
+		Description	"Window Down Button"
+	}
+}
+
+WIDGET ButtonDown_Highlighted {
+
+	size	"14 12"
+
+	BaseSkin {
+		posOffset	"0 0 14 12" 
+		skinOffset	"95 28 14 12" 
+		align		HStretch VStretch
+		Description	"Window Down Button"
+	}
+}
+
+WIDGET ButtonDown_Pushed {
+
+	size	"14 12"
+
+	BaseSkin {
+		posOffset	"0 0 14 12" 
+		skinOffset	"95 54 14 12" 
+		align		HStretch VStretch
+		Description	"Window Down Button"
+	}
+}
+
+WIDGET ButtonV {
+
+	size	"17 15"
+
+	BaseSkin {
+		posOffset	"0 0 17 15" 
+		skinOffset	"72 114 17 15" 
+		align		HStretch VStretch
+		Description	"Window Maximize Button"
+	}
+}
+
+WIDGET ButtonV_Normal {
+
+	size	"17 15"
+
+	BaseSkin {
+		posOffset	"0 0 17 15" 
+		skinOffset	"72 114 17 15" 
+		align		HStretch VStretch
+		Description	"Window Maximize Button"
+	}
+}
+
+WIDGET ButtonV_Disabled {
+
+	size	"17 15"
+
+	BaseSkin {
+		posOffset	"0 0 17 15" 
+		skinOffset	"72 98 17 15" 
+		align		HStretch VStretch
+		Description	"Window Maximize Button"
+	}
+}
+
+WIDGET ButtonV_Highlighted {
+
+	size	"17 15"
+
+	BaseSkin {
+		posOffset	"0 0 17 15" 
+		skinOffset	"72 130 17 15" 
+		align		HStretch VStretch
+		Description	"Window Maximize Button"
+	}
+}
+
+WIDGET ButtonV_Pushed {
+
+	size	"17 15"
+
+	BaseSkin {
+		posOffset	"0 0 17 15" 
+		skinOffset	"72 162 17 15" 
+		align		HStretch VStretch
+		Description	"Window Maximize Button"
+	}
+}
+
+WIDGET ButtonX {
+
+	size	"17 15"
+
+	BaseSkin {
+		posOffset	"0 0 17 15" 
+		skinOffset	"72 21 18 17"
+		align		HStretch VStretch
+		Description	"Window Close Button"
+	}
+}
+
+WIDGET ButtonX_Normal {
+
+	size	"17 15"
+
+	BaseSkin {
+		posOffset	"0 0 17 15" 
+		skinOffset	"72 21 18 17"
+		align		HStretch VStretch
+		Description	"Window Close Button"
+	}
+}
+
+WIDGET ButtonX_Disabled {
+
+	size	"17 15"
+
+	BaseSkin {
+		posOffset	"0 0 17 15" 
+		skinOffset	"72 2 18 17"
+		align		HStretch VStretch
+		Description	"Window Close Button"
+	}
+}
+
+WIDGET ButtonX_Highlighted {
+
+	size	"17 15"
+
+	BaseSkin {
+		posOffset	"0 0 17 15" 
+		skinOffset	"72 40 18 17"
+		align		HStretch VStretch
+		Description	"Window Close Button"
+	}
+}
+
+WIDGET ButtonX_Pushed {
+
+	size	"18 18"
+
+	BaseSkin {
+		posOffset	"0 0 18 18" 
+		skinOffset	"72 78 18 17"
+		align		HStretch VStretch
+		Description	"Window Close Button"
+	}
+}
+
+WIDGET ButtonPlus {
+
+	size	"18 18"
+
+	BaseSkin {
+		posOffset	"0 0 18 18" 
+		skinOffset	"49 107 18 18" 
+		align		HStretch VStretch
+		Description	"Window Plus Button"
+	}
+}
+
+WIDGET ButtonPlus_Normal {
+
+	size	"18 18"
+
+	BaseSkin {
+		posOffset	"0 0 18 18" 
+		skinOffset	"49 107 18 18" 
+		align		HStretch VStretch
+		Description	"Window Maximize Button"
+	}
+}
+
+WIDGET ButtonPlus_Disabled {
+
+	size	"18 18"
+
+	BaseSkin {
+		posOffset	"0 0 18 18" 
+		skinOffset	"49 86 18 18" 
+		align		HStretch VStretch
+		Description	"Window Maximize Button"
+	}
+
+}
+
+WIDGET ButtonPlus_Highlighted {
+
+	size	"18 18"
+
+	BaseSkin {
+		posOffset	"0 0 18 18" 
+		skinOffset	"49 128 18 18" 
+		align		HStretch VStretch
+		Description	"Window Maximize Button"
+	}
+}
+
+WIDGET ButtonPlus_Pushed {
+
+	size	"18 18"
+
+	BaseSkin {
+		posOffset	"0 0 18 18" 
+		skinOffset	"49 149 18 18" 
+		align		HStretch VStretch
+		Description	"Window Maximize Button"
+	}
+}
+
+WIDGET ButtonMinus {
+
+	size	"18 8"
+
+	BaseSkin {
+		posOffset	"0 0 18 8" 
+		skinOffset	"49 28 18 8" 
+		align		HStretch VStretch
+		Description	"Window Minus Button"
+	}
+}
+
+WIDGET ButtonMinus_Normal {
+
+	size	"18 8"
+
+	BaseSkin {
+		posOffset	"0 0 18 8" 
+		skinOffset	"49 28 18 8" 
+		align		HStretch VStretch
+		Description	"Window Minus Button"
+	}
+}
+
+WIDGET ButtonMinus_Disabled {
+
+	size	"18 8"
+
+	BaseSkin {
+		posOffset	"0 0 18 8" 
+		skinOffset	"49 7 18 8" 
+		align		HStretch VStretch
+		Description	"Window Minus Button"
+	}
+
+}
+
+WIDGET ButtonMinus_Highlighted {
+
+	size	"18 8"
+
+	BaseSkin {
+		posOffset	"0 0 18 8" 
+		skinOffset	"49 49 18 8" 
+		align		HStretch VStretch
+		Description	"Window Minus Button"
+	}
+}
+
+WIDGET ButtonMinus_Pushed {
+
+	size	"18 8"
+
+	BaseSkin {
+		posOffset	"0 0 18 8" 
+		skinOffset	"49 70 18 8" 
+		align		HStretch VStretch
+		Description	"Window Minus Button"
+	}
+}
+
+WIDGET DefaultClient {
+
+	size	"65 57"
+
+	BaseSkin {
+		posOffset	"0 0 65 57" 
+		skinOffset	"432 5 65 57" 
+		align		HStretch VStretch
+		Description	"Default Client"
+	}
+}
+
+WIDGET ItemBoxH {
+
+	size	"11 11"
+
+	1Child {
+		skin		VScroll
+		posOffset	"-9 3 15 -12"
+		align		Right VStretch
+	}
+
+	1Child {
+		skin		HScroll
+		posOffset	"3 -9 -12 15"
+		align		HStretch Bottom
+	}
+	
+	Child {
+		skin		DefaultClient
+		posOffset	"3 3 -12 -12"
+		align		HStretch VStretch
+	}
+
+	BaseSkin {
+		posOffset	"0 0 3 3" 
+		skinOffset	"429 70 3 3" 
+		align		Left Top
+		Description	"Default Client"
+	}
+
+	BaseSkin {
+		posOffset	"3 0 3 3" 
+		skinOffset	"435 70 3 3"
+		align		HStretch Top
+		Description	"Default Client"
+	}
+
+	BaseSkin {
+		posOffset	"6 0 5 3" 
+		skinOffset	"447 70 5 3"
+		align		Right Top
+		Description	"Default Client"
+	}
+
+	BaseSkin {
+		posOffset	"0 3 3 3" 
+		skinOffset	"429 76 3 3"
+		align		Left VStretch
+		Description	"Default Client"
+	}
+
+	BaseSkin {
+		posOffset	"6 3 5 3" 
+		skinOffset	"447 76 5 3"
+		align		Right VStretch
+		Description	"Default Client"
+	}
+
+	BaseSkin {
+		posOffset	"0 6 3 5"
+		skinOffset	"429 87 3 5"
+		align		Left Bottom
+		Description	"Default Client"
+	}
+
+	BaseSkin {
+		posOffset	"3 6 3 5"
+		skinOffset	"435 87 3 5"
+		align		HStretch Bottom
+		Description	"Default Client"
+	}
+
+	BaseSkin {
+		posOffset	"6 6 5 5"
+		skinOffset	"447 87 5 5"
+		align		Right Bottom
+		Description	"Default Client"
+	}
+}
+
+WIDGET WindowCaption {
+
+	size	"68 28"
+
+	BaseSkin {
+		posOffset	"0 0 15 28" 
+		skinOffset	"356 36 15 28" 
+		align		Left VStretch
+		Description	"TitleBar Left"
+	}
+	BaseSkin {
+		posOffset	"15 0 36 28"
+		skinOffset	"371 36 36 28" 
+		align		HStretch VStretch
+		Description	"TitleBar Center"
+	}
+	BaseSkin {
+		posOffset	"51 0 17 28"
+		skinOffset	"407 36 17 28"
+		align		Right VStretch
+		Description	"TitleBar Right Button Space"
+	}
+
+	//ClientArea {
+		//skin		DefaultClient
+		//posOffset	"7 1 52 22"
+		//align		HStretch VStretch
+	//}
+
+	SimpleText {
+		string		Window
+		posOffset	"7 1 52 22"
+		align		Left Top
+	}
+}
+
+
+WIDGET WindowCaptionDisable {
+	
+	size	"68 28"
+
+	BaseSkin {
+		posOffset	"0 0 15 28" 
+		skinOffset	"356 2 15 28" 
+		align		Left VStretch
+		Description	"TitleBar Left"
+	}
+	BaseSkin {
+		posOffset	"15 0 36 28" 
+		skinOffset	"371 2 36 28" 
+		align		HStretch VStretch
+		Description	"TitleBar Center"
+	}
+	BaseSkin {
+		posOffset	"51 0 17 28"
+		skinOffset	"407 2 17 28"
+		align		Right VStretch
+		Description	"TitleBar Right Button Space"
+	}
+}
+
+WIDGET WindowCaptionSmall {
+	
+	size	"68 28"
+
+	BaseSkin {
+		posOffset	"0 0 15 28" 
+		skinOffset	"356 104 15 28" 
+		align		Left VStretch
+		Description	"TitleBar Left"
+	}
+	BaseSkin {
+		posOffset	"15 0 18 28" 
+		skinOffset	"371 104 18 28" 
+		align		HStretch VStretch
+		Description	"TitleBar Center"
+	}
+	BaseSkin {
+		posOffset	"33 0 35 28"
+		skinOffset	"389 104 35 28"
+		align		Right VStretch
+		Description	"TitleBar Right Button Space"
+	}
+
+	//ClientArea {
+		//skin		DefaultClient
+		//posOffset	"7 1 29 22"
+		//align		HStretch VStretch
+	//}
+}
+
+WIDGET WindowCaptionMoreSmall {
+	
+	size	"68 28"
+	
+	BaseSkin {
+		posOffset	"0 0 8 28" 
+		skinOffset	"356 104 8 28" 
+		align		Left VStretch
+		Description	"TitleBar Left"
+	}
+
+	BaseSkin {
+		posOffset	"8 0 7 28" 
+		skinOffset	"364 104 7 28" 
+		align		HStretch VStretch
+		Description	"TitleBar Center"
+	}
+
+	BaseSkin {
+		posOffset	"15 0 7 28"
+		skinOffset	"391 104 7 28"
+		align		Right VStretch
+		Description	"TitleBar Right"
+	}
+
+	BaseSkin {
+		posOffset	"22 0 46 28"
+		skinOffset	"378 2 46 28"
+		align		Right Top
+		Description	"TitleBar Right Button Space"
+	}
+
+	//ClientArea {
+		//skin		DefaultClient
+		//posOffset	"7 1 9 22"
+		//align		HStretch VStretch
+	//}
+}
+
+WIDGET WindowC_Scroll {
+	size	"88 115"
+	
+	Child {
+		skin		WindowC
+		posOffset	"0 0 88 115"
+		align		HStretch VStretch
+	}
+	
+	Child {
+		skin		WindowCS
+		posOffset	"0 0 88 115"
+		align		HStretch VStretch
+	}
+	
+	Child {
+		skin		WindowCSX
+		posOffset	"0 0 88 115"
+		align		HStretch VStretch
+	}
+	
+	Child {
+		skin		WindowCSMX
+		posOffset	"0 0 88 115"
+		align		HStretch VStretch
+	}
+	
+	Child {//Caption for WindowCS
+		skin		WindowCaption
+		posOffset	"0 0 88 28"
+		align		HStretch Top
+	}
+
+	Child {//Caption for WindowCSX
+		skin		WindowCaptionSmall
+		posOffset	"0 0 88 28"
+		align		HStretch Top
+	}
+
+	Child {//Caption for WindowCSMX
+		skin		WindowCaptionMoreSmall
+		posOffset	"0 0 88 28"
+		align		HStretch Top
+	}	
+
+	Child {
+		skin		VScroll
+		posOffset	"68 30 15 65"
+		align		Right VStretch
+	}
+	
+	Child {
+		skin		HScroll
+		posOffset	"3 95 65 15"
+		align		HStretch Bottom
+	}
+
+	Child {
+		skin		ButtonV
+		posOffset	"44 7 17 15"
+		align		Right Top
+	}
+
+	Child {
+		skin		ButtonX
+		posOffset	"63 6 18 17"
+		align		Right Top
+	}
+	
+	Child {
+		skin		WindowResizeLeft
+		posOffset	"0 104 9 9"
+		align		Left Bottom
+	}	
+
+	Child {
+		skin		WindowResizeRight
+		posOffset	"77 104 9 9" 
+		align		Right Bottom
+	}
+	
+	ClientArea {
+		skin		DefaultClient
+		posOffset	"4 31 64 64"
+		align		HStretch VStretch
+	}
+}
+
+WIDGET Frame_Scroll {
+	size	"83 108"
+	
+	Child {
+		skin		FrameWindow
+		posOffset	"0 0 83 117"
+		align		HStretch VStretch
+	}
+	
+	Child {
+		skin		VScroll
+		posOffset	"63 3 15 91"
+		align		Right VStretch
+	}
+	
+	Child {
+		skin		HScroll
+		posOffset	"3 94 60 15"
+		align		HStretch Bottom
+	}
+
+	Child {
+		skin		WindowResizeLeft
+		posOffset	"0 103 9 9"
+		align		Left Bottom
+	}	
+
+	Child {
+		skin		WindowResizeRight
+		posOffset	"72 103 9 9" 
+		align		Right Bottom
+	}
+	
+	ClientArea {
+		skin		DefaultClient
+		posOffset	"4 4 59 90"
+		align		HStretch VStretch
+	}
+}
+
+WIDGET InspectorC_Scroll {
+	size	"83 108"
+	
+	Child {
+		skin		FrameWindow
+		posOffset	"0 0 83 117"
+		align		HStretch VStretch
+	}
+	
+	Child {
+		skin		VScroll
+		posOffset	"63 3 15 105"
+		align		Right VStretch
+	}
+	
+	Child {
+		skin		HScroll
+		posOffset	"3 94 60 15"
+		align		HStretch Bottom
+	}
+
+	Child {
+		skin		WindowResizeLeft
+		posOffset	"0 103 9 9"
+		align		Left Bottom
+	}	
+
+	Child {
+		skin		WindowResizeRight
+		posOffset	"72 103 9 9" 
+		align		Right Bottom
+	}
+	
+	ClientArea {
+		skin		DefaultClient
+		posOffset	"4 4 59 104"
+		align		HStretch VStretch
+	}
+}
+
+WIDGET InspectorTabC_Scroll {
+	size	"68 41"
+	
+	Child {
+		skin		InspectorTabC
+		posOffset	"0 0 68 41"
+		align		HStretch VStretch
+	}
+	
+	Child {
+		skin		ButtonPlus
+		posOffset	"40 2 18 18"
+		align		Right Top
+	}
+
+	Child {
+		skin		ButtonMinus
+		posOffset	"40 6 18 8"
+		align		Right Top
+	}
+	
+	ClientArea {
+		skin		DefaultClient
+		posOffset	"3 22 60 14"
+		align		HStretch VStretch
+	}
+}
+
+WIDGET WindowC {
+
+	size	"68 49"
+	
+	///////////////// TITLE BAR
+	BaseSkin {
+		posOffset	"0 0 15 28" 
+		skinOffset	"356 36 15 28" 
+		align		Left Top
+		Description	"TitleBar Left"
+	}
+	BaseSkin {
+		posOffset	"15 0 36 28"
+		skinOffset	"371 36 36 28" 
+		align		HStretch Top
+		Description	"TitleBar Center"
+	}
+	BaseSkin {
+		posOffset	"51 0 17 28"
+		skinOffset	"407 36 17 28"
+		align		Right Top
+		Description	"TitleBar Right Button Space"
+	}
+	///////////////////////////
+	
+	BaseSkin {
+		posOffset	"0 28 4 3" 
+		skinOffset	"384 173 4 3" 
+		align		Left Top
+		Description	"Window Client Area Left Top"
+	}
+
+	BaseSkin {
+		posOffset	"4 28 58 3" 
+		skinOffset	"390 173 3 3" 
+		align		HStretch Top
+		Description	"Window Client Area Center Top"
+	}
+
+	BaseSkin {
+		posOffset	"62 28 6 3" 
+		skinOffset	"401 173 6 3" 
+		align		Right Top
+		Description	"Window Client Area Right Top"
+	}
+
+	BaseSkin {
+		posOffset	"0 31 4 12" 
+		skinOffset	"384 176 4 12" 
+		align		Left VStretch
+		Description	"Window Client Area Left Middle"
+	}
+
+	BaseSkin {
+		type		"Widget"
+		skin		"DefaultClient" 
+		posOffset	"4 31 58 12" 
+		skinOffset	"432 5 65 57" 
+		align		HStretch VStretch
+		Description	"Window Client Area Center"
+	}
+
+	BaseSkin {
+		posOffset	"62 31 6 12"
+		skinOffset	"401 176 6 12" 
+		align		Right VStretch
+		Description	"Window Client Area Right Middle"
+	}
+	
+	BaseSkin {
+		posOffset	"0 43 4 6"
+		skinOffset	"384 188 4 6" 
+		align		Left Bottom
+		Description	"Window Client Area Left Bottom"
+	}
+
+	BaseSkin {
+		posOffset	"4 43 58 6"
+		skinOffset	"390 188 3 6" 
+		align		HStretch Bottom
+		Description	"Window Client Area Center Bottom"
+	}
+
+	BaseSkin {
+		posOffset	"62 43 6 6"
+		skinOffset	"401 188 6 6"
+		align		Right Bottom
+		Description	"Window Client Area Right Bottom"
+	}
+}
+
+WIDGET InspectorTabC {
+
+	size	"68 41"
+	
+	///////////////// TITLE BAR
+	BaseSkin {
+		posOffset	"0 0 15 20" 
+		skinOffset	"356 36 15 28" 
+		align		Left Top
+		Description	"TitleBar Left"
+	}
+	BaseSkin {
+		posOffset	"15 0 36 20"
+		skinOffset	"371 36 36 28" 
+		align		HStretch Top
+		Description	"TitleBar Center"
+	}
+	BaseSkin {
+		posOffset	"51 0 17 20"
+		skinOffset	"407 36 17 28"
+		align		Right Top
+		Description	"TitleBar Right Button Space"
+	}
+	///////////////////////////
+	
+	BaseSkin {
+		posOffset	"0  20 4 3" 
+		skinOffset	"384 173 4 3" 
+		align		Left Top
+		Description	"Window Client Area Left Top"
+	}
+
+	BaseSkin {
+		posOffset	"4 20 58 3" 
+		skinOffset	"390 173 3 3" 
+		align		HStretch Top
+		Description	"Window Client Area Center Top"
+	}
+
+	BaseSkin {
+		posOffset	"62 20 6 3" 
+		skinOffset	"401 173 6 3" 
+		align		Right Top
+		Description	"Window Client Area Right Top"
+	}
+
+	BaseSkin {
+		posOffset	"0 23 4 12" 
+		skinOffset	"384 176 4 12" 
+		align		Left VStretch
+		Description	"Window Client Area Left Middle"
+	}
+
+	BaseSkin {
+		type		"Widget"
+		skin		"DefaultClient" 
+		posOffset	"4 23 58 12" 
+		skinOffset	"432 5 65 57" 
+		align		HStretch VStretch
+		Description	"Window Client Area Center"
+	}
+
+	BaseSkin {
+		posOffset	"62 23 6 12"
+		skinOffset	"401 176 6 12" 
+		align		Right VStretch
+		Description	"Window Client Area Right Middle"
+	}
+	
+	BaseSkin {
+		posOffset	"0 35 4 6"
+		skinOffset	"384 188 4 6" 
+		align		Left Bottom
+		Description	"Window Client Area Left Bottom"
+	}
+
+	BaseSkin {
+		posOffset	"4 35 58 6"
+		skinOffset	"390 188 3 6" 
+		align		HStretch Bottom
+		Description	"Window Client Area Center Bottom"
+	}
+
+	BaseSkin {
+		posOffset	"62 35 6 6"
+		skinOffset	"401 188 6 6"
+		align		Right Bottom
+		Description	"Window Client Area Right Bottom"
+	}
+}
+
+WIDGET 	FrameWindow {
+
+	size	"68 49"
+	
+	BaseSkin {
+		posOffset	"0 0 4 3" 
+		skinOffset	"384 172 4 3" 
+		align		Left Top
+		Description	"Window Client Area Left Top"
+	}
+
+	BaseSkin {
+		posOffset	"4 0 58 3" 
+		skinOffset	"390 172 3 3" 
+		align		HStretch Top
+		Description	"Window Client Area Center Top"
+	}
+
+	BaseSkin {
+		posOffset	"62 0 6 3" 
+		skinOffset	"401 172 6 3" 
+		align		Right Top
+		Description	"Window Client Area Right Top"
+	}
+
+	BaseSkin {
+		posOffset	"0 3 4 40" 
+		skinOffset	"384 176 4 12" 
+		align		Left VStretch
+		Description	"Window Client Area Left Middle"
+	}
+
+	BaseSkin {
+		type		"Widget"
+		skin		"DefaultClient" 
+		posOffset	"4 3 58 40" 
+		skinOffset	"432 5 65 57" 
+		align		HStretch VStretch
+		Description	"Window Client Area Center"
+	}
+
+	BaseSkin {
+		posOffset	"62 3 6 40"
+		skinOffset	"401 176 6 12" 
+		align		Right VStretch
+		Description	"Window Client Area Right Middle"
+	}
+	
+	BaseSkin {
+		posOffset	"0 40 4 6"
+		skinOffset	"384 188 4 6" 
+		align		Left Bottom
+		Description	"Window Client Area Left Bottom"
+	}
+
+	BaseSkin {
+		posOffset	"4 40 58 6"
+		skinOffset	"390 188 3 6" 
+		align		HStretch Bottom
+		Description	"Window Client Area Center Bottom"
+	}
+
+	BaseSkin {
+		posOffset	"62 40 6 6"
+		skinOffset	"401 188 6 6"
+		align		Right Bottom
+		Description	"Window Client Area Right Bottom"
+	}
+}
+
+WIDGET WindowCS {
+
+	size	"68 49"
+
+	BaseSkin {
+		posOffset	"0 28 4 3" 
+		skinOffset	"384 173 4 3" 
+		align		Left Top
+		Description	"Window Client Area Left Top"
+	}
+
+	BaseSkin {
+		posOffset	"4 28 58 3" 
+		skinOffset	"390 173 3 3" 
+		align		HStretch Top
+		Description	"Window Client Area Center Top"
+	}
+
+	BaseSkin {
+		posOffset	"62 28 6 3" 
+		skinOffset	"401 173 6 3" 
+		align		Right Top
+		Description	"Window Client Area Right Top"
+	}
+
+	BaseSkin {
+		posOffset	"0 31 4 12" 
+		skinOffset	"384 176 4 12" 
+		align		Left VStretch
+		Description	"Window Client Area Left Middle"
+	}
+
+	BaseSkin {
+		type		"Widget"
+		skin		"DefaultClient" 
+		posOffset	"4 31 58 12" 
+		skinOffset	"432 5 65 57" 
+		align		HStretch VStretch
+		Description	"Window Client Area Center"
+	}
+
+	BaseSkin {
+		posOffset	"62 31 6 12"
+		skinOffset	"401 176 6 12" 
+		align		Right VStretch
+		Description	"Window Client Area Right Middle"
+	}
+	
+	BaseSkin {
+		posOffset	"0 43 4 6"
+		skinOffset	"384 188 4 6" 
+		align		Left Bottom
+		Description	"Window Client Area Left Bottom"
+	}
+
+	BaseSkin {
+		posOffset	"4 43 58 6"
+		skinOffset	"390 188 3 6" 
+		align		HStretch Bottom
+		Description	"Window Client Area Center Bottom"
+	}
+
+	BaseSkin {
+		posOffset	"62 43 6 6"
+		skinOffset	"401 188 6 6"
+		align		Right Bottom
+		Description	"Window Client Area Right Bottom"
+	}
+}
+
+WIDGET WindowCSX {
+
+	size	"68 49"
+	
+	///////////////// TITLE BAR
+	BaseSkin {
+		posOffset	"0 0 15 28" 
+		skinOffset	"356 104 15 28" 
+		align		Left Top
+		Description	"TitleBar Left"
+	}
+	BaseSkin {
+		posOffset	"15 0 18 28" 
+		skinOffset	"371 104 18 28" 
+		align		HStretch Top
+		Description	"TitleBar Center"
+	}
+	BaseSkin {
+		posOffset	"33 0 35 28"
+		skinOffset	"389 104 35 28"
+		align		Right Top
+		Description	"TitleBar Right Button Space"
+	}
+	///////////////////////////
+	
+	BaseSkin {
+		posOffset	"0 28 4 3" 
+		skinOffset	"384 173 4 3" 
+		align		Left Top
+		Description	"Window Client Area Left Top"
+	}
+
+	BaseSkin {
+		posOffset	"4 28 58 3" 
+		skinOffset	"390 173 3 3" 
+		align		HStretch Top
+		Description	"Window Client Area Center Top"
+	}
+
+	BaseSkin {
+		posOffset	"62 28 6 3" 
+		skinOffset	"401 173 6 3" 
+		align		Right Top
+		Description	"Window Client Area Right Top"
+	}
+
+	BaseSkin {
+		posOffset	"0 31 4 12" 
+		skinOffset	"384 176 4 12" 
+		align		Left VStretch
+		Description	"Window Client Area Left Middle"
+	}
+
+	BaseSkin {
+		type		"Widget"
+		skin		"DefaultClient" 
+		posOffset	"4 31 58 12" 
+		skinOffset	"432 5 65 57" 
+		align		HStretch VStretch
+		Description	"Window Client Area Center"
+	}
+
+	BaseSkin {
+		posOffset	"62 31 6 12"
+		skinOffset	"401 176 6 12" 
+		align		Right VStretch
+		Description	"Window Client Area Right Middle"
+	}
+	
+	BaseSkin {
+		posOffset	"0 43 4 6"
+		skinOffset	"384 188 4 6" 
+		align		Left Bottom
+		Description	"Window Client Area Left Bottom"
+	}
+
+	BaseSkin {
+		posOffset	"4 43 58 6"
+		skinOffset	"390 188 3 6" 
+		align		HStretch Bottom
+		Description	"Window Client Area Center Bottom"
+	}
+
+	BaseSkin {
+		posOffset	"62 43 6 6"
+		skinOffset	"401 188 6 6"
+		align		Right Bottom
+		Description	"Window Client Area Right Bottom"
+	}
+}
+
+WIDGET WindowCSMX {
+
+	size "68 49"
+
+	///////////////// TITLE BAR
+	BaseSkin {
+		posOffset	"0 0 8 28" 
+		skinOffset	"356 104 8 28" 
+		align		Left Top
+		Description	"TitleBar Left"
+	}
+
+	BaseSkin {
+		posOffset	"8 0 7 28" 
+		skinOffset	"364 104 7 28" 
+		align		HStretch Top
+		Description	"TitleBar Center"
+	}
+
+	BaseSkin {
+		posOffset	"15 0 7 28"
+		skinOffset	"391 104 7 28"
+		align		Right Top
+		Description	"TitleBar Right"
+	}
+
+	BaseSkin {
+		posOffset	"22 0 46 28"
+		skinOffset	"378 2 46 28"
+		align		Right Top
+		Description	"TitleBar Right Button Space"
+	}
+	///////////////////////////
+
+	BaseSkin {
+		posOffset	"0 28 4 3" 
+		skinOffset	"384 173 4 3" 
+		align		Left Top
+		Description	"Window Client Area Left Top"
+	}
+
+	BaseSkin {
+		posOffset	"4 28 58 3" 
+		skinOffset	"390 173 3 3" 
+		align		HStretch Top
+		Description	"Window Client Area Center Top"
+	}
+
+	BaseSkin {
+		posOffset	"62 28 6 3" 
+		skinOffset	"401 173 6 3" 
+		align		Right Top
+		Description	"Window Client Area Right Top"
+	}
+
+	BaseSkin {
+		posOffset	"0 31 4 12" 
+		skinOffset	"384 176 4 12" 
+		align		Left VStretch
+		Description	"Window Client Area Left Middle"
+	}
+
+	BaseSkin {
+		type		"Widget"
+		skin		"DefaultClient" 
+		posOffset	"4 31 58 12" 
+		skinOffset	"432 5 65 57" 
+		align		HStretch VStretch
+		Description	"Window Client Area Center"
+	}
+
+	BaseSkin {
+		posOffset	"62 31 6 12" 
+		skinOffset	"401 176 6 12" 
+		align		Right VStretch
+		Description	"Window Client Area Right Middle"
+	}
+
+	BaseSkin {
+		posOffset	"0 43 4 6" 
+		skinOffset	"384 188 4 6" 
+		align		Left Bottom
+		Description	"Window Client Area Left Bottom"
+	}
+	
+	BaseSkin {
+		posOffset	"4 43 58 6"
+		skinOffset	"390 188 3 6" 
+		align		HStretch Bottom
+		Description	"Window Client Area Center Bottom"
+	}
+
+	BaseSkin {
+		posOffset	"62 43 6 6"
+		skinOffset	"401 188 6 6"
+		align		Right Bottom
+		Description	"Window Client Area Right Bottom"
+	}
+}

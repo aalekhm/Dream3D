@@ -24,32 +24,29 @@ H_WND WCheckbox::Create(		const char* lpClassName,
 											LPVOID lpVoid
 ) {
 	WCheckbox* pWCheckbox = new WCheckbox();
-	return pWCheckbox->createWindow(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpVoid);
+	((WContainer*)pWCheckbox)->Create(	lpClassName, 
+															lpWindowName, 
+															dwStyle, 
+															x, 
+															y, 
+															width, 
+															height, 
+															hwndParent, 
+															hMenu, 
+															lpVoid,
+															false, 
+															true);
+
+	return pWCheckbox;
 }
 
-H_WND WCheckbox::createWindow(	const char* lpClassName, 
-													const char* lpWindowName, 
-													DWORD dwStyle, 
-													int x, 
-													int y, 
-													int width, 
-													int height, 
-													H_WND hwndParent, 
-													HMENU hMenu, 
-													LPVOID lpParam
-) {
-	sprintf(m_pClassName, "%s", lpClassName);
+void WCheckbox::onCreateEx(LPVOID lpVoid) {
 
 	m_pTitle = new char[255];
 	memset(m_pTitle, 0, 255);
-	sprintf(m_pTitle, "%s", lpWindowName);
-
-	m_pParent = (WContainer*)hwndParent;
+	sprintf(m_pTitle, "%s", getWindowName());
 
 	CHECKBOX_TEXT_HEIGHT = WWidgetManager::CHARACTER_HEIGHT + (CHECKBOX_TOP_GUTTER << 1);
-
-	m_iOffsetX = x;
-	m_iOffsetY = y;
 
 	m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_pParent->m_iMainX;
 	m_iTop = m_pParent->getTop() + m_iOffsetY + m_pParent->m_iMainY;
@@ -82,61 +79,7 @@ H_WND WCheckbox::createWindow(	const char* lpClassName,
 
 	m_pCBUnCheckedStateNameDisabled = new char[32];
 	sprintf(m_pCBUnCheckedStateNameDisabled, "CheckBox_Inactive");
-
-	setComponentID((int)hMenu);
-	setComponentAsChild(true);
-	((WContainer*)m_pParent)->addComponent(this);
-	return this;
 }
-
-//void WCheckbox::create(WComponent* parent, int x, int y, int w, int h, const char* sTitle) {
-//	setComponentAsChild(true);
-//
-//	m_pTitle = new char[255];
-//	memset(m_pTitle, 0, 255);
-//	sprintf(m_pTitle, "%s", sTitle);
-//	
-//	m_pParent = (WContainer*)parent;
-//
-//	CHECKBOX_TEXT_HEIGHT = WWidgetManager::CHARACTER_HEIGHT + (CHECKBOX_TOP_GUTTER << 1);
-//
-//	m_iOffsetX = x;
-//	m_iOffsetY = y;
-//
-//	m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_pParent->m_iMainX;
-//	m_iTop = m_pParent->getTop() + m_iOffsetY + m_pParent->m_iMainY;
-//	m_iRight = m_iLeft + w;
-//	m_iBottom = m_iTop + CHECKBOX_TEXT_HEIGHT;
-//
-//	m_bChecked = false;
-//	m_State = NORMAL;
-//
-//	m_pCBCheckedStateNameNormal = new char[32];
-//	sprintf(m_pCBCheckedStateNameNormal, "CheckBox_Normal_Checked");
-//
-//	m_pCBCheckedStateNameHighlighted = new char[32];
-//	sprintf(m_pCBCheckedStateNameHighlighted, "CheckBox_Highlighted_Checked");
-//
-//	m_pCBCheckedStateNamePushed = new char[32];
-//	sprintf(m_pCBCheckedStateNamePushed, "CheckBox_Pushed_Checked");
-//
-//	m_pCBCheckedStateNameDisabled = new char[32];
-//	sprintf(m_pCBCheckedStateNameDisabled, "CheckBox_Inactive_Checked");
-//	
-//	m_pCBUnCheckedStateNameNormal = new char[32];
-//	sprintf(m_pCBUnCheckedStateNameNormal, "CheckBox_Normal");
-//
-//	m_pCBUnCheckedStateNameHighlighted = new char[32];
-//	sprintf(m_pCBUnCheckedStateNameHighlighted, "CheckBox_Highlighted");
-//
-//	m_pCBUnCheckedStateNamePushed = new char[32];
-//	sprintf(m_pCBUnCheckedStateNamePushed, "CheckBox_Pushed");
-//
-//	m_pCBUnCheckedStateNameDisabled = new char[32];
-//	sprintf(m_pCBUnCheckedStateNameDisabled, "CheckBox_Inactive");
-//
-//	((WContainer*)m_pParent)->addComponent(this);
-//}
 
 void WCheckbox::deactivate() {
 	m_State = INACTIVE;
@@ -147,7 +90,7 @@ void WCheckbox::activate() {
 }
 
 void WCheckbox::onUpdate() {
-	updateComponentPosition();
+
 }
 
 void WCheckbox::onRender() {

@@ -38,55 +38,24 @@ H_WND WWindow::Create(		const char* lpClassName,
 											LPVOID lpVoid
 ) {
 	WWindow* pWWindow = new WWindow();
-	return pWWindow->createWindow(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpVoid);
+	((WContainer*)pWWindow)->Create(	lpClassName, 
+														lpWindowName, 
+														dwStyle, 
+														x, 
+														y, 
+														width, 
+														height, 
+														hwndParent, 
+														hMenu, 
+														lpVoid,
+														true, 
+														true);
+
+	return pWWindow;
 }
 
-H_WND WWindow::createWindow(	const char* lpClassName, 
-												const char* lpWindowName, 
-												DWORD dwStyle, 
-												int x, 
-												int y, 
-												int width, 
-												int height, 
-												H_WND hwndParent, 
-												HMENU hMenu, 
-												LPVOID lpParam
-) {
-		sprintf(m_pClassName, "%s", lpClassName);
-
-		m_iMainX = m_iMainY = 0;
-		m_pParent = (WComponent*)hwndParent;
-
-		m_iOffsetX = x;
-		m_iOffsetY = y;
-
-		m_WndType = (int)lpParam;
-
-		if(m_pParent) {
-			m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_iMainX;
-			m_iTop = m_pParent->getTop() + m_iOffsetY + m_iMainY;
-		}
-
-		m_iRight = m_iLeft + width;
-		m_iBottom = m_iTop + height;
-
-		m_title = lpWindowName;
-		m_WindowCWidget = WWidgetManager::getWidget("WindowC_Scroll");
-
-		// custom initialization
-		onCreate();
-
-		setComponentID((int)hMenu);
-		setIsContainer(true);
-		setComponentAsChild(true);
-
-		if(m_pParent != NULL)
-			((WContainer*)m_pParent)->addComponent(this);
-
-		return this;
-}
-
-void WWindow::onCreate() {
+// custom initialization
+void WWindow::onCreateEx(LPVOID lpVoid) {
 
 	H_WND hWnd = NULL;
 
@@ -94,6 +63,9 @@ void WWindow::onCreate() {
 	RectF hDestRect;
 	RectF wndRect;
 	RectF idealRect;
+
+	m_WndType = (int)lpVoid;
+	m_WindowCWidget = WWidgetManager::getWidget("WindowC_Scroll");
 
 	///////////////////////////////////////////////////
 	CHILD* verticalSBChild = m_WindowCWidget->getChild("VScroll");
@@ -370,7 +342,6 @@ void WWindow::onCreate() {
 }
 
 void WWindow::onUpdate() {
-	updateComponentPosition();
 
 	m_iMaxWidthPixels = m_iMaxHeightPixels = 0;
 	if(m_pChildren.size() > 0) {
@@ -519,7 +490,15 @@ void WWindow::onMouseMoveEx(int mCode, int x, int y, int prevx, int prevy) {
 	int diffY = (y - prevy);
 
 	if((mCode & MK_LBUTTON) != 0) {
-		setPosition(getOffsetX() + diffX, getOffsetY() + diffY);
+		if(m_pParent != NULL) {
+			setPosition(getOffsetX() + diffX, getOffsetY() + diffY);
+		}
+		else {
+			setLeft(getLeft() + diffX);
+			setTop(getTop() + diffY);
+
+			onResize(getWidth(), getHeight());
+		}
 	}
 }
 
@@ -554,11 +533,13 @@ void WWindow::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 				case ID_RESIZE_LEFT:
 				{
 					m_iResizingX = -1;
+					WWidgetManager::getInstance()->setCursor(IDC__SIZENESW);
 				}
 				break;
 				case ID_RESIZE_RIGHT:
 				{
 					m_iResizingX = 1;
+					WWidgetManager::getInstance()->setCursor(IDC__SIZENWSE);
 				}
 				break;
 				case ID_VERTICAL_SCROLLBAR:
@@ -627,7 +608,9 @@ void WWindow::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 		break;
 		case MOUSE_MOVE:
 		{
-			int buttonID = (wParam & 0xff);
+			int code = (wParam>>16)&0xffff;
+			int buttonID = (wParam&0xffff);
+
 			DWORD* dwDiff = (DWORD*)(lParam);
 
 			short dwDiffX = (*dwDiff >> 16) & 0xffff;
@@ -638,12 +621,39 @@ void WWindow::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 				case ID_HORIZONTAL_SCROLLBAR:
 				break;
 				case ID_RESIZE_LEFT:
+					WWidgetManager::getInstance()->setCursor(IDC__SIZENESW);
+
 					resizeWidth(dwDiffX);
 					resizeHeight(dwDiffY);
 				break;
 				case ID_RESIZE_RIGHT:
+					WWidgetManager::getInstance()->setCursor(IDC__SIZENWSE);
+
 					resizeWidth(dwDiffX);
 					resizeHeight(dwDiffY);
+				break;
+			}
+		}
+		break;
+		case MOUSE_HOVER:
+		{
+			int code = (wParam>>16)&0xffff;
+			int buttonID = (wParam&0xffff);
+
+			DWORD* dwDiff = (DWORD*)(lParam);
+
+			short dwDiffX = (*dwDiff >> 16) & 0xffff;
+			short dwDiffY = (*dwDiff & 0xffff);
+			switch(buttonID) {
+				case ID_VERTICAL_SCROLLBAR:
+				break;
+				case ID_HORIZONTAL_SCROLLBAR:
+				break;
+				case ID_RESIZE_LEFT:
+					WWidgetManager::getInstance()->setCursor(IDC__SIZENESW);
+				break;
+				case ID_RESIZE_RIGHT:
+					WWidgetManager::getInstance()->setCursor(IDC__SIZENWSE);
 				break;
 			}
 		}
@@ -674,7 +684,7 @@ void WWindow::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 
 void WWindow::onResize(int width, int height) {
 	setSize(width, height);
-	onCreate();
+	onCreateEx((LPVOID)m_WndType);
 }
 
 LRESULT WWindow::OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -682,19 +692,18 @@ LRESULT WWindow::OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch(msg) {
 	case WM__GETTEXTLENGTH:
 		{
-			return strlen(m_title.c_str());
+			return strlen(getWindowName());
 		}
 		break;
 	case WM__GETTEXT:
 		{
-			return sprintf_s((char*)lParam, (size_t)wParam, "%s", m_title.c_str());
+			return sprintf_s((char*)lParam, (size_t)wParam, "%s", getWindowName());
 		}
 		break;
 	case WM__SETTEXT:
 		{
 			char* str = (char*)lParam;
-			m_title = str;
-			//sprintf_s(m_pTitle, strlen(str) + 1, "%s", str);
+			setWindowName(str);
 			return WM__OKAY;
 		}
 		break;

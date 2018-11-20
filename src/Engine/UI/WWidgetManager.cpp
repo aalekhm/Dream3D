@@ -63,7 +63,7 @@ WWidgetManager::WWidgetManager() {
 	CreateComponent(	"WWindow", 
 								"Title", 
 								0, 
-								0,
+								110,
 								0, 
 								1024, 
 								768,

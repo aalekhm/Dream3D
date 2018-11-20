@@ -41,40 +41,30 @@ H_WND WTextBox::Create(		const char* lpClassName,
 											LPVOID lpVoid
 ) {
 	WTextBox* pWTextBox = new WTextBox();
-	return pWTextBox->createWindow(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpVoid);
+	pWTextBox->setText(lpWindowName);
+
+	((WContainer*)pWTextBox)->Create(	lpClassName, 
+														"WTextBox", 
+														dwStyle, 
+														x, 
+														y, 
+														width, 
+														height, 
+														hwndParent, 
+														hMenu, 
+														lpVoid,
+														true, 
+														true);
+	
+	return pWTextBox;
 }
 
-H_WND WTextBox::createWindow(	const char* lpClassName, 
-												const char* lpWindowName, 
-												DWORD dwStyle, 
-												int x, 
-												int y, 
-												int width, 
-												int height, 
-												H_WND hwndParent, 
-												HMENU hMenu, 
-												LPVOID lpParam
-) {
-	sprintf(m_pClassName, "%s", lpClassName);
-
-	H_WND hWnd = NULL;
-
-	m_pParent = (WContainer*)hwndParent;
-
-	m_iOffsetX = x;
-	m_iOffsetY = y;
-
-	m_iLeft = m_pParent->getLeft() + m_iOffsetX;
-	m_iTop = m_pParent->getTop() + m_iOffsetY;
-	m_iRight = m_iLeft + width;
-	m_iBottom = m_iTop + height;
-
+void WTextBox::onCreateEx(LPVOID lpVoid) {
 	mState = NORMAL;
 	m_CaretPosX = m_CaretPosY = 0;
 	m_mainX = 0;
 	m_mainY = 0;
 
-	setText(lpWindowName);
 	showLineNumbers(false);
 
 	mState = NORMAL;
@@ -108,7 +98,7 @@ H_WND WTextBox::createWindow(	const char* lpClassName,
 		verticalSBChild->align.iHAlign,
 		verticalSBChild->align.iVAlign
 		);
-	hWnd = 
+	H_WND hWnd = 
 	CreateComponent(	"WScrollbar", 
 								"", 
 								0, 
@@ -186,12 +176,6 @@ H_WND WTextBox::createWindow(	const char* lpClassName,
 	updateScrollBarVisibility();
 	updateMains();
 	///////////////////////////////////////////////////
-
-	setComponentID((int)hMenu);
-	setComponentAsChild(true);
-	((WContainer*)m_pParent)->addComponent(this);
-
-	return this;
 }
 
 void WTextBox::calculateMaxLineWidth() {
@@ -200,9 +184,10 @@ void WTextBox::calculateMaxLineWidth() {
 }
 
 void WTextBox::setText(const char* str) {
-	
-	m_Lines.clear();
-	appendText(str);
+	if(str != NULL && strlen(str) > 0) {
+		m_Lines.clear();
+		appendText(str);
+	}
 }
 
 void WTextBox::appendText(const char* str) {
@@ -443,8 +428,6 @@ void WTextBox::getCaretPos(int x, int y) {
 }
 
 void WTextBox::onUpdate() {
-
-	updateComponentPosition();
 
 	m_iMaxWidthPixels = m_iMaxHeightPixels = 0;
 	

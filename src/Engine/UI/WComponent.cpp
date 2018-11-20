@@ -1,5 +1,6 @@
 
 #include "Engine/UI/WComponent.h"
+#include "Engine/UI/WContainer.h"
 #include "Engine/UI/WWidgetManager.h"
 
 WComponent::WComponent() :	m_iLeft(0), 
@@ -37,6 +38,47 @@ WComponent::WComponent() :	m_iLeft(0),
 	memset(m_pWindowName, 0, 255);
 }
 
+H_WND WComponent::Create(		const char* lpClassName, 
+												const char* lpWindowName, 
+												DWORD dwStyle, 
+												int x, 
+												int y, 
+												int width, 
+												int height, 
+												H_WND hwndParent, 
+												HMENU hMenu, 
+												LPVOID lParam,
+												bool bIsContainer, 
+												bool bIsChild
+) {
+		sprintf(m_pClassName, "%s", lpClassName);
+		setWindowName(lpWindowName);
+
+		m_iMainX = m_iMainY = 0;
+		m_iOffsetX = x;
+		m_iOffsetY = y;
+
+		m_pParent = (WComponent*)hwndParent;
+		if(m_pParent) {
+			m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_iMainX;
+			m_iTop = m_pParent->getTop() + m_iOffsetY + m_iMainY;
+		}
+
+		m_iRight = m_iLeft + width;
+		m_iBottom = m_iTop + height;
+
+		setComponentID((int)hMenu);
+		setIsContainer(bIsContainer);
+		setComponentAsChild(bIsChild);
+
+		if(m_pParent != NULL)
+			((WContainer*)m_pParent)->addComponent(this);
+
+		onCreateEx(lParam);
+
+		return this;
+}
+
 const char* WComponent::getClassName() {
 	return m_pClassName;
 }
@@ -44,6 +86,13 @@ const char* WComponent::getClassName() {
 const char* WComponent::getWindowName() {
 	return m_pWindowName;
 }
+
+void WComponent::setWindowName(const char* sWindowName) {
+	if(sWindowName != NULL && strlen(sWindowName) > 0) {
+		memset(m_pClassName, 0, 255);
+		sprintf(m_pWindowName, "%s", sWindowName);
+	}
+};
 
 void WComponent::getFocus() {
 	getMouseFocus();
@@ -73,14 +122,21 @@ void WComponent::releaseKeyBFocus() {
 
 void WComponent::updateComponentPosition() {
 	////////////////////////////////////////////////////////////
-	if(m_pParent && isComponentAChild()) {
-		int w = getWidth();
-		int h = getHeight();
-		m_iLeft = m_pParent->getLeft() + m_iOffsetX + (isMovable() ? m_pParent->m_iMainX : 0);
-		m_iTop = m_pParent->getTop() + m_iOffsetY + (isMovable() ? m_pParent->m_iMainY : 0);
-		m_iRight = m_iLeft + w;
-		m_iBottom = m_iTop + h;
+	int w = getWidth();
+	int h = getHeight();
+
+	if(m_pParent) {
+		m_iLeft = m_pParent->getLeft() + m_iOffsetX;
+		m_iTop = m_pParent->getTop() + m_iOffsetY;
+
+		 if(isComponentAChild()) {
+			 m_iLeft += (isMovable() ? m_pParent->m_iMainX : 0);
+			 m_iTop += (isMovable() ? m_pParent->m_iMainY : 0);
+		 }
 	}
+	
+	m_iRight = m_iLeft + w;
+	m_iBottom = m_iTop + h;
 	////////////////////////////////////////////////////////////
 }
 
@@ -149,16 +205,7 @@ void WComponent::frameUpdate() {
 	if(!isVisible())
 		return;
 
-	if(m_pParent) {
-		int w = getWidth();
-		int h = getHeight();
-
-		m_iLeft = m_pParent->getLeft() + m_iOffsetX;
-		m_iTop = m_pParent->getTop() + m_iOffsetY;
-
-		m_iRight = m_iLeft + w;
-		m_iBottom = m_iTop + h;
-	}
+	updateComponentPosition();
 
 	// Update the component
 	onUpdate();

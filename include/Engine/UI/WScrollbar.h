@@ -26,14 +26,13 @@ struct WScrollbar : public WContainer {
 		
 		static H_WND __stdcall Create(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 
-		H_WND		createWindow(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
-		//void			create(WComponent* parent, int x, int y, int w, int h, int align, int HWND_ID);
 		void			setLength(float pixelsPercentage);
 		void			setCursorPositionInPercent(float pixelsPercentage);
 		void			setDisable(bool bDisable);
 		void			setReadOnly(bool bDisable);
 		void			hasBG(bool bBG) { m_bDrawBG = bBG; }
 	protected:
+		virtual void	onCreateEx(LPVOID lpVoid);
 		virtual void	frameUpdate();
 		virtual void	frameRender();
 
@@ -56,7 +55,6 @@ struct WScrollbar : public WContainer {
 
 		SCROLLBARSTATE		m_State;
 		SB_ALIGN			m_Align;
-		int					m_HwndID;
 		WIDGET*				m_ScrollbarWidget;
 
 		WButton*			m_ButtonLeft;

@@ -18,49 +18,34 @@ H_WND WStatic::Create(		const char* lpClassName,
 										LPVOID lpVoid
 ) {
 	WStatic* pWStatic = new WStatic();
-	return pWStatic->createWindow(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpVoid);
+	((WContainer*)pWStatic)->Create(	lpClassName, 
+														lpWindowName, 
+														dwStyle, 
+														x, 
+														y, 
+														width, 
+														height, 
+														hwndParent, 
+														hMenu, 
+														lpVoid,
+														false, 
+														true);
+
+	return pWStatic;
 }
 
-H_WND WStatic::createWindow(	const char* lpClassName, 
-												const char* lpWindowName, 
-												DWORD dwStyle, 
-												int x, 
-												int y, 
-												int width, 
-												int height, 
-												H_WND hwndParent, 
-												HMENU hMenu, 
-												LPVOID lpVoid
-) {
-	sprintf(m_pClassName, "%s", lpClassName);
+void WStatic::onCreateEx(LPVOID lpVoid) {
 
 	int iLen = (int)((lpVoid <= 0) ? 255 : (int)lpVoid);
 	m_pText = new char[iLen];
 	memset(m_pText, 0, iLen);
-	sprintf(m_pText, "%s", lpWindowName);
-
-	m_HwndID = (int)hMenu;
-	m_pParent = (WContainer*)hwndParent;
-
-	m_iOffsetX = x;
-	m_iOffsetY = y;
-
-	m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_pParent->m_iMainX;
-	m_iTop = m_pParent->getTop() + m_iOffsetY + m_pParent->m_iMainY;
-	m_iRight = m_iLeft + width;
-	m_iBottom = m_iTop + height;
+	sprintf(m_pText, "%s", getWindowName());
 
 	m_State = NORMAL;
-
-	setComponentID((int)hMenu);
-	setComponentAsChild(true);
-	((WContainer*)m_pParent)->addComponent(this);
-
-	return this;
 }
 
 void WStatic::onUpdate() {
-	updateComponentPosition();
+
 }
 
 void WStatic::frameRender() {
@@ -83,19 +68,19 @@ void WStatic::onRender() {
 
 void WStatic::onMouseDown(int x, int y, int iButton) {
 	if(m_pParent) {
-		m_pParent->onMessage(MOUSE_DOWN, this->m_HwndID, 0);
+		m_pParent->onMessage(MOUSE_DOWN, getComponentID(), 0);
 	}
 }
 
 void WStatic::onMouseUp(int x, int y, int iButton) {
 	if(m_pParent) {
-		m_pParent->onMessage(MOUSE_UP, this->m_HwndID, 0);
+		m_pParent->onMessage(MOUSE_UP, getComponentID(), 0);
 	}
 }
 
 void WStatic::onMouseMove(int mCode, int x, int y, int prevX, int prevY) {
 	if(m_pParent) {
-		m_pParent->onMessage(MOUSE_MOVE, (mCode<<16)|(this->m_HwndID), ((-(prevX-x))<<16) | (-(prevY-y)));
+		m_pParent->onMessage(MOUSE_MOVE, (mCode<<16)|(getComponentID()), ((-(prevX-x))<<16) | (-(prevY-y)));
 	}
 }
 

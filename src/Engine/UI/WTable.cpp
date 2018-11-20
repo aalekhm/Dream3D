@@ -40,80 +40,24 @@ H_WND WTable::Create(		const char* lpClassName,
 										LPVOID lpVoid
 ) {
 	WTable* pWTable = new WTable();
-	return pWTable->createWindow(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpVoid);
+
+	((WContainer*)pWTable)->Create(	lpClassName, 
+														lpWindowName, 
+														dwStyle, 
+														x, 
+														y, 
+														width, 
+														height, 
+														hwndParent, 
+														hMenu, 
+														lpVoid,
+														true, 
+														true);
+
+	return pWTable;
 }
 
-H_WND WTable::createWindow(	const char* lpClassName, 
-											const char* lpWindowName, 
-											DWORD dwStyle, 
-											int x, 
-											int y, 
-											int width, 
-											int height, 
-											H_WND hwndParent, 
-											HMENU hMenu, 
-											LPVOID lpParam
-) {
-		sprintf(m_pClassName, "%s", lpClassName);
-
-		m_pParent = (WComponent*)hwndParent;
-
-		m_iOffsetX = x;
-		m_iOffsetY = y;
-
-		if(m_pParent) {
-			m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_iMainX;
-			m_iTop = m_pParent->getTop() + m_iOffsetY + m_iMainY;
-		}
-
-		m_iRight = m_iLeft + width;
-		m_iBottom = m_iTop + height;
-
-		m_title = lpWindowName;
-		m_TableWidget = WWidgetManager::getWidget("Table");
-		m_sLineNoStr = new char[255];
-
-		LINE_HEIGHT = WWidgetManager::CHARACTER_HEIGHT;
-		TABLE_ROW_HEADER_HEIGHT = WWidgetManager::CHARACTER_HEIGHT + (TABLE_HEADER_OFFSET_Y << 1);
-
-		// custom initialization
-		onCreate();
-
-		setComponentID((int)hMenu);
-		setComponentAsChild(true);
-		((WContainer*)m_pParent)->addComponent(this);
-
-		return this;
-}
-
-//void WTable::create(WComponent* parent, int x, int y, int w, int h, const std::string &title) {
-//	setComponentAsChild(true);
-//
-//	m_pParent = parent;
-//
-//	m_iOffsetX = x;
-//	m_iOffsetY = y;
-//
-//	if(m_pParent) {
-//		m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_iMainX;
-//		m_iTop = m_pParent->getTop() + m_iOffsetY + m_iMainY;
-//	}
-//
-//	m_iRight = m_iLeft + w;
-//	m_iBottom = m_iTop + h;
-//
-//	m_title = title;
-//	m_TableWidget = WWidgetManager::getWidget("Table");
-//	m_sLineNoStr = new char[255];
-//
-//	LINE_HEIGHT = WWidgetManager::CHARACTER_HEIGHT;
-//	TABLE_ROW_HEADER_HEIGHT = WWidgetManager::CHARACTER_HEIGHT + (TABLE_HEADER_OFFSET_Y << 1);
-//
-//	// custom initialization
-//	onCreate();
-//}
-
-void WTable::onCreate() {
+void WTable::onCreateEx(LPVOID lpVoid) {
 	
 	H_WND hWnd = NULL;
 
@@ -122,6 +66,12 @@ void WTable::onCreate() {
 	RectF wndRect;
 	RectF idealRect;
 
+	m_TableWidget = WWidgetManager::getWidget("Table");
+	m_sLineNoStr = new char[255];
+
+	LINE_HEIGHT = WWidgetManager::CHARACTER_HEIGHT;
+	TABLE_ROW_HEADER_HEIGHT = WWidgetManager::CHARACTER_HEIGHT + (TABLE_HEADER_OFFSET_Y << 1);
+	
 	m_pRenderer =  WWidgetManager::getInstance();
 
 	///////////////////////////////////////////////////
@@ -224,8 +174,6 @@ void WTable::onCreate() {
 }
 
 void WTable::onUpdate() {
-
-	updateComponentPosition();
 
 	if(!m_IsVScrolling)
 		updateVBarPosition();

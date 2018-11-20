@@ -18,36 +18,28 @@ H_WND WScrollbar::Create(		const char* lpClassName,
 											LPVOID lpVoid
 ) {
 	WScrollbar* pWScrollbar = new WScrollbar();
-	return pWScrollbar->createWindow(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpVoid);
+	((WContainer*)pWScrollbar)->Create(	lpClassName, 
+															lpWindowName, 
+															dwStyle, 
+															x, 
+															y, 
+															width, 
+															height, 
+															hwndParent, 
+															hMenu, 
+															lpVoid,
+															true, 
+															true);
+
+	return pWScrollbar;
 }
 
-H_WND WScrollbar::createWindow(	const char* lpClassName, 
-													const char* lpWindowName, 
-													DWORD dwStyle, 
-													int x, 
-													int y, 
-													int width, 
-													int height, 
-													H_WND hwndParent, 
-													HMENU hMenu, 
-													LPVOID lpParam
-) {
-	sprintf(m_pClassName, "%s", lpClassName);
+void WScrollbar::onCreateEx(LPVOID lpVoid) {
 
 	H_WND hWnd = NULL;
 
-	m_pParent = (WComponent*)hwndParent;
-	m_HwndID = (int)hMenu;
-	m_Align = (SB_ALIGN)((int)lpParam);
+	m_Align = (SB_ALIGN)((int)lpVoid);
 	m_State = NORMAL;
-
-	m_iOffsetX = x;
-	m_iOffsetY = y;
-
-	m_iLeft = m_pParent->getLeft() + m_iOffsetX;
-	m_iTop = m_pParent->getTop() + m_iOffsetY;
-	m_iRight = m_iLeft + width;
-	m_iBottom = m_iTop + height;
 
 	m_bDrawBG = false;
 	////////////////////////////////////////////
@@ -70,123 +62,120 @@ H_WND WScrollbar::createWindow(	const char* lpClassName,
 		sprintf(scrollTrackName, "HScrollTrack");
 	}
 	else
-		if(m_Align == VERTICAL) {
-			m_ScrollbarWidget = WWidgetManager::getWidget("VScroll");
-			sprintf(leftOrUpScrollButtonName, "ButtonUp");
-			sprintf(rightOrDownScrollButtonName, "ButtonDown");
-			sprintf(scrollTrackName, "VScrollTrack");
-		}
-		////////////////////////////////////////////
+	if(m_Align == VERTICAL) {
+		m_ScrollbarWidget = WWidgetManager::getWidget("VScroll");
+		sprintf(leftOrUpScrollButtonName, "ButtonUp");
+		sprintf(rightOrDownScrollButtonName, "ButtonDown");
+		sprintf(scrollTrackName, "VScrollTrack");
+	}
+	////////////////////////////////////////////
 
-		////////////////////////////////////////////
-		RectF destRect;
-		RectF wndRect;
-		RectF idealRect;
+	////////////////////////////////////////////
+	RectF destRect;
+	RectF wndRect;
+	RectF idealRect;
 
-		CHILD* leftScrollChild = m_ScrollbarWidget->getChild(leftOrUpScrollButtonName);
-		m_ButtonLeft = new WButton();
-		wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
-		idealRect.X = leftScrollChild->posOffsets.x;
-		idealRect.Y = leftScrollChild->posOffsets.y;
-		idealRect.Width = leftScrollChild->posOffsets.w; 
-		idealRect.Height = leftScrollChild->posOffsets.h;
-		WWidgetManager::getDestinationRect(	destRect,
-			m_ScrollbarWidget->widgetSize.width,
-			m_ScrollbarWidget->widgetSize.height,
-			&wndRect,
-			&idealRect,
-			leftScrollChild->align.iHAlign,
-			leftScrollChild->align.iVAlign
-			);
-		hWnd = 
-		CreateComponent(	"WButton", 
-									"", 
-									0, 
-									destRect.X - m_iLeft,
-									destRect.Y - m_iTop, 
-									destRect.Width, 
-									destRect.Height,
-									this, 
-									HMENU((m_Align == HORIZONTAL)?BTN_SCROLLBAR_LEFT:BTN_SCROLLBAR_UP), 
-									leftOrUpScrollButtonName);
-		m_ButtonLeft = (WButton*)hWnd;
-		////////////////////////////////////////////
+	CHILD* leftScrollChild = m_ScrollbarWidget->getChild(leftOrUpScrollButtonName);
+	m_ButtonLeft = new WButton();
+	wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
+	idealRect.X = leftScrollChild->posOffsets.x;
+	idealRect.Y = leftScrollChild->posOffsets.y;
+	idealRect.Width = leftScrollChild->posOffsets.w; 
+	idealRect.Height = leftScrollChild->posOffsets.h;
+	WWidgetManager::getDestinationRect(	destRect,
+															m_ScrollbarWidget->widgetSize.width,
+															m_ScrollbarWidget->widgetSize.height,
+															&wndRect,
+															&idealRect,
+															leftScrollChild->align.iHAlign,
+															leftScrollChild->align.iVAlign
+															);
+	hWnd = 
+	CreateComponent(	"WButton", 
+								"", 
+								0, 
+								destRect.X - m_iLeft,
+								destRect.Y - m_iTop, 
+								destRect.Width, 
+								destRect.Height,
+								this, 
+								HMENU((m_Align == HORIZONTAL)?BTN_SCROLLBAR_LEFT:BTN_SCROLLBAR_UP), 
+								leftOrUpScrollButtonName);
+	m_ButtonLeft = (WButton*)hWnd;
+	////////////////////////////////////////////
 
-		////////////////////////////////////////////
-		CHILD* rightScrollChild = m_ScrollbarWidget->getChild(rightOrDownScrollButtonName);
-		m_ButtonRight = new WButton();
-		wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
-		idealRect.X = rightScrollChild->posOffsets.x;
-		idealRect.Y = rightScrollChild->posOffsets.y;
-		idealRect.Width = rightScrollChild->posOffsets.w; 
-		idealRect.Height = rightScrollChild->posOffsets.h;
-		WWidgetManager::getDestinationRect(	destRect,
-			m_ScrollbarWidget->widgetSize.width,
-			m_ScrollbarWidget->widgetSize.height,
-			&wndRect,
-			&idealRect,
-			rightScrollChild->align.iHAlign,
-			rightScrollChild->align.iVAlign
-			);
-		hWnd = 
-		CreateComponent(	"WButton", 
-									"", 
-									0, 
-									destRect.X - m_iLeft,
-									destRect.Y - m_iTop, 
-									destRect.Width, 
-									destRect.Height,
-									this, 
-									HMENU((m_Align == HORIZONTAL)?BTN_SCROLLBAR_RIGHT:BTN_SCROLLBAR_DOWN), 
-									rightOrDownScrollButtonName);
-		m_ButtonRight = (WButton*)hWnd;
-		////////////////////////////////////////////
+	////////////////////////////////////////////
+	CHILD* rightScrollChild = m_ScrollbarWidget->getChild(rightOrDownScrollButtonName);
+	m_ButtonRight = new WButton();
+	wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
+	idealRect.X = rightScrollChild->posOffsets.x;
+	idealRect.Y = rightScrollChild->posOffsets.y;
+	idealRect.Width = rightScrollChild->posOffsets.w; 
+	idealRect.Height = rightScrollChild->posOffsets.h;
+	WWidgetManager::getDestinationRect(	destRect,
+															m_ScrollbarWidget->widgetSize.width,
+															m_ScrollbarWidget->widgetSize.height,
+															&wndRect,
+															&idealRect,
+															rightScrollChild->align.iHAlign,
+															rightScrollChild->align.iVAlign
+														);
+	hWnd = 
+	CreateComponent(	"WButton", 
+								"", 
+								0, 
+								destRect.X - m_iLeft,
+								destRect.Y - m_iTop, 
+								destRect.Width, 
+								destRect.Height,
+								this, 
+								HMENU((m_Align == HORIZONTAL)?BTN_SCROLLBAR_RIGHT:BTN_SCROLLBAR_DOWN), 
+								rightOrDownScrollButtonName);
+	m_ButtonRight = (WButton*)hWnd;
+	////////////////////////////////////////////
 
-		////////////////////////////////////////////
-		CHILD* scrollTrackChild = m_ScrollbarWidget->getChild(scrollTrackName);
-		m_sliderLen = (bIsHorizontal)?scrollTrackChild->posOffsets.w:scrollTrackChild->posOffsets.h;
-		m_ButtonScrollTrack = new WButton();
-		wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
-		idealRect.X = scrollTrackChild->posOffsets.x;
-		idealRect.Y = scrollTrackChild->posOffsets.y;
-		idealRect.Width = (bIsHorizontal)?m_sliderLen:scrollTrackChild->posOffsets.w; 
-		idealRect.Height = (bIsHorizontal)?scrollTrackChild->posOffsets.h:m_sliderLen;
-		WWidgetManager::getDestinationRect(	destRect,
-			m_ScrollbarWidget->widgetSize.width,
-			m_ScrollbarWidget->widgetSize.height,
-			&wndRect,
-			&idealRect,
-			scrollTrackChild->align.iHAlign,
-			scrollTrackChild->align.iVAlign
-			);
-		m_minSliderPos = (bIsHorizontal)?destRect.X - m_iLeft:destRect.Y - m_iTop;
-		m_curSliderPos = m_minSliderPos;
-		m_maxSliderPos = (bIsHorizontal)?(getWidth() - scrollTrackChild->posOffsets.x - m_sliderLen):(getWidth() - scrollTrackChild->posOffsets.y - m_sliderLen);
+	////////////////////////////////////////////
+	CHILD* scrollTrackChild = m_ScrollbarWidget->getChild(scrollTrackName);
+	m_sliderLen = (bIsHorizontal)?scrollTrackChild->posOffsets.w:scrollTrackChild->posOffsets.h;
+	m_ButtonScrollTrack = new WButton();
+	wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
+	idealRect.X = scrollTrackChild->posOffsets.x;
+	idealRect.Y = scrollTrackChild->posOffsets.y;
+	idealRect.Width = (bIsHorizontal)?m_sliderLen:scrollTrackChild->posOffsets.w; 
+	idealRect.Height = (bIsHorizontal)?scrollTrackChild->posOffsets.h:m_sliderLen;
+	WWidgetManager::getDestinationRect(	destRect,
+															m_ScrollbarWidget->widgetSize.width,
+															m_ScrollbarWidget->widgetSize.height,
+															&wndRect,
+															&idealRect,
+															scrollTrackChild->align.iHAlign,
+															scrollTrackChild->align.iVAlign
+															);
+	m_minSliderPos = (bIsHorizontal)?destRect.X - m_iLeft:destRect.Y - m_iTop;
+	m_curSliderPos = m_minSliderPos;
+	m_maxSliderPos = (bIsHorizontal)?(getWidth() - scrollTrackChild->posOffsets.x - m_sliderLen):(getWidth() - scrollTrackChild->posOffsets.y - m_sliderLen);
 
-		hWnd = 
-		CreateComponent(	"WButton", 
-									"", 
-									0, 
-									destRect.X - m_iLeft,
-									destRect.Y - m_iTop, 
-									destRect.Width, 
-									destRect.Height,
-									this, 
-									HMENU(BTN_SCROLLBAR_SCROLL), 
-									scrollTrackChild->sName);
-		m_ButtonScrollTrack = (WButton*)hWnd;
-		m_ButtonScrollTrack->setMovable(true);
-		////////////////////////////////////////////
+	hWnd = 
+	CreateComponent(	"WButton", 
+								"", 
+								0, 
+								destRect.X - m_iLeft,
+								destRect.Y - m_iTop, 
+								destRect.Width, 
+								destRect.Height,
+								this, 
+								HMENU(BTN_SCROLLBAR_SCROLL), 
+								scrollTrackChild->sName);
+	m_ButtonScrollTrack = (WButton*)hWnd;
+	m_ButtonScrollTrack->setMovable(true);
+	////////////////////////////////////////////
 
-		SAFE_DELETE(leftOrUpScrollButtonName);
-		SAFE_DELETE(rightOrDownScrollButtonName);
-		SAFE_DELETE(scrollTrackName);
+	SAFE_DELETE(leftOrUpScrollButtonName);
+	SAFE_DELETE(rightOrDownScrollButtonName);
+	SAFE_DELETE(scrollTrackName);
 
-		setAsIntegral(true);
-
-		setComponentID((int)hMenu);
-		((WContainer*)m_pParent)->addComponent(this);
-		return this;
+	setMovable(false);
+	setAsIntegral(true);
 }
 
 void WScrollbar::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -199,12 +188,12 @@ void WScrollbar::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 				case BTN_SCROLLBAR_LEFT:
 				case BTN_SCROLLBAR_UP:
 					if(m_pParent)
-						m_pParent->onMessage(MOUSE_DOWN, this->m_HwndID, (m_Align == HORIZONTAL)?BTN_SCROLLBAR_LEFT:BTN_SCROLLBAR_UP);
+						m_pParent->onMessage(MOUSE_DOWN, getComponentID(), (m_Align == HORIZONTAL)?BTN_SCROLLBAR_LEFT:BTN_SCROLLBAR_UP);
 				break;
 				case BTN_SCROLLBAR_RIGHT:
 				case BTN_SCROLLBAR_DOWN:
 					if(m_pParent)
-						m_pParent->onMessage(MOUSE_DOWN, this->m_HwndID, (m_Align == HORIZONTAL)?BTN_SCROLLBAR_RIGHT:BTN_SCROLLBAR_DOWN);
+						m_pParent->onMessage(MOUSE_DOWN, getComponentID(), (m_Align == HORIZONTAL)?BTN_SCROLLBAR_RIGHT:BTN_SCROLLBAR_DOWN);
 				break;
 				case BTN_SCROLLBAR_SCROLL:
 				break;
@@ -219,12 +208,12 @@ void WScrollbar::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 				case BTN_SCROLLBAR_LEFT:
 				case BTN_SCROLLBAR_UP:
 					if(m_pParent)
-						m_pParent->onMessage(MOUSE_UP, this->m_HwndID, (m_Align == HORIZONTAL)?BTN_SCROLLBAR_LEFT:BTN_SCROLLBAR_UP);
+						m_pParent->onMessage(MOUSE_UP, getComponentID(), (m_Align == HORIZONTAL)?BTN_SCROLLBAR_LEFT:BTN_SCROLLBAR_UP);
 				break;
 				case BTN_SCROLLBAR_RIGHT:
 				case BTN_SCROLLBAR_DOWN:
 					if(m_pParent)
-						m_pParent->onMessage(MOUSE_UP, this->m_HwndID, (m_Align == HORIZONTAL)?BTN_SCROLLBAR_RIGHT:BTN_SCROLLBAR_DOWN);
+						m_pParent->onMessage(MOUSE_UP, getComponentID(), (m_Align == HORIZONTAL)?BTN_SCROLLBAR_RIGHT:BTN_SCROLLBAR_DOWN);
 				break;
 				case BTN_SCROLLBAR_SCROLL:					
 				break;
@@ -258,7 +247,7 @@ void WScrollbar::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 							float percentage = (actualVal/_total)*100;
 
 							//printf("Percentage *********************************** = %f\n", percentage);
-							m_pParent->onMessage(SCROLLER_POS_ON_DRAG, this->m_HwndID, percentage);
+							m_pParent->onMessage(SCROLLER_POS_ON_DRAG, getComponentID(), percentage);
 						}
 					}
 				}

@@ -12,6 +12,7 @@ struct WComponent {
 			MOUSE_DOWN,
 			MOUSE_UP,
 			MOUSE_MOVE,
+			MOUSE_HOVER,
 			KEY_DOWN,
 			KEY_UP,
 			SCROLLER_POS_ON_DRAG,
@@ -21,10 +22,13 @@ struct WComponent {
 
 		WComponent();
 		virtual ~WComponent();
+		
+		virtual	H_WND	Create(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam, bool bIsContainer = false, bool bIsChild = false);
 
 		virtual LRESULT	OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam);
 		const char*		getClassName();
 		const char*		getWindowName();
+		void					setWindowName(const char* sWindowName);
 
 		int			getLeft()	{ return m_iLeft; }
 		int			getTop()	{ return m_iTop; }
@@ -40,6 +44,8 @@ struct WComponent {
 						m_iOffsetY = newOffsetY;
 					}
 		void		setPositionX(int x) { setPosition(x, getOffsetY()); }
+		void		setLeft(int x)	{ m_iLeft = x; setWidth(getWidth()); }
+		void		setTop(int y)	{ m_iTop = y; setHeight(getHeight()); }
 		void		setPositionY(int y) { setPosition(getOffsetX(), y); }
 		void		setSize(int w, int h) { m_iRight = m_iLeft + w; m_iBottom = m_iTop + h; }
 		void		setWidth(int w) { 
@@ -97,6 +103,7 @@ struct WComponent {
 
 		// event handlers. Override these methods to define how your
 		// component behaves
+		virtual void		onCreateEx(LPVOID lpVoid) {};
 		virtual void		updateScroll() {};
 		virtual void		onUpdate() {};
 		virtual void		onRender();

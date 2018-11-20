@@ -280,14 +280,12 @@ struct TREEITEM {
 
 		static H_WND __stdcall Create(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 
-		H_WND			createWindow(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
-		void				create(WComponent* parent, int left, int top, int width, int height, const std::string &title);
 		LRESULT		OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam);
 
 		void setResizable(bool bResizable)	{ m_bResizable = bResizable; }
 		const char* getTitle() { return m_title.c_str(); }
 		
-		virtual void onCreate();
+		virtual void onCreateEx(LPVOID lpVoid);
 		virtual void onUpdate();
 		virtual void onRender();
 

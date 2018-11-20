@@ -7,6 +7,35 @@ WContainer::WContainer() : m_pActiveComponent(0) {
 	m_iComponentID = -1;
 }
 
+H_WND WContainer::Create(		const char* lpClassName, 
+												const char* lpWindowName, 
+												DWORD dwStyle, 
+												int x, 
+												int y, 
+												int width, 
+												int height, 
+												H_WND hwndParent, 
+												HMENU hMenu, 
+												LPVOID lParam,
+												bool bIsContainer, 
+												bool bIsChild
+) {
+	WComponent::Create(	lpClassName, 
+									lpWindowName, 
+									dwStyle, 
+									x, 
+									y, 
+									width, 
+									height, 
+									hwndParent, 
+									hMenu, 
+									lParam,
+									bIsContainer, 
+									bIsChild);
+
+	return this;
+}
+
 WContainer::~WContainer() {
 	
 	std::vector<WComponent*>::iterator itrBegin = m_pChildren.begin();
@@ -26,16 +55,7 @@ void WContainer::frameUpdate() {
 	if(!isVisible())
 		return;
 
-	int w = getWidth();
-	int h = getHeight();
-
-	if(m_pParent) {
-		m_iLeft = m_pParent->getLeft() + m_iOffsetX;
-		m_iTop = m_pParent->getTop() + m_iOffsetY;
-	}
-
-	m_iRight = m_iLeft + w;
-	m_iBottom = m_iTop + h;
+	updateComponentPosition();
 
 	// Update the container itself
 	onUpdate();

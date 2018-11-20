@@ -24,7 +24,6 @@ struct WWidgetManager {
 		H_WND							m_pBaseWindow;
 
 		static void			setCallback(YAGUICallback wndProc);
-		H_WND				createWindow(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 		H_WND				GetWindow(int ID_WINDOW);
 		H_WND				FindWindowQ(LPCSTR lpClassName, LPCSTR lpWindowName);
 

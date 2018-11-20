@@ -21,7 +21,8 @@ struct WButton : public WComponent {
 		char*			m_pButtonStateNameHighlighted;
 		char*			m_pButtonStateNamePushed;
 		char*			m_pButtonStateNameDisabled;
-		
+
+		virtual void		onCreateEx(LPVOID lpVoid);
 		virtual void		frameRender();
 		virtual void		onUpdate();
 		virtual void		onRender();
@@ -43,9 +44,8 @@ struct WButton : public WComponent {
 
 		static H_WND __stdcall Create(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 	
-		H_WND				createWindow(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 		LRESULT			OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam);
-		//void					create(WComponent* parent, int x, int y, int w, int h, const char* sTitle, const char* sIdentifier, int BUTTON_ID);
+
 		void					setTitle(const char* sTitle) { sprintf(m_pTitle, "%s", sTitle); }
 		void					setState(ButtonState bs) { m_State = bs; }
 		ButtonState		getState() { return m_State; }

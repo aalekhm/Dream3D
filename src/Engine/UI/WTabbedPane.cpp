@@ -34,65 +34,24 @@ H_WND WTabbedPane::Create(		const char* lpClassName,
 												LPVOID lpVoid
 ) {
 	WTabbedPane* pWTabbedPane = new WTabbedPane();
-	return pWTabbedPane->createWindow(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpVoid);
+
+	((WContainer*)pWTabbedPane)->Create(	lpClassName, 
+																lpWindowName, 
+																dwStyle, 
+																x, 
+																y, 
+																width, 
+																height, 
+																hwndParent, 
+																hMenu, 
+																lpVoid,
+																true, 
+																true);
+
+	return pWTabbedPane;
 }
 
-H_WND WTabbedPane::createWindow(	const char* lpClassName, 
-													const char* lpWindowName, 
-													DWORD dwStyle, 
-													int x, 
-													int y, 
-													int width, 
-													int height, 
-													H_WND hwndParent, 
-													HMENU hMenu, 
-													LPVOID lpParam
-) {
-	sprintf(m_pClassName, "%s", lpClassName);
-
-	m_pParent = (WContainer*)hwndParent;
-	
-	m_iOffsetX = x;
-	m_iOffsetY = y;
-
-	TAB_HEIGHT = WWidgetManager::CHARACTER_HEIGHT + (TAB_TITLE_START_Y << 1);
-
-	if(m_pParent) {
-		m_iLeft = m_pParent->getLeft() + m_iOffsetX;
-		m_iTop = m_pParent->getTop() + m_iOffsetY;
-	}
-
-	m_iRight = m_iLeft + width;
-	m_iBottom = m_iTop + height;
-
-	m_TabbedWidget = WWidgetManager::getWidget("Tab");
-
-	// custom initialization
-	onCreate();
-
-	m_minX = getLeft() + TAB_START_X;
-
-	m_MaxTabsOnScreen = m_ButtonScrollLeft->getOffsetX() / TAB_WIDTH;
-
-	char* sTitle = new char[255];
-	memset(sTitle, 0, 255);
-	for(int i = 0; i < 6; i++) {
-		sprintf(sTitle, "W-%d\0", i);
-		std::string sTitle(sTitle);
-		addTab1(sTitle);
-	}
-
-	setSelectedTab(0);
-
-	setComponentID((int)hMenu);
-	setComponentAsChild(true);
-	setIsContainer(true);
-	m_pParent->addComponent(this);
-
-	return this;
-}
-
-void WTabbedPane::onCreate() {
+void WTabbedPane::onCreateEx(LPVOID lpVoid) {
 	
 	H_WND hWnd = NULL;
 
@@ -100,6 +59,9 @@ void WTabbedPane::onCreate() {
 	RectF hDestRect;
 	RectF wndRect;
 	RectF idealRect;
+
+	TAB_HEIGHT = WWidgetManager::CHARACTER_HEIGHT + (TAB_TITLE_START_Y << 1);
+	m_TabbedWidget = WWidgetManager::getWidget("Tab");
 
 	///////////////////////////////////////////////////
 	CHILD* btnScrollLeft = m_TabbedWidget->getChild("ButtonLeft");
@@ -184,10 +146,23 @@ void WTabbedPane::onCreate() {
 		m_ClientRect.Height = destRect.Height;
 	}
 	///////////////////////////////////////////
+
+	m_minX = getLeft() + TAB_START_X;
+	m_MaxTabsOnScreen = m_ButtonScrollLeft->getOffsetX() / TAB_WIDTH;
+	
+	char* sTitle = new char[255];
+	memset(sTitle, 0, 255);
+	for(int i = 0; i < 6; i++) {
+		sprintf(sTitle, "W-%d\0", i);
+		std::string sTitle(sTitle);
+		addTab1(sTitle);
+	}
+
+	setSelectedTab(0);
 }
 
 void WTabbedPane::onUpdate() {
-	updateComponentPosition();
+
 }
 
 void WTabbedPane::onRender() {
@@ -213,7 +188,7 @@ void WTabbedPane::onRender() {
 			renderer->renderWidget("TabPatchUnSelected", &rTab);
 		}
 
-		renderer->drawStringFont((char*)((WFrame*)m_vTabFrames[i])->getTitle(), getLeft() + count*TAB_WIDTH + TAB_TITLE_START_X, getTop() + TAB_TITLE_START_Y, 0);
+		renderer->drawStringFont((char*)((WFrame*)m_vTabFrames[i])->getWindowName(), getLeft() + count*TAB_WIDTH + TAB_TITLE_START_X, getTop() + TAB_TITLE_START_Y, 0);
 	}
 }
 
@@ -483,7 +458,7 @@ WFrame* WTabbedPane::getTab(const char* sTitle) {
 		CCString cTitle = sTitle;
 		for(int i = 0; i < m_TabCount; i++) {
 			pTab = (WFrame*)m_vTabFrames[i];
-			CCString cTabTitle = pTab->getTitle();
+			CCString cTabTitle = pTab->getWindowName();
 			if (strcmp(cTitle.toLower(), cTabTitle.toLower()) == 0) {
 				return pTab;
 			}
@@ -538,7 +513,7 @@ LRESULT WTabbedPane::OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 
 					WFrame* pTab = getTab(iIndex);
 
-					tcim->lpzText = (LPSTR)pTab->getTitle();
+					tcim->lpzText = (LPSTR)pTab->getWindowName();
 					tcim->cchTextMax = strlen(tcim->lpzText);
 					tcim->lParam = (LPARAM)NULL;
 					
@@ -676,7 +651,7 @@ LRESULT WTabbedPane::OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 				if(iIndex>= 0 && iIndex < m_TabCount) {
 					
 					WFrame* pTab = getTab(iIndex);
-					pTab->setTitle(tcim->lpzText);
+					pTab->setWindowName(tcim->lpzText);
 					
 					return WM__OKAY;
 				}

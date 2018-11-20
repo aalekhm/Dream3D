@@ -41,40 +41,31 @@ H_WND WConsoleLog::Create(		const char* lpClassName,
 												LPVOID lpVoid
 ) {
 	WConsoleLog* pWConsoleLog = new WConsoleLog();
-	return pWConsoleLog->createWindow(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpVoid);
+	pWConsoleLog->setText(lpWindowName);
+
+	((WContainer*)pWConsoleLog)->Create(	lpClassName, 
+																"WConsoleLog", 
+																dwStyle, 
+																x, 
+																y, 
+																width, 
+																height, 
+																hwndParent, 
+																hMenu, 
+																lpVoid,
+																true, 
+																true);
+	
+	return pWConsoleLog;
 }
 
-H_WND WConsoleLog::createWindow(	const char* lpClassName, 
-												const char* lpWindowName, 
-												DWORD dwStyle, 
-												int x, 
-												int y, 
-												int width, 
-												int height, 
-												H_WND hwndParent, 
-												HMENU hMenu, 
-												LPVOID lpParam
-) {
-	sprintf(m_pClassName, "%s", lpClassName);
-
+void WConsoleLog::onCreateEx(LPVOID lpVoid) {
 	H_WND hWnd = NULL;
-
-	m_pParent = (WContainer*)hwndParent;
-
-	m_iOffsetX = x;
-	m_iOffsetY = y;
-
-	m_iLeft = m_pParent->getLeft() + m_iOffsetX;
-	m_iTop = m_pParent->getTop() + m_iOffsetY;
-	m_iRight = m_iLeft + width;
-	m_iBottom = m_iTop + height;
-
 	mState = NORMAL;
 	m_CaretPosX = m_CaretPosY = 0;
 	m_mainX = 0;
 	m_mainY = 0;
 
-	setText(lpWindowName);
 	showLineNumbers(false);
 
 	mState = NORMAL;
@@ -186,12 +177,6 @@ H_WND WConsoleLog::createWindow(	const char* lpClassName,
 	updateScrollBarVisibility();
 	updateMains();
 	///////////////////////////////////////////////////
-
-	setComponentID((int)hMenu);
-	setComponentAsChild(true);
-	((WContainer*)m_pParent)->addComponent(this);
-
-	return this;
 }
 
 void WConsoleLog::calculateMaxLineWidth() {
@@ -271,6 +256,8 @@ void WConsoleLog::drawStringFont(int x, int y, int anchor) {
 		int CHAR_WIDTH = 0;
 		char c = ' ';
 
+		bool bSkipRestLine = false;
+
 		if(m_Lines[lineNo].size() > 0) {
 			c = m_Lines[lineNo].at(i);
 			CHAR_WIDTH = WWidgetManager::getCharWidth(c);
@@ -307,12 +294,17 @@ void WConsoleLog::drawStringFont(int x, int y, int anchor) {
 				}
 			}
 
+			if(iLeftTop >= m_maxX || iRightTop >= m_maxX) {
+				bSkipRestLine = true;
+			}
+
 			xX += CHAR_WIDTH;
 		}
 
 		i++;
 
-		if(i >= m_Lines[lineNo].size()) {
+		if(i >= m_Lines[lineNo].size() || bSkipRestLine) {
+			bSkipRestLine = false;
 			if(lineNo == CURSOR_LINE_NO) {//Current line Selection.
 				rect.X = m_minX;
 				rect.Y = yY;
@@ -461,8 +453,6 @@ void WConsoleLog::getCaretPos(int x, int y) {
 }
 
 void WConsoleLog::onUpdate() {
-
-	updateComponentPosition();
 
 	m_iMaxWidthPixels = m_iMaxHeightPixels = 0;
 	

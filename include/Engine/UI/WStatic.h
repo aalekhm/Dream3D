@@ -12,10 +12,10 @@ struct WStatic : public WComponent {
 			INACTIVE
 		};
 		
-		char*			m_pText;
-		int				m_HwndID;
+		char*				m_pText;
 		StaticState		m_State;
 		
+		virtual void	 onCreateEx(LPVOID lpVoid);
 		virtual void	frameRender();
 		virtual void	onUpdate();
 		virtual void	onRender();
@@ -32,7 +32,6 @@ struct WStatic : public WComponent {
 		
 		static H_WND __stdcall Create(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 
-		H_WND			createWindow(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 		LRESULT		OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam);
 
 		void			setText(const char* sText) { sprintf(m_pText, "%s", sText); }

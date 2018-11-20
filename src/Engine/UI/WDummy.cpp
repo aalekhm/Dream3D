@@ -36,55 +36,24 @@ H_WND WDummy::Create(		const char* lpClassName,
 											LPVOID lpVoid
 ) {
 	WDummy* pWDummy = new WDummy();
-	return pWDummy->createWindow(lpClassName, lpWindowName, dwStyle, x, y, width, height, hwndParent, hMenu, lpVoid);
+
+	((WContainer*)pWDummy)->Create(	lpClassName, 
+														lpWindowName, 
+														dwStyle, 
+														x, 
+														y, 
+														width, 
+														height, 
+														hwndParent, 
+														hMenu, 
+														lpVoid,
+														true, 
+														true);
+
+	return pWDummy;
 }
 
-H_WND WDummy::createWindow(	const char* lpClassName, 
-												const char* lpWindowName, 
-												DWORD dwStyle, 
-												int x, 
-												int y, 
-												int width, 
-												int height, 
-												H_WND hwndParent, 
-												HMENU hMenu, 
-												LPVOID lpParam
-) {
-	sprintf(m_pClassName, "%s", lpClassName);
-
-	m_iMainX = m_iMainY = 0;
-
-	m_pParent = (WComponent*)hwndParent;
-
-	m_iOffsetX = x;
-	m_iOffsetY = y;
-
-	m_bHasScrollBars = (bool)lpParam;
-
-	if(m_pParent) {
-		m_iLeft = m_pParent->getLeft() + m_iOffsetX + m_iMainX;
-		m_iTop = m_pParent->getTop() + m_iOffsetY + m_iMainY;
-	}
-
-	m_iRight = m_iLeft + width;
-	m_iBottom = m_iTop + height;
-
-	setTitle(lpWindowName);
-	m_DummyWidget = WWidgetManager::getWidget("DummyWindow");
-
-	// custom initialization
-	onCreate();
-
-	setComponentID((int)hMenu);
-	setIsContainer(true);
-	setComponentAsChild(true);
-	if(m_pParent != NULL)
-		((WContainer*)m_pParent)->addComponent(this);
-
-	return this;
-}
-
-void WDummy::onCreate() {
+void WDummy::onCreateEx(LPVOID lpVoid) {
 
 	H_WND hWnd = NULL;
 
@@ -94,6 +63,8 @@ void WDummy::onCreate() {
 	RectF wndRect;
 	RectF idealRect;
 
+	m_bHasScrollBars = (bool)lpVoid;
+	m_DummyWidget = WWidgetManager::getWidget("DummyWindow");
 	///////////////////////////////////////////////////
 	CHILD* verticalSBChild = m_DummyWidget->getChild("VScroll");
 	wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
@@ -277,8 +248,6 @@ void WDummy::onCreate() {
 
 void WDummy::onUpdate() {
 
-	updateComponentPosition();
-
 	m_iMaxWidthPixels = m_iMaxHeightPixels = 0;
 	if(m_pChildren.size() > 0) {
 		for(int i = 0; i < m_pChildren.size(); i++) {
@@ -448,11 +417,13 @@ void WDummy::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 				case ID_RESIZE_LEFT:
 				{
 					m_iResizingX = -1;
+					WWidgetManager::getInstance()->setCursor(IDC__SIZENESW);
 				}
 				break;
 				case ID_RESIZE_RIGHT:
 				{
 					m_iResizingX = 1;
+					WWidgetManager::getInstance()->setCursor(IDC__SIZENWSE);
 				}
 				break;
 				case ID_VERTICAL_SCROLLBAR:
@@ -521,7 +492,9 @@ void WDummy::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 		break;
 		case MOUSE_MOVE:
 		{
-			int buttonID = (wParam & 0xff);
+			int code = (wParam>>16)&0xffff;
+			int buttonID = (wParam&0xffff);
+
 			DWORD* dwDiff = (DWORD*)(lParam);
 
 			short dwDiffX = (*dwDiff >> 16) & 0xffff;
@@ -532,12 +505,39 @@ void WDummy::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 				case ID_HORIZONTAL_SCROLLBAR:
 				break;
 				case ID_RESIZE_LEFT:
+					WWidgetManager::getInstance()->setCursor(IDC__SIZENESW);
+
 					resizeWidth(dwDiffX);
 					resizeHeight(dwDiffY);
 				break;
 				case ID_RESIZE_RIGHT:
+					WWidgetManager::getInstance()->setCursor(IDC__SIZENWSE);
+
 					resizeWidth(dwDiffX);
 					resizeHeight(dwDiffY);
+				break;
+			}
+		}
+		break;
+		case MOUSE_HOVER:
+		{
+			int code = (wParam>>16)&0xffff;
+			int buttonID = (wParam&0xffff);
+
+			DWORD* dwDiff = (DWORD*)(lParam);
+
+			short dwDiffX = (*dwDiff >> 16) & 0xffff;
+			short dwDiffY = (*dwDiff & 0xffff);
+			switch(buttonID) {
+				case ID_VERTICAL_SCROLLBAR:
+				break;
+				case ID_HORIZONTAL_SCROLLBAR:
+				break;
+				case ID_RESIZE_LEFT:
+					WWidgetManager::getInstance()->setCursor(IDC__SIZENESW);
+				break;
+				case ID_RESIZE_RIGHT:
+					WWidgetManager::getInstance()->setCursor(IDC__SIZENWSE);
 				break;
 			}
 		}
@@ -568,72 +568,72 @@ void WDummy::onMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 
 void WDummy::onResize(int width, int height) {
 	setSize(width, height);
-	onCreate();
+	onCreateEx((LPVOID)m_bHasScrollBars);
 }
 
 LRESULT WDummy::OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	switch(msg) {
-		case WM__GETTEXTLENGTH:
-			{
-				return strlen(m_title.c_str());
-			}
-			break;
-		case WM__GETTEXT:
-			{
-				return sprintf_s((char*)lParam, (size_t)wParam, "%s", m_title.c_str());
-			}
-			break;
-		case WM__SETTEXT:
-			{
-				char* str = (char*)lParam;
-				m_title = str;
-				//sprintf_s(m_pTitle, strlen(str) + 1, "%s", str);
-				return WM__OKAY;
-			}
-			break;
-		case WM__GETRECT:
-			{
-				Rect* listRect = (Rect*)lParam;
-				listRect->X = getLeft();
-				listRect->Y = getTop();
-				listRect->Width = getWidth();
-				listRect->Height = getHeight();
+	case WM__GETTEXTLENGTH:
+		{
+			return strlen(getWindowName());
+		}
+		break;
+	case WM__GETTEXT:
+		{
+			return sprintf_s((char*)lParam, (size_t)wParam, "%s", getWindowName());
+		}
+		break;
+	case WM__SETTEXT:
+		{
+			char* str = (char*)lParam;
+			setWindowName(str);
+			return WM__OKAY;
+		}
+		break;
+	case WM__GETRECT:
+		{
+			Rect* listRect = (Rect*)lParam;
+			listRect->X = getLeft();
+			listRect->Y = getTop();
+			listRect->Width = getWidth();
+			listRect->Height = getHeight();
 
-				return WM__OKAY;
-			}
-			break;
-		case WM__GETPOS:
-			{
-				DWORD* dwPos = (DWORD*)lParam;
-				*dwPos |= (getLeft() & 0xffff);
-				*dwPos |= ((getTop() & 0xffff) << 16);
+			return WM__OKAY;
+		}
+		break;
+	case WM__GETPOS:
+		{
+			DWORD* dwPos = (DWORD*)lParam;
+			*dwPos |= (getLeft() & 0xffff);
+			*dwPos |= ((getTop() & 0xffff) << 16);
 
-				return WM__OKAY;
-			}
-			break;	
-		case WM__SETPOS:
-			{
-				DWORD dwPos = (DWORD)lParam;
-				setPosition((dwPos & 0xffff), ((dwPos >> 16) & 0xffff));
-				return WM__OKAY;
-			}
-			break;
-		case WM__GETSIZE:
-			{
-				DWORD* dwSize = (DWORD*)lParam;
-				*dwSize |= (getWidth() & 0xffff);
-				*dwSize |= ((getHeight() & 0xffff) << 16);
+			return WM__OKAY;
+		}
+		break;	
+	case WM__SETPOS:
+		{
+			DWORD dwPos = (DWORD)lParam;
+			setPosition((dwPos & 0xffff), ((dwPos >> 16) & 0xffff));
+			return WM__OKAY;
+		}
+		break;
+	case WM__GETSIZE:
+		{
+			DWORD* dwSize = (DWORD*)lParam;
+			*dwSize |= (getWidth() & 0xffff);
+			*dwSize |= ((getHeight() & 0xffff) << 16);
 
-				return WM__OKAY;
-			}
-			break;
-		case WM__SETSIZE:
-			{
-				DWORD dwPos = (DWORD)lParam;
-				onResize((dwPos & 0xffff), ((dwPos >> 16) & 0xffff));
-				return WM__OKAY;
-			}
-			break;
+			return WM__OKAY;
+		}
+		break;
+	case WM__SETSIZE:
+		{
+			DWORD dwPos = (DWORD)lParam;
+			onResize((dwPos & 0xffff), ((dwPos >> 16) & 0xffff));
+
+			return WM__OKAY;
+		}
+		break;
 	}
 }
