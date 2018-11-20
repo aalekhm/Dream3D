@@ -154,6 +154,7 @@ void WComponent::setTop(int y) {
 void WComponent::setPosition(int newOffsetX, int newOffsetY) { 
 	m_iOffsetX = newOffsetX;
 	m_iOffsetY = newOffsetY;
+	updateComponentPosition();
 
 	WWidgetManager::onEvent((H_WND)this , WN__MOVE, getComponentID(), 0);
 }

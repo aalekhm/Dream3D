@@ -21,6 +21,9 @@ namespace111
 		}
 	}
 
+	property0 = true
+	property1 = true
+
 	material cube : colored
 	{
 		technique
@@ -138,6 +141,9 @@ namespace111
 		}
 	}
 	
+	gravityProperty = "0.5, -9.8, 0.5"
+	gravityOnMarsProperty = "5.0, -3.711, 5.0"
+
 	scene
 	{
 		path = "res/common/scene.gpb"
@@ -150,7 +156,7 @@ namespace111
 			rotate = "0.0, 1.0, 0.0, 180"
 		}
 		
-		node cube
+		node cube11
 		{
 			material = "res/common/scene.material#cube"
 		}
@@ -186,4 +192,16 @@ namespace111
 			gravityOnMars = "0.0, -3.711, 0.0"
 		}
 	}
+	
+	vertexShader = "res/shaders/textured_.vert"
+	fragmentShader = "res/shaders/textured_.frag"
+	defines = SPECULAR_
+	
+	// uniforms
+	u_worldViewProjectionMatrix = WORLD_VIEW_PROJECTION_MATRIX_
+	u_inverseTransposeWorldViewMatrix = INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX_
+	u_cameraPosition = CAMERA_WORLD_POSITION_
+	u_ambientColor = "0.25, 0.25, 0.25"
+	u_lightColor = "0.755, 0.755, 0.755"
+	u_specularExponent = 105
 }

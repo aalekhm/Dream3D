@@ -81,6 +81,8 @@ bool MaterialReader::namespace_body() {
 
 	if(!GrammerUtils::match('}', MANDATORY))
 		return false;
+
+	m_pCurNamespace->rewind();
 	m_pCurNamespace =m_pCurNamespace ->getParent ();
 	return true;
 

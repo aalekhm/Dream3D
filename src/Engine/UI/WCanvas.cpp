@@ -66,7 +66,7 @@ void WCanvas::onCreateEx(LPVOID lpVoid) {
 	RectF idealRect;
 
 	m_bHasScrollBars = (bool)lpVoid;
-	m_DummyWidget = WWidgetManager::getWidget("DummyWindow");
+	m_DummyWidget = WWidgetManager::getWidget("CanvasWindow");
 	///////////////////////////////////////////////////
 	CHILD* verticalSBChild = m_DummyWidget->getChild("VScroll");
 	wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight();
@@ -213,6 +213,9 @@ void WCanvas::onCreateEx(LPVOID lpVoid) {
 			m_ButtonWResizeRight->setPostRender(true);
 			m_ButtonWResizeRight->setMovable(false);
 			m_ButtonWResizeRight->setAsIntegral(true);
+
+			CHILD* cWnd = m_DummyWidget->getChild("CanvasBorder");
+			addBaseSkinChild(cWnd);
 		}
 		else {
 			m_ButtonWResizeRight->setPosition(hDestRect.X - m_iLeft, hDestRect.Y - m_iTop);
@@ -351,11 +354,20 @@ void WCanvas::onRender() {
 
 		RectF thisWndRect(getLeft(), getTop(), getWidth(), getHeight());
 			
-		CHILD* cWnd = 0;
-		cWnd = m_DummyWidget->getChild("TextArea");
-
-		renderer->renderChild(m_DummyWidget, cWnd, &thisWndRect);
+		//CHILD* cWnd = 0;
+		//cWnd = m_DummyWidget->getChild("TextArea");
+		//renderer->renderChild(m_DummyWidget, cWnd, &thisWndRect);
 		//renderer->renderClientArea(m_DummyWidget, 0, &thisWndRect);
+	}
+}
+
+void WCanvas::postRenderEx() {
+	WWidgetManager* renderer =  WWidgetManager::getInstance();
+	RectF thisWndRect(getLeft(), getTop(), getWidth(), getHeight());
+
+	for(size_t i = 0; i < m_pBaseSkinChilds.size(); i++) {
+		CHILD* pC = m_pBaseSkinChilds[i];
+		renderer->renderChild(m_DummyWidget, pC, &thisWndRect);
 	}
 }
 

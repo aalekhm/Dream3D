@@ -35,6 +35,7 @@ struct WCanvas : public WContainer {
 		virtual void onCreateEx(LPVOID lpVoid);
 		virtual void onUpdate();
 		virtual void onRender();
+		virtual void postRenderEx();
 
 		virtual void onMouseDownEx(int x, int y, int iButton);
 		virtual void onMouseMoveEx(int mCode, int x, int y, int prevx, int prevy);

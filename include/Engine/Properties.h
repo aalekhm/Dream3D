@@ -18,6 +18,7 @@ public:
 class Properties {
 
 	public:
+		static Properties* create(const char* url);
 		Properties (const char* sNamespace, const char* sID, const char* sParentID );
 		void 			addNamespace(Properties* prop);
 		
@@ -27,9 +28,16 @@ class Properties {
 
 		void			print(int iLevel);
 
+		Properties*			getNextNamespace();
+		Properties*			getNamespace(const char* id, bool bSearchNames = false) const;
 		const char*		getNamespace();
+		const char*		getNextProperty(char** value = NULL);
 		const char*		getID();
-		bool			exists(const char* name) const;
+		const char*		getString(const char* name) const;
+
+		bool					exists(const char* name) const;
+		static void			printProperties(Properties* properties);
+		void					rewind();
 
 		~Properties();
 	private:
@@ -42,8 +50,11 @@ class Properties {
 		
 		Properties*								m_pParent;
 
-		std::map<std::string, std::string, strless>		m_mProperies;
-		std::vector<Properties*>						m_vNamespaces;
+		std::map<std::string, std::string>							m_mProperties;
+		std::map<std::string, std::string>::const_iterator	m_mPropertiesItr;
+
+		std::vector<Properties*>							m_vNamespaces;
+		std::vector<Properties*>::const_iterator	m_vNamespacesItr;
 };
 
 #endif

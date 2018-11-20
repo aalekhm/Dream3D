@@ -1089,6 +1089,107 @@ WIDGET GreyTop {
 	}
 }
 
+WIDGET CanvasBorder {
+	
+	size	"21 20"
+
+	////////////////////////////////////////////// Top
+	BaseSkin {
+		posOffset	"0 0 6 6" 
+		skinOffset	"429 120 6 6"
+		align		Left Top
+		Description	""
+	}
+	
+	BaseSkin {
+		posOffset	"6 0 9 6" 
+		skinOffset	"435 120 9 6"
+		align		HStretch Top
+		Description	""
+	}
+	
+	BaseSkin {
+		posOffset	"15 0 6 6" 
+		skinOffset	"444 120 6 6"
+		align		Right Top
+		Description	""
+	}
+		
+	////////////////////////////////////////////// Bottom 
+	BaseSkin {
+		posOffset	"0 6 6 8" 
+		skinOffset	"429 126 6 8"
+		align		Left VStretch
+		Description	""
+	}
+	
+	BaseSkin {
+		posOffset	"15 6 6 8" 
+		skinOffset	"444 126 6 8"
+		align		Right VStretch
+		Description	""
+	}	
+	
+	////////////////////////////////////////////// Bottom 
+	BaseSkin {
+		posOffset	"0 14 6 6" 
+		skinOffset	"429 134 6 6"
+		align		Left Bottom
+		Description	""
+	}
+	
+	BaseSkin {
+		posOffset	"6 14 9 6" 
+		skinOffset	"435 134 9 6"
+		align		HStretch Bottom
+		Description	""
+	}
+	
+	BaseSkin {
+		posOffset	"15 14 6 6" 
+		skinOffset	"444 134 6 6"
+		align		Right Bottom
+		Description	""
+	}
+}
+
+
+WIDGET CanvasWindow {
+
+	size	"29 26"
+
+	Child {
+		skin		CanvasBorder
+		posOffset	"0 0 29 26"
+		align		HStretch VStretch
+	}
+	Child {
+		skin		VScroll
+		posOffset	"10 2 15 5"
+		align		Right VStretch
+	}
+	Child {
+		skin		HScroll
+		posOffset	"2 7 8 15"
+		align		HStretch Bottom
+	}
+	Child {
+		skin		WindowResizeLeft
+		posOffset	"0 17 9 9"
+		align		Left Bottom
+	}
+	Child {
+		skin		WindowResizeRight
+		posOffset	"20 17 9 9" 
+		align		Right Bottom
+	}
+	ClientArea {
+		skin		EditClient
+		posOffset	"2 2 7 4"
+		align		HStretch VStretch
+	}
+}
+
 WIDGET DummyWindow {
 	
 	size	"29 26"

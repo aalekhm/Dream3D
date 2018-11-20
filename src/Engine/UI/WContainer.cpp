@@ -68,15 +68,15 @@ void WContainer::frameUpdate() {
 
 void WContainer::frameRender() {
 	
-	if(!isVisible() || !canUpdateOrRender())
+	if(!isVisible() || !canUpdateOrRender()) {
 		return;
+	}
 
 	RectF reclaimRect;
 	WWidgetManager::GetClipBounds(&reclaimRect);
 
 	// Render the container itself
-	if(WWidgetManager::onEvent((H_WND)this , WN__PAINT, getComponentID(), 0) <= 0) 
-	{
+	if(WWidgetManager::onEvent((H_WND)this , WN__PAINT, getComponentID(), (LPARAM)&reclaimRect) <= 0) 	{
 		onRender();
 	}
 	else {
@@ -87,9 +87,9 @@ void WContainer::frameRender() {
 	bool bRenderChilds = true;
 	if(m_ClientRect.Width > 0) {
 		RectF clipRectForChilds(	getLeft() + m_ClientRect.X,
-									getTop() + m_ClientRect.Y,
-									m_ClientRect.Width,
-									m_ClientRect.Height);
+											getTop() + m_ClientRect.Y,
+											m_ClientRect.Width,
+											m_ClientRect.Height);
 
 		RectF clipRect;
 		if(m_pParent && m_pParent->isContainer()) {
@@ -125,6 +125,8 @@ void WContainer::postRender() {
 		if(m_pChildren[i]->isVisible() && m_pChildren[i]->isPostRender())
 			m_pChildren[i]->frameRender();
 	}
+
+	postRenderEx();
 }
 
 bool WContainer::canUpdateOrRender() {
@@ -189,7 +191,7 @@ void WContainer::onMouseDown(int x, int y, int iButton) {
 	if(m_pActiveComponent) {
 		// Bring the new active component on top (method respects
 		// fixedZOrder flag)
-		bringChildToFront(activeComponent);
+		//bringChildToFront(activeComponent);//TODO Later
 
 		// Activate the new component
 		m_pActiveComponent->onActivate();
@@ -391,6 +393,25 @@ void WContainer::removeComponent(WComponent *pC)
 	for (size_t i = 0; i < m_pChildren.size(); ++i) {
 		if (m_pChildren[i] == pC) {
 			m_pChildren.erase(m_pChildren.begin() + i);
+			return;
+		}
+	}
+}
+
+void WContainer::addBaseSkinChild(CHILD* pC) {
+	if(pC == NULL)
+		return;
+
+	m_pBaseSkinChilds.push_back(pC);
+}
+
+void WContainer::removeBaseSkinChild(CHILD* pC) {
+	if(pC == NULL)
+		return;
+
+	for (size_t i = 0; i < m_pBaseSkinChilds.size(); ++i) {
+		if (m_pBaseSkinChilds[i] == pC) {
+			m_pBaseSkinChilds.erase(m_pBaseSkinChilds.begin() + i);
 			return;
 		}
 	}

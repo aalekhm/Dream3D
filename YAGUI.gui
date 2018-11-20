@@ -1,0 +1,65 @@
+
+WWindow {
+	Caption	"Main Window"
+	Position	0, 0
+	Size			1024, 768
+	ID			1001
+	
+	WStatic {
+		Caption	"Static Text"
+		Position	10, 20
+		Size			50, 20
+		ID			1002
+	}
+	
+	WButton {
+		Caption	"Push Me !!!"
+		Position	10, 35
+		Size			40, 20
+		Widget		"Button"
+		ID			1002
+	}
+	
+	WCheckBox {
+		Caption	"CheckBox Test: "
+		Position	10, 60
+		Size			60, 20
+		ID			1003
+	}
+	
+	WCanvas {
+		Caption	"Canvas !!!"
+		Position	10, 80
+		Size			100, 100
+		ID			1004
+		
+		WButton {
+			Caption	"Push Me !!!"
+			Position	10, 35
+			Size			40, 20
+			Widget		"Button"
+			ID			1005
+		}
+	}
+	
+	WTextField {
+		Caption		"sprintf(m_pText, \"%s%c%s\", leftHalfSubstr, iKey, rightHalfSubstr);"
+		Position		10, 90
+		Size				220, 20
+		ID				1006
+	}
+	
+	WConsoleLog {
+		Caption		"sprintf(m_pText, \"%s%c%s\", leftHalfSubstr, iKey, rightHalfSubstr);"
+		Position		10, 90
+		Size				397, 163
+		ID				1007
+	}
+	
+	WConsoleLog {
+		Caption		"sprintf(m_pText, \"%s%c%s\", leftHalfSubstr, iKey, rightHalfSubstr);"
+		Position		10, 260
+		Size				319, 165
+		ID				1008
+	}
+}

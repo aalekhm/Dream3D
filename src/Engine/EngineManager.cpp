@@ -172,8 +172,23 @@ unsigned int EngineManager::getHeight() {
 	return m_iViewportH;
 }
 
+//double gLastElapsedTimeMillis = -1.0f;
+
 void EngineManager::updateFPS() {
 	++m_iFrameCount;
+
+	//double dCurrTimeMillis = m_pTimer->getElapsedTimeInMilliSec();
+	//unsigned int iLimitFPS = 30;
+	//unsigned int iLimitFPSTimeMillis = 1000/iLimitFPS;
+	//if(gLastElapsedTimeMillis <= 0) {
+	//	gLastElapsedTimeMillis = dCurrTimeMillis;
+	//}
+	//double dFrameTime = dCurrTimeMillis - gLastElapsedTimeMillis;
+	//if(dFrameTime >= 0 && dFrameTime < iLimitFPSTimeMillis ) {
+	//	SleepEx((unsigned long)(iLimitFPSTimeMillis - dFrameTime), true);
+	//}
+	//gLastElapsedTimeMillis = dCurrTimeMillis;
+
 	if( (m_pTimer->getFrameElapsedTime() - m_dLastElapsedFPSTimeMs) >= 1000.0f) {
 		m_iFrameRate = m_iFrameCount;
 		m_iFrameCount = 0;

@@ -1,14 +1,31 @@
 ﻿/*
-███████████████ ▒		███████████████░   	  ███████████████		 ██████████
-	█████   ██████ 		  ███████████████     ████████			    ████	████
-	█████░   █████ 		░  █████  ░ █████     ██				   ████		█████
-	░█████ ░  ██████	 ░ █████████████·░	  ████████			   ████	  ██  ████
-	░█████   ▒██████	   ████████████░░     ██████			  ████	███	  ████
-	░░▒█████   ███████	   █████   █████·░    ██				  ██████	   ████
-	███████████████ 	░ ███████ ░██████     ███████			 ████		   ████
-	███████████████ ▒ 	███████████ ███████   ████████████		████		    ████
+_____________________________________________________________________________________
+________                                 ________ ________   
+\______ \_______   ____ _____    _____   \_____  \\______ \  
+ |    |  \_  __ \_/ __ \\__  \  /     \    _(__  < |    |  \ 
+ |    `   \  | \/\  ___/ / __ \|  Y Y  \  /       \|    `   \
+/_______  /__|    \___  >____  /__|_|  / /______  /_______  /
+        \/            \/     \/      \/         \/        \/ 
+_____________________________________________________________________________________
+/*
+                               (
+                      .-'''-..' \                      _____           _____
+            _______ .'       -   \                 ,ad8PPPP88b,     ,d88PPPP8ba,
+          <<<<<<<< );__   ,,,_)   \               d8P"      "Y8b, ,d8P"      "Y8b
+             <<<<<<<<< ) ;C  /     \             dP'           "8a8"           `Yd
+               <<<<<< (.-'-.  )====_)_=======>   8(              "              )8
+                 <<<<< \    '''''''   )          I8                             8I
+                 ;  <<<     .......__/            Yb,                         ,dP
+            .-'''         (         )              "8a,                     ,a8"
+         .-'              ;.       /                 "8a,                 ,a8"
+        /  .-'     .     =  .     /                    "Yba             adP"
+    _-''\_/         '. .'    .   /                       `Y8a         a8P'
+ .-'  )  ;\          '''.     . /                          `88,     ,88'
+;   .''''  `.       '    ;     (                             "8b   d8"  Normand
+O -'        .'''       .'                                     "8b d8"   Veilleux
+          .'   .-'''''`      (__)))                            `888'
+          'o-'           (  )mikey(__)))                         "
 */
-
 #include "Dream3DTest.h"
 #include "Engine/Model.h"
 #include "Engine/Mesh.h"
@@ -20,7 +37,6 @@
 #include "Engine/TGA.h"
 #include "Engine/MeshObjLoader.h"
 
-#include "Engine/MaterialReader.h"
 #include "Engine/Properties.h"
 
 #include "Engine/UI/WComponentFactory.h"
@@ -100,15 +116,20 @@ L_RESULT CALLBACK UICallback(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						Rect boundsRect;
 						int iRet = SendMessageQ(hWnd, WM__GETRECT, (WPARAM)NULL, (LPARAM)&boundsRect);
+						//RectF reclaimRect = *((RectF*)lParam);
+						//RectF viewportRect;
+						//RectF boundsRectF(boundsRect.X, boundsRect.Y, boundsRect.Width, boundsRect.Height);
+						//viewportRect.Intersect(viewportRect, reclaimRect, boundsRectF);
 
 						//////////////////////////// 3D SCENE
 						Camera* pCamera = gCanvasCameraNode->getCamera();
+						pCamera->setCameraValues(boundsRect.X, boundsRect.Y, boundsRect.Width, boundsRect.Height, 45.0f, 0.01f, 10.0f);
 						pCamera->setType(Camera::PERSPECTIVE);
 						{
 							glClear(GL_DEPTH_BUFFER_BIT);
 							glClearColor(0.1f, 0.1f, 0.1f, 1);
 							glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
-							glDisable(GL_SCISSOR_TEST);
+							
 							
 							pCamera->getNode()->getViewMatrix().getTranspose();
 							drawTriangle(Vector3(0, 0.5f, -1.5f), Vector3(-0.5f, 0, -1.5f), Vector3(0.5f, 0, -1.5f));
@@ -119,7 +140,7 @@ L_RESULT CALLBACK UICallback(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 						pCamera->setType(Camera::ORTHOGRAPHIC);
 						{
 							//FillRect(&boundsRect, 255.0f, 255.0f, 255.0f, 255.0f);
-							DrawRect(&boundsRect, 0.0f, 0.0f, 0.0f, 255.0f);
+							//DrawRect(&boundsRect, 0.0f, 0.0f, 0.0f, 255.0f);
 
 							SetColorQ(255, 0, 0, 255);
 							DrawString("Hi There !!!", boundsRect.X + 10, boundsRect.Y + 10, 0);
@@ -137,15 +158,6 @@ L_RESULT CALLBACK UICallback(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			{
 				int WINDOW_ID = wParam;
 				switch(WINDOW_ID) {
-					case 1103:
-					{
-						Rect boundsRect;
-						int iRet = SendMessageQ(hWnd, WM__GETRECT, (WPARAM)NULL, (LPARAM)&boundsRect);
-
-						Camera* pCamera = gCanvasCameraNode->getCamera();
-						pCamera->setCameraValues(boundsRect.X, boundsRect.Y, boundsRect.Width, boundsRect.Height, 45.0f, 0.01f, 10.0f);
-					}
-					break;
 				}
 			}
 			break;
@@ -153,15 +165,6 @@ L_RESULT CALLBACK UICallback(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			{
 				int WINDOW_ID = wParam;
 				switch(WINDOW_ID) {
-				case 1103:
-					{
-						Rect boundsRect;
-						int iRet = SendMessageQ(hWnd, WM__GETRECT, (WPARAM)NULL, (LPARAM)&boundsRect);
-
-						Camera* pCamera = gCanvasCameraNode->getCamera();
-						pCamera->setCameraValues(boundsRect.X, boundsRect.Y, boundsRect.Width, boundsRect.Height, 45.0f, 0.01f, 10.0f);
-					}
-					break;
 				}
 			}
 			break;
@@ -512,10 +515,35 @@ void Dream3DTest::initialize() {
 	gTexture0 = Texture::create(COLOURFUL_TGA, false);
 	gTexture1 = Texture::create(CORE_UI, false);
 
-	MaterialReader* matReader = new MaterialReader();
-	Properties* prop = matReader->read("data/test.mat");
-	if(prop != NULL)
-		prop->print(0);
+	{
+		Properties* properties = Properties::create("data/test.mat");
+		if(properties != NULL)
+			properties->print(0);
+
+		//Properties* pNS = properties->getNamespace("scene", true);
+		//const char* path = pNS->getString("path");
+		//printf("path ============== %s\n", path);
+		printf("__________________________________________________________________\n");
+
+		Properties::printProperties(properties);
+
+		//Properties* pNS1 = properties->getNamespace("physics", true);
+		//const char* spacename = pNS1->getNamespace();
+		//const char* id = pNS1->getID();
+		//printf("%s {\n", spacename);
+
+		// Print all properties in this namespace.
+		//const char* name = pNS1->getNextProperty();
+		//const char* value = NULL;
+		//while(name != NULL) {
+
+		//	value = pNS1->getString(name);
+		//	printf("\t %s ==== %s\n", name, value);
+
+		//	name = pNS1->getNextProperty();
+		//}
+		//printf("}");
+	}
 
 	//initLights();
 	//////////////////////////////////////////////
@@ -1071,6 +1099,19 @@ void addDummyWindows(H_WND hParent) {
 								hParent, 
 								HMENU(1103), 
 								NULL);
+		{
+			H_WND hBtn = 
+			CreateComponent(	"WButton", 
+										"Simple Button", 
+										0, 
+										10,
+										10, 
+										50, 
+										25,
+										hWnd, 
+										HMENU(1291), 
+										"Button");
+		}
 	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 	hWnd = 
 	CreateComponent(	"WTextField", 

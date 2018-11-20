@@ -18,7 +18,10 @@ struct WContainer : public WComponent {
 		void					removeComponent(WComponent* pC);
 		int					getNumChildren() {	return (int)m_pChildren.size(); }
 		WComponent*		getChild(int pos) { return m_pChildren[pos]; }
-		
+
+		void					addBaseSkinChild(CHILD* pC);
+		void					removeBaseSkinChild(CHILD* pC);
+
 		// overridables
 		virtual		void		onCreateEx(LPVOID lpVoid) { };
 		virtual		void		onMouseDownEx(int x, int y, int iButton) { };
@@ -53,11 +56,14 @@ struct WContainer : public WComponent {
 
 	protected:
 
-		void			bringChildToFront(int id);
-		void			postRender();
+		void				bringChildToFront(int id);
+		void				postRender();
+		virtual void		postRenderEx() { }
 
 		std::vector<WComponent*>	m_pChildren;
 		WComponent*						m_pActiveComponent;
+
+		std::vector<CHILD*>			m_pBaseSkinChilds;
 
 		RectF								m_ClientRect;
 		REAL									m_iClientRectW;
