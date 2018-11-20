@@ -257,7 +257,7 @@ void WCanvas::onCreateEx(LPVOID lpVoid) {
 	}
 }
 
-void WCanvas::onUpdate() {
+void WCanvas::onUpdate(float deltaTimeMs) {
 
 	m_iMaxWidthPixels = m_iMaxHeightPixels = 0;
 	if(m_pChildren.size() > 0) {

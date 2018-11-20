@@ -185,7 +185,7 @@ void WGraph::onCreateEx(LPVOID lpVoid) {
 	m_iMainY = (getHeight() >> 1);
 }
 
-void WGraph::onUpdate() {
+void WGraph::onUpdate(float deltaTimeMs) {
 
 }
 

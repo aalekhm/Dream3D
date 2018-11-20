@@ -463,7 +463,7 @@ void WListBox::getCaretPos(int x, int y) {
 	return;
 }
 
-void WListBox::onUpdate() {
+void WListBox::onUpdate(float deltaTimeMs) {
 
 	updateScrollBarVisibility();
 

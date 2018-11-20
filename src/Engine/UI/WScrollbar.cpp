@@ -313,11 +313,11 @@ void WScrollbar::onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	}
 }
 
-void WScrollbar::frameUpdate() {
-	WContainer::frameUpdate();
+void WScrollbar::frameUpdate(float deltaTimeMs) {
+	WContainer::frameUpdate(deltaTimeMs);
 }
 
-void WScrollbar::onUpdate() {
+void WScrollbar::onUpdate(float deltaTimeMs) {
 
 }
 

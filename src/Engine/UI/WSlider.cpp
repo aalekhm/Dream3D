@@ -80,7 +80,7 @@ void WSlider::onCreateEx(LPVOID lpVoid) {
 	///////////////////////////////////////////
 }
 
-void WSlider::onUpdate() {
+void WSlider::onUpdate(float deltaTimeMs) {
 
 }
 

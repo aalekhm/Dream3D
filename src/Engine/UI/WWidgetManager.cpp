@@ -42,6 +42,7 @@ VertexT2F_C4UB_V3F*			WWidgetManager::m_VB;
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 WWidgetManager::WWidgetManager() {
+	WComponentFactory::Get()->Register("WContainer", &WContainer::Create);
 	WComponentFactory::Get()->Register("WStatic", &WStatic::Create);
 	WComponentFactory::Get()->Register("WButton", &WButton::Create);
 	WComponentFactory::Get()->Register("WCheckbox", &WCheckbox::Create);
@@ -70,10 +71,10 @@ WWidgetManager::WWidgetManager() {
 	CreateComponent(	"WWindow", 
 								"Title", 
 								0, 
-								110,
+								0,
 								0, 
-								1024, 
-								768,
+								800, 
+								600,
 								NULL, 
 								NULL, 
 								(LPVOID)ID_TYPE_WND_CX);
@@ -198,7 +199,7 @@ void WWidgetManager::update(float deltaTimeMs) {
 		///////////////////////////////////////
 
 		///////////////////////////////////////
-		((WContainer*)m_pBaseWindow)->frameUpdate();
+		((WContainer*)m_pBaseWindow)->frameUpdate(deltaTimeMs);
 		((WContainer*)m_pBaseWindow)->frameRender();
 
 		char str[255];
@@ -228,8 +229,7 @@ void WWidgetManager::flush() {
 		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 		glDisableClientState( GL_COLOR_ARRAY );
 
-		glDisable(GL_TEXTURE_2D);
-
+		m_pCurrentTexture->unbind();
 		m_SpriteCount = 0;
 	}
 }

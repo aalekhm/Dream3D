@@ -249,7 +249,7 @@ void WFrame::onCreateEx(LPVOID lpVoid) {
 	///////////////////////////////////////////
 }
 
-void WFrame::onUpdate() {
+void WFrame::onUpdate(float deltaTimeMs) {
 
 	m_iMaxWidthPixels = m_iMaxHeightPixels = 0;
 	if(m_pChildren.size() > 0) {

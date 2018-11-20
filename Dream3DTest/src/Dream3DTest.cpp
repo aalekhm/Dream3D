@@ -1183,7 +1183,7 @@ void Dream3DTest::render3D(float deltaTimeMs) {
 	meshBatch->add(&_meshBatchVertices[0], (unsigned int)_meshBatchVertices.size(), _indices, _indicesCount);
 	meshBatch->stop();
 	meshBatch->render();
-	*/
+	//*/
 	////////////////////////////////////////////////////////////////
 }
 
@@ -1667,7 +1667,7 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 										HMENU(1101), 
 										"Button");
 				((WButton*)hWnd)->setComponentAsChild(true);
-
+				H_WND hButton = hWnd;
 			iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 			hWnd = 
 			CreateComponentEx(	"WCheckbox", 
@@ -1680,7 +1680,7 @@ The MBR can only represent four partitions. A technique called \"extended\" part
 										hWnd0, 
 										HMENU(1190), 
 										NULL);
-
+			((WComponent*)hWnd)->setAlignmentParent((WComponent*)hButton);
 			iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 5;
 				hWnd = 
 				CreateComponentEx(	"WTextField", 
@@ -2687,8 +2687,8 @@ void addDummyWindows_(H_WND hParent) {
 									WM_ANCHOR_TOPLEFT,
 									iXPos,
 									40, 
-									500, 
-									500,
+									250, 
+									250,
 									hParent, 
 									HMENU(1234), 
 									&GraphScale(1.0f, 1.0f));
@@ -2699,41 +2699,68 @@ void addDummyWindows_(H_WND hParent) {
 			pGraph->addDot(1.1f, 1.2f);
 	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 10;
 
+	iXPos += ((WComponent*)hWnd)->getOffsetX() + ((WComponent*)hWnd)->getWidth() + 10;
 	hWnd = 
+	CreateComponentEx(	"WCanvas", 
+								"WCanvas window", 
+								WM_ANCHOR_TOPLEFT, 
+								iXPos,
+								iYPos, 
+								250, 
+								250,
+								hParent, 
+								HMENU(1103), 
+								NULL);
+
+
+	H_WND hContainer = 
+	CreateComponentEx(	"WContainer",
+								"Simple Container", 
+								WM_ANCHOR_TOPLEFT, 
+								iXPos,
+								100, 
+								100, 
+								100,
+								hParent, 
+								HMENU(1243), 
+								NULL);
+
+	H_WND hButton = 
 	CreateComponentEx(	"WButton",
 								"Simple Button", 
-								WM_ANCHOR_BOTTOMRIGHT, 
-								iXPos + (((WComponent*)hWnd)->getWidth() >> 1),
-								iYPos, 
+								WM_ANCHOR_TOPLEFT, 
+								iXPos,
+								20, 
 								189, 
 								25,
-								hParent, 
+								hContainer,//hParent, 
 								HMENU(121), 
 								"Button");
 
+	iYPos = ((WComponent*)hButton)->getOffsetY() + ((WComponent*)hButton)->getHeight() + 10;
 	hWnd = 
 	CreateComponentEx(	"WTextField", 
 								"**sprintf(m_pText, \"%s%c%s\", leftHalfSubstr, iKey, rightHalfSubstr); g->SetClip(RectF(m_pParent->getLeft(), m_pParent->getTop(), m_pParent->getWidth(), m_pParent->getHeight()));", 
 								WM_ANCHOR_TOPLEFT, 
-								iXPos + (((WComponent*)hWnd)->getWidth() + 10),
+								iXPos,
 								iYPos, 
 								220, 
 								23,
-								hParent, 
+								hContainer,//hParent, 
 								NULL, 
 								NULL);
-
+	((WComponent*)hWnd)->setAlignmentParent((WComponent*)hButton);
 	iYPos = ((WComponent*)hWnd)->getOffsetY() + ((WComponent*)hWnd)->getHeight() + 10;
-	hWnd = 
-	CreateComponentEx(	"WWindow", 
-								"Title", 
-								WM_ANCHOR_TOPCENTER, 
-								iXPos,
-								iYPos, 
-								500, 
-								650,
-								hParent, 
-								HMENU(1212), 
-								(LPVOID)ID_TYPE_WND_C);
+	//hWnd = 
+	//CreateComponentEx(	"WWindow", 
+	//							"Title", 
+	//							WM_ANCHOR_TOPCENTER, 
+	//							iXPos,
+	//							iYPos, 
+	//							500, 
+	//							650,
+	//							hParent, 
+	//							HMENU(1212), 
+	//							(LPVOID)ID_TYPE_WND_C);
 }
 #endif

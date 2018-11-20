@@ -63,7 +63,7 @@ void WButton::onCreateEx(LPVOID lpVoid) {
 	sprintf(m_pButtonStateNameDisabled, "%s_Disabled", (const char*)lpVoid);
 }
 
-void WButton::onUpdate() {
+void WButton::onUpdate(float deltaTimeMs) {
 
 }
 

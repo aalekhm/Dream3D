@@ -13,6 +13,7 @@ struct WContainer : public WComponent {
 		virtual ~WContainer();
 
 		virtual	H_WND	Create(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam, bool bIsContainer = false, bool bIsChild = false);
+		static H_WND __stdcall Create(const char* lpClassName, const char* lpWindowName, DWORD dwStyle, int x, int y, int width, int height, H_WND hwndParent, HMENU hMenu, LPVOID lpParam);
 
 		void					addComponent(WComponent* pC);
 		void					removeComponent(WComponent* pC);
@@ -22,7 +23,9 @@ struct WContainer : public WComponent {
 		void					addBaseSkinChild(CHILD* pC);
 		void					removeBaseSkinChild(CHILD* pC);
 
-		virtual		void		frameUpdate();
+		void					onUpdate(float deltaTimeMs);
+
+		virtual		void		frameUpdate(float deltaTimeMs);
 		virtual		void		frameRender();
 		bool						canUpdateOrRender();
 

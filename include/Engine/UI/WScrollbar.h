@@ -34,7 +34,7 @@ struct WScrollbar : public WContainer {
 		void			hasBG(bool bBG) { m_bDrawBG = bBG; }
 	protected:
 		virtual void	onCreateEx(LPVOID lpVoid);
-		virtual void	frameUpdate();
+		virtual void	frameUpdate(float deltaTimeMs);
 		virtual void	frameRender();
 
 		virtual void	onMouseDownEx(int x, int y, int iButton);
@@ -49,7 +49,7 @@ struct WScrollbar : public WContainer {
 		virtual void	onKeyBUpEx(unsigned int iVirtualKeycode, unsigned short ch);
 		virtual void	onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 		
-		void			onUpdate();
+		void			onUpdate(float deltaTimeMs);
 		void			onRender();
 
 		void			moveCursorBy(int pixels);

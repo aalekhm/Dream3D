@@ -143,7 +143,7 @@ void WInspectorTab::onCreateEx(LPVOID lpVoid) {
 	///////////////////////////////////////////
 }
 
-void WInspectorTab::onUpdate() {
+void WInspectorTab::onUpdate(float deltaTimeMs) {
 
 	m_iMaxWidthPixels = m_iMaxHeightPixels = 0;
 	for(int i = 0; i < m_pChildren.size(); i++) {
@@ -165,14 +165,11 @@ void WInspectorTab::onUpdate() {
 		{
 			m_ButtonExpand->setVisible(false);
 			m_ButtonCollapse->setVisible(true);
-
-			m_iRate = 1;
 		}
 		break;
 		case STATE_INSPECTOR_CLOSING:
 		{
-			m_iRate += 1;
-			if(m_iRate > 2) m_iRate = 2;
+			m_iRate = deltaTimeMs;
 
 			setHeight(getHeight() - m_iRate);
 			m_ClientRect.Height = getHeight() - INSPECTOR_TITLEBAR_HEIGHT - INSPECTOR_BOTTOM_DECORATION;
@@ -191,14 +188,11 @@ void WInspectorTab::onUpdate() {
 		{
 			m_ButtonExpand->setVisible(true);
 			m_ButtonCollapse->setVisible(false);
-
-			m_iRate = 1;
 		}
 		break;
 		case STATE_INSPECTOR_OPENING:
 		{
-			m_iRate += 1;
-			if(m_iRate > 2) m_iRate = 2;
+			m_iRate = deltaTimeMs;
 
 			setHeight(getHeight() + m_iRate);
 			m_ClientRect.Height = getHeight() - INSPECTOR_TITLEBAR_HEIGHT - INSPECTOR_BOTTOM_DECORATION;

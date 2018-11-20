@@ -20,7 +20,7 @@ struct WSprite : public WContainer {
 		char*			m_pSpriteWidget;
 
 		virtual void		onCreateEx(LPVOID lpVoid);
-		virtual void		onUpdate();
+		virtual void		onUpdate(float deltaTimeMs);
 		virtual void		onRender();
 
 		virtual void		onMouseDownEx(int x, int y, int iButton);

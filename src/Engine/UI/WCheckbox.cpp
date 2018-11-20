@@ -84,7 +84,7 @@ void WCheckbox::activate() {
 	m_State = NORMAL;
 }
 
-void WCheckbox::onUpdate() {
+void WCheckbox::onUpdate(float deltaTimeMs) {
 
 }
 

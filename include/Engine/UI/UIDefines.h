@@ -345,6 +345,14 @@ public:
         Y += dy;
     }
 
+	void Set(REAL xX, REAL yY, REAL wWidth, REAL hHeight)
+	{
+		X = xX;
+		Y = yY;
+		Width = wWidth;
+		Height = Height;
+
+	}
 public:
 
     REAL X;
@@ -842,4 +850,95 @@ struct ColorUV
 
 #define					IDC_CB_FONT	100
 
+//////////////////////////////////////////////////////////////////
+#define ADD_VERTICAL_SCROLL(__widget__) \
+{ \
+	RectF wndRect; \
+	RectF vDestRect; \
+	RectF idealRect; \
+	RectF hDestRect; \
+	\
+	CHILD* verticalSBChild = __widget__->getChild("VScroll"); \
+	wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight(); \
+	idealRect.X = verticalSBChild->posOffsets.x; \
+	idealRect.Y = verticalSBChild->posOffsets.y; \
+	idealRect.Width = verticalSBChild->posOffsets.w;  \
+	idealRect.Height = verticalSBChild->posOffsets.h; \
+	WWidgetManager::getDestinationRect(	vDestRect, \
+															__widget__->widgetSize.width, \
+															__widget__->widgetSize.height, \
+															&wndRect, \
+															&idealRect, \
+															verticalSBChild->align.eHAlign, \
+															verticalSBChild->align.eVAlign \
+														); \
+	if(m_sbVertical == NULL) { \
+		hWnd =  \
+				CreateComponent(	"WScrollbar",  \
+				"",  \
+				0,  \
+				vDestRect.X - m_iLeft,  \
+				vDestRect.Y - m_iTop, \
+				vDestRect.Width,  \
+				vDestRect.Height, \
+				this,  \
+				HMENU(ID_VERTICAL_SCROLLBAR),  \
+				(LPVOID)1); \
+		m_sbVertical = (WScrollbar*)hWnd; \
+		m_sbVertical->hasBG(true); \
+		m_sbVertical->setPostRender(true); \
+	} \
+	else { \
+		m_sbVertical->setPosition(vDestRect.X - m_iLeft, vDestRect.Y - m_iTop); \
+		m_sbVertical->setSize(vDestRect.Width, vDestRect.Height); \
+	} \
+	m_iMaxVScrollbarHeight = vDestRect.Height; \
+} \
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+#define ADD_HORIZONTAL_SCROLL(__widget__) \
+{ \
+	RectF wndRect; \
+	RectF vDestRect; \
+	RectF idealRect; \
+	RectF hDestRect; \
+	\
+	CHILD* horizontalSBChild = __widget__->getChild("HScroll"); \
+	wndRect.X = m_iLeft; wndRect.Y = m_iTop; wndRect.Width = getWidth(); wndRect.Height = getHeight(); \
+	idealRect.X = horizontalSBChild->posOffsets.x; \
+	idealRect.Y = horizontalSBChild->posOffsets.y; \
+	idealRect.Width = horizontalSBChild->posOffsets.w;  \
+	idealRect.Height = horizontalSBChild->posOffsets.h; \
+	WWidgetManager::getDestinationRect(	hDestRect, \
+															__widget__->widgetSize.width, \
+															__widget__->widgetSize.height, \
+															&wndRect, \
+															&idealRect, \
+															horizontalSBChild->align.eHAlign, \
+															horizontalSBChild->align.eVAlign \
+														); \
+	if(m_sbHorizontal == NULL) { \
+		hWnd =  \
+			CreateComponent(	"WScrollbar",  \
+										"",  \
+										0,  \
+										hDestRect.X - m_iLeft,  \
+										hDestRect.Y - m_iTop, \
+										hDestRect.Width,  \
+										hDestRect.Height, \
+										this,  \
+										HMENU(ID_HORIZONTAL_SCROLLBAR),  \
+										(LPVOID)0); \
+		m_sbHorizontal = (WScrollbar*)hWnd; \
+		m_sbHorizontal->hasBG(true); \
+		m_sbHorizontal->setPostRender(true); \
+	} \
+	else { \
+		m_sbHorizontal->setPosition(hDestRect.X - m_iLeft, hDestRect.Y - m_iTop); \
+		m_sbHorizontal->setSize(hDestRect.Width, hDestRect.Height); \
+	} \
+	\
+	m_iMaxHScrollbarWidth = hDestRect.Width; \
+} \
+//////////////////////////////////////////////////////////////////
 #endif

@@ -282,7 +282,7 @@ void WTree::setPositionInTree() {
 	}
 }
 
-void WTree::onUpdate() {
+void WTree::onUpdate(float deltaTimeMs) {
 
 	if(!m_IsVScrolling)
 		updateVBarPosition();

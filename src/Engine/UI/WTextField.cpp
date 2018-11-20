@@ -238,7 +238,7 @@ void WTextField::getCaretPos(int x, int y) {
 	return;
 }
 
-void WTextField::onUpdate() {
+void WTextField::onUpdate(float deltaTimeMs) {
 
 	m_minX = getLeft() + TB_LEFT_GUTTER;
 	m_minY = getTop() + TB_TOP_GUTTER;

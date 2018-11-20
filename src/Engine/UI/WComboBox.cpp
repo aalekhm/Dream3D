@@ -160,7 +160,7 @@ void WComboBox::onCreateEx(LPVOID lpVoid) {
 	m_cbListBox->setVisible(false);
 }
 
-void WComboBox::onUpdate() {
+void WComboBox::onUpdate(float deltaTimeMs) {
 
 	if(!isActive()) {
 		if(m_cbListBox->isVisible())

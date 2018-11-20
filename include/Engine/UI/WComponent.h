@@ -109,20 +109,25 @@ struct WComponent {
 		void		releaseKeyBFocus();
 
 		WComponent*		getParent()	{ return m_pParent; }
-		void		setParent(WComponent* pParent)	{ m_pParent = pParent; }
+		void					setParent(WComponent* pParent)	{ m_pParent = pParent; }
+
+		WComponent*		getAlignmentParent()	{ return m_pAlignmentParent; }
+		void					setAlignmentParent(WComponent* pAlignmentParent)	{ m_pAlignmentParent = pAlignmentParent; }
+		bool					hasAlignmentParent() { return (m_pAlignmentParent != NULL); }
+
 		void		setAlwaysOnTop(bool bOnTop)		{ m_bAlwaysOnTop = bOnTop; }
 		void		setVisible(bool bVisible)		{ m_bVisible = bVisible; }
 
 		void		setComponentID(int id) { m_iComponentID = id; }
 		int		getComponentID() { return m_iComponentID; }
 
-		virtual void	frameUpdate();
+		virtual void	frameUpdate(float deltaTimeMs);
 		virtual void	frameRender();
 
 		// event handlers. Override these methods to define how your
 		// component behaves
 		virtual void		updateScroll() {};
-		virtual void		onUpdate() {};
+		virtual void		onUpdate(float deltaTimeMs) {};
 		virtual void		onRender();
 		virtual void		postRenderEx() { }
 		virtual void		postRenderInternal();
@@ -170,6 +175,7 @@ struct WComponent {
 		int			m_iMainX, m_iMainY;
 	protected:
 		WComponent*	m_pParent;
+		WComponent*	m_pAlignmentParent;
 		char*			m_pClassName;
 		char*			m_pWindowName;
 		

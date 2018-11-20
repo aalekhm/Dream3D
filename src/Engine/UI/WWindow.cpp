@@ -341,7 +341,7 @@ void WWindow::onCreateEx(LPVOID lpVoid) {
 	///////////////////////////////////////////
 }
 
-void WWindow::onUpdate() {
+void WWindow::onUpdate(float deltaTimeMs) {
 
 	m_iMaxWidthPixels = m_iMaxHeightPixels = 0;
 	if(m_pChildren.size() > 0) {

@@ -199,7 +199,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);USE_YAGUI</PreprocessorDefinitions>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>opengl32.lib;freetype245.lib;CCString.lib;RandomAccessFile.lib;StringTokenizer.lib;%(AdditionalDependencies)</AdditionalDependencies>

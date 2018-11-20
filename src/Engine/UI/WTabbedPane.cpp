@@ -162,7 +162,7 @@ void WTabbedPane::onCreateEx(LPVOID lpVoid) {
 	setSelectedTab(0);
 }
 
-void WTabbedPane::onUpdate() {
+void WTabbedPane::onUpdate(float deltaTimeMs) {
 
 }
 

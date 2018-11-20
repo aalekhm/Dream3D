@@ -434,7 +434,7 @@ void WTextBox::getCaretPos(int x, int y) {
 	return;
 }
 
-void WTextBox::onUpdate() {
+void WTextBox::onUpdate(float deltaTimeMs) {
 
 	setVScrollbarLength();
 	setHScrollbarLength();

@@ -45,7 +45,7 @@ void WStatic::onCreateEx(LPVOID lpVoid) {
 	m_State = NORMAL;
 }
 
-void WStatic::onUpdate() {
+void WStatic::onUpdate(float deltaTimeMs) {
 
 }
 

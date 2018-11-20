@@ -45,7 +45,7 @@ void WSprite::onCreateEx(LPVOID lpVoid) {
 	sprintf(m_pSpriteWidget, "%s", (const char*)lpVoid);
 }
 
-void WSprite::onUpdate() {
+void WSprite::onUpdate(float deltaTimeMs) {
 
 }
 

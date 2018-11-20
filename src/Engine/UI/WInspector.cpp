@@ -210,7 +210,7 @@ void WInspector::onCreateEx(LPVOID lpVoid) {
 	///////////////////////////////////////////
 }
 
-void WInspector::onUpdate() {
+void WInspector::onUpdate(float deltaTimeMs) {
 	if(!m_bHasScrollBars)
 		return;
 

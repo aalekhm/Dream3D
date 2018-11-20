@@ -17,7 +17,7 @@ struct WSlider : public WContainer {
 		LRESULT		OnSendMessage(UINT msg, WPARAM wParam, LPARAM lParam);
 
 		virtual void onCreateEx(LPVOID lpVoid);
-		virtual void onUpdate();
+		virtual void onUpdate(float deltaTimeMs);
 		virtual void onRender();
 
 		virtual void onMouseEnterEx(int mCode, int x, int y, int prevX, int prevY);

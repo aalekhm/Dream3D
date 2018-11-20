@@ -452,7 +452,7 @@ void WConsoleLog::getCaretPos(int x, int y) {
 	return;
 }
 
-void WConsoleLog::onUpdate() {
+void WConsoleLog::onUpdate(float deltaTimeMs) {
 
 	setVScrollbarLength();
 	setHScrollbarLength();

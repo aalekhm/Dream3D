@@ -174,7 +174,7 @@ void WTable::onCreateEx(LPVOID lpVoid) {
 	///////////////////////////////////////////
 }
 
-void WTable::onUpdate() {
+void WTable::onUpdate(float deltaTimeMs) {
 
 	if(!m_IsVScrolling)
 		updateVBarPosition();

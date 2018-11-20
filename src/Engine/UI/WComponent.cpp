@@ -18,7 +18,7 @@ WComponent::WComponent()	: m_iLeft(0)
 											, m_iMainY(0)
 
 											, m_pParent(NULL)
-		
+											, m_pAlignmentParent(NULL)
 											, m_bAlwaysOnTop(false)
 											, m_bVisible(true)
 											, m_bHasMouseFocus(false)
@@ -159,36 +159,38 @@ void WComponent::updateComponentPosition() {
 	u32 _width = getWidth();
 	u32 _height = getHeight();
 
-	if(m_pParent) {
-		s32 _parentX = m_pParent->getLeft();
-		s32 _parentY = m_pParent->getTop();
-		s32 _parentW = m_pParent->getWidth();
-		s32 _parentH = m_pParent->getHeight();
+	WComponent* pParent = (m_pAlignmentParent == NULL) ? m_pParent : m_pAlignmentParent;
+
+	if(pParent) {
+		s32 _parentX = pParent->getLeft();
+		s32 _parentY = pParent->getTop();
+		s32 _parentW = pParent->getWidth();
+		s32 _parentH = pParent->getHeight();
 
 		/////////////////////////////////////
 		{
 			if(m_iAlignWRTParent & WM_ALIGN_WRT_PARENT_LEFT) {
-				_parentX = m_pParent->getLeft();
+				_parentX = pParent->getLeft();
 			}
 			else
 			if(m_iAlignWRTParent & WM_ALIGN_WRT_PARENT_CENTERX) {
-				_parentX = m_pParent->getLeft() + (_parentW >> 1);
+				_parentX = pParent->getLeft() + (_parentW >> 1);
 			}
 			else
 			if(m_iAlignWRTParent & WM_ALIGN_WRT_PARENT_RIGHT) {
-				_parentX = m_pParent->getLeft() + _parentW;
+				_parentX = pParent->getLeft() + _parentW;
 			}
 
 			if(m_iAlignWRTParent & WM_ALIGN_WRT_PARENT_TOP) {
-				_parentY = m_pParent->getTop();
+				_parentY = pParent->getTop();
 			}
 			else
 			if(m_iAlignWRTParent & WM_ALIGN_WRT_PARENT_CENTERY) {
-				_parentY = m_pParent->getTop() + (_parentH >> 1);
+				_parentY = pParent->getTop() + (_parentH >> 1);
 			}
 			else
 			if(m_iAlignWRTParent & WM_ALIGN_WRT_PARENT_BOTTOM) {
-				_parentY = m_pParent->getTop() + _parentH;
+				_parentY = pParent->getTop() + _parentH;
 			}
 		}
 		
@@ -225,8 +227,8 @@ void WComponent::updateComponentPosition() {
 		}
 
 		if(isComponentAChild()) {
-			m_iLeft += (isMovable() ? m_pParent->m_iMainX : 0);
-			m_iTop += (isMovable() ? m_pParent->m_iMainY : 0);
+			m_iLeft += (isMovable() ? pParent->m_iMainX : 0);
+			m_iTop += (isMovable() ? pParent->m_iMainY : 0);
 		}
 	}
 
@@ -443,7 +445,7 @@ void WComponent::postRenderInternal() {
 		}
 
 		if(m_StaticRenderAlignment.m_pMe != NULL) {
-			WComponent* pParent = m_StaticRenderAlignment.m_pMe->getParent();
+			WComponent* pParent = hasAlignmentParent() ? pParent = m_StaticRenderAlignment.m_pMe->getAlignmentParent() : m_StaticRenderAlignment.m_pMe->getParent();
 			WORD			_iAlignWRTParent = m_StaticRenderAlignment.m_pMe->m_iAlignWRTParent;
 			if(m_StaticRenderAlignment.m_pMe->getParent() == this) {
 				thisWndPos.Y = getTop();
@@ -705,7 +707,7 @@ void WComponent::onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch) {
 #ifdef HAS_CUSTOM_FEATURES
 	if(isActive()) {
 		if(m_bIsCustom) {
-			if(GetAsyncKeyState(VK_CONTROL) && GetAsyncKeyState(VK_LWIN) && GetAsyncKeyState('P')) {
+			if(GetAsyncKeyState(VK_CONTROL) && GetAsyncKeyState(VK_LWIN) && GetAsyncKeyState('O')) {
 				m_eCustomState = CUSTOM_STATE_ALIGN_TO_PARENT;
 			}
 			else
@@ -769,7 +771,7 @@ void WComponent::frameRender() {
 	postRenderInternal();
 }
 
-void WComponent::frameUpdate() {
+void WComponent::frameUpdate(float deltaTimeMs) {
 	
 	if(!isVisible())
 		return;
@@ -777,7 +779,7 @@ void WComponent::frameUpdate() {
 	updateComponentPosition();
 
 	// Update the component
-	onUpdate();
+	onUpdate(deltaTimeMs);
 }
 
 #ifdef HAS_CUSTOM_FEATURES

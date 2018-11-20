@@ -37,6 +37,35 @@ H_WND WContainer::Create(		const char* lpClassName,
 	return this;
 }
 
+H_WND WContainer::Create(		const char* lpClassName, 
+											const char* lpWindowName, 
+											DWORD dwStyle, 
+											int x, 
+											int y, 
+											int width, 
+											int height, 
+											H_WND hwndParent, 
+											HMENU hMenu, 
+											LPVOID lpVoid
+) {
+	WContainer* pWContainer = new WContainer();
+
+	((WContainer*)pWContainer)->Create(	lpClassName, 
+															lpWindowName, 
+															dwStyle, 
+															x, 
+															y, 
+															width, 
+															height, 
+															hwndParent, 
+															hMenu, 
+															lpVoid,
+															true, 
+															true);
+
+	return pWContainer;
+}
+
 WContainer::~WContainer() {
 	
 	std::vector<WComponent*>::iterator itrBegin = m_pChildren.begin();
@@ -51,7 +80,7 @@ WContainer::~WContainer() {
 	}
 }
 
-void WContainer::frameUpdate() {
+void WContainer::frameUpdate(float deltaTimeMs) {
 
 	if(!isVisible())
 		return;
@@ -59,11 +88,42 @@ void WContainer::frameUpdate() {
 	updateComponentPosition();
 
 	// Update the container itself
-	onUpdate();
+	onUpdate(deltaTimeMs);
 
 	//update the childrens too
 	for(size_t i = 0; i < m_pChildren.size(); i++) {
-		m_pChildren[i]->frameUpdate();
+		m_pChildren[i]->frameUpdate(deltaTimeMs);
+	}
+}
+
+void WContainer::onUpdate(float deltaTimeMs) {
+	int iMaxWidthPixels = 0, iMaxHeightPixels = 0;
+	if(m_pChildren.size() > 0) {
+		for(int i = 0; i < m_pChildren.size(); i++) {
+			WComponent* comp = (WComponent*)m_pChildren[i];
+			if(comp->isComponentAChild() && !comp->isIntegral()) {
+				
+				bool bHasAlignmentParent = comp->hasAlignmentParent();
+
+				int iOffsetX = comp->getOffsetX();
+				int iAlignmentOffsetX =  bHasAlignmentParent ? comp->getAlignmentParent()->getOffsetX() : 0;
+				iOffsetX += iAlignmentOffsetX;
+				int iRight = iOffsetX + comp->getWidth();
+				if(iRight > iMaxWidthPixels)
+					iMaxWidthPixels = iRight;
+
+
+				int iOffsetY = comp->getOffsetY();
+				int iAlignmentOffsetY = bHasAlignmentParent ? comp->getAlignmentParent()->getOffsetY() : 0;
+				iOffsetY += iAlignmentOffsetY;
+				int iBottom = iOffsetY + comp->getHeight();
+				if(iBottom > iMaxHeightPixels)
+					iMaxHeightPixels = iBottom;
+			}
+		}
+
+		setWidth(iMaxWidthPixels);
+		setHeight(iMaxHeightPixels);
 	}
 }
 
