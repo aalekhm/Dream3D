@@ -28,8 +28,12 @@ Camera::Camera(int x, int y, int w, int h, float iFieldOfView, float fNearPlane,
 
 		m_CameraPosition(),
 		m_CameraAngle(),
+		
+		m_MatrixView(),
 		m_MatrixProjection(),
-		m_MatrixViewProjection()
+		m_MatrixViewProjection(),
+
+		m_pNode(NULL)
 {
 	
 }
@@ -48,8 +52,12 @@ Camera::Camera(int x, int y, int w, int h, float fNearPlane, float fFarPlane)
 
 		m_CameraPosition(),
 		m_CameraAngle(),
+
+		m_MatrixView(),
 		m_MatrixProjection(),
-		m_MatrixViewProjection()
+		m_MatrixViewProjection(),
+
+		m_pNode(NULL)
 {
 	m_iViewX = x;
 	m_iViewY = y;
@@ -60,8 +68,7 @@ Camera::Camera(int x, int y, int w, int h, float fNearPlane, float fFarPlane)
 	m_fFarPlane = fFarPlane;
 }
 
-Camera::~Camera() 
-{
+Camera::~Camera() {
 
 }
 
@@ -81,7 +88,7 @@ Camera* Camera::createOrthographic(int x, int y, int w, int h, float fNearPlane,
 
 void Camera::setType(Camera::Type camType) {
 	m_iCameraType = camType;
-	m_iDirty |= CAMERA_DIRTY_PROJ;
+	setDirty(CAMERA_DIRTY_PROJ);
 
 	if(m_iDirty & CAMERA_DIRTY_PROJ) {
 		if(m_iCameraType == PERSPECTIVE) {
@@ -124,20 +131,19 @@ Matrix4& Camera::getViewProjectionMatrix() {
 Matrix4& Camera::getViewMatrix() {
 	if (m_iDirty & CAMERA_DIRTY_VIEW)
 	{
-		//if (_node)
+		if (m_pNode)
 		{
 			// The view matrix is the inverse of our transform matrix.
-			//_node->getWorldMatrix().invert(&_view);
+			m_MatrixView = m_pNode->getWorldMatrix();//.invert(&m_MatrixView);
 		}
-		//else
-		{
-			setIdentity();
+		else {
+			m_MatrixView.setIdentity();
 		}
 
 		m_iDirty &= ~CAMERA_DIRTY_VIEW;
 	}
 
-	return getMatrix();
+	return m_MatrixView;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -176,7 +182,7 @@ void Camera::setFrustum(float fovY, float aspectRatio, float front, float back) 
 // Note: this is for row-major notation. OpenGL needs transpose it
 ///////////////////////////////////////////////////////////////////////////////
 void Camera::setPerspectiveFrustum(float l, float r, float b, float t, float n, float f) {
-	m_MatrixProjection.identity();
+	m_MatrixProjection.setIdentity();
 	m_MatrixProjection[0]  =  2 * n / (r - l);
 	m_MatrixProjection[2]  =  (r + l) / (r - l);
 	m_MatrixProjection[5]  =  2 * n / (t - b);
@@ -203,7 +209,7 @@ void Camera::setOrthographic(int x, int y, int w, int h, float iNearPlane, float
 // Note: this is for row-major notation. OpenGL needs transpose it
 ///////////////////////////////////////////////////////////////////////////////
 void Camera::setOrthogonalFrustum(float l, float r, float b, float t, float n, float f) {
-	m_MatrixProjection.identity();
+	m_MatrixProjection.setIdentity();
 	m_MatrixProjection[0]  =  2 / (r - l);
 	m_MatrixProjection[3]  =  -(r + l) / (r - l);
 	m_MatrixProjection[5]  =  2 / (t - b);
@@ -256,12 +262,12 @@ void Camera::setCamera(float posX, float posY, float posZ, float targetX, float 
 	position[3] = 1.0f;
 
 	// copy axis vectors to matrix
-	setIdentity();
-	setAxisX(Vector3(left[0], left[1], left[2]));
-	setAxisY(Vector3(up[0], up[1], up[2]));
-	setAxisZ(Vector3(forward[0], forward[1], forward[2]));
-	setPosition(Vector3(position[0], position[1], position[2]));
-	
+	m_pNode->setIdentity();
+	m_pNode->setAxisX(Vector3(left[0], left[1], left[2]));
+	m_pNode->setAxisY(Vector3(up[0], up[1], up[2]));
+	m_pNode->setAxisZ(Vector3(forward[0], forward[1], forward[2]));
+	m_pNode->setPosition(Vector3(position[0], position[1], position[2]));
+	setDirty(CAMERA_DIRTY_VIEW);
 }
 
 void Camera::handleMouse(float deltaTimeMs) {
@@ -282,67 +288,82 @@ void Camera::handleMouse(float deltaTimeMs) {
 	float deltaY = (mousePos.y - screenCenterY)/5.0f;
 
 	bool yesRotateX = false;
-	if(deltaY <= 0) {
-		if(getRotateX() < 80) {
+	bool yesRotateY = (deltaX != 0);
+	if(deltaY < 0) {
+		if(m_pNode->getRotateX() < 80) {
 			yesRotateX = true;
 		}
 	}
 	else 
 	if(deltaY > 0) {
-		if(getRotateX() > -80) {
+		if(m_pNode->getRotateX() > -80) {
 			yesRotateX = true;
 		}
 	}
 
 	if(yesRotateX) {
-		rotateX(-deltaY);
+		m_pNode->rotateX(-deltaY);
+		setDirty(CAMERA_DIRTY_VIEW);
 	}
 
-	rotateY(-deltaX);
+	if(yesRotateY) {
+		m_pNode->rotateY(-deltaX);
+		setDirty(CAMERA_DIRTY_VIEW);
+	}
 }
 
 void Camera::handleKeyboard(float deltaTimeMs) {
 	if(EngineManager::isKeyPressed('Q') || EngineManager::isKeyPressed(VK_LEFT)) {
-		rotateY(ROTATE_SPEED * deltaTimeMs);
+		m_pNode->rotateY(ROTATE_SPEED * deltaTimeMs);
+		setDirty(CAMERA_DIRTY_VIEW);
 	}
 	else
 	if(EngineManager::isKeyPressed('E') || EngineManager::isKeyPressed(VK_RIGHT)) {
-		rotateY(-ROTATE_SPEED * deltaTimeMs);
+		m_pNode->rotateY(-ROTATE_SPEED * deltaTimeMs);
+		setDirty(CAMERA_DIRTY_VIEW);
 	}
 
 	if(EngineManager::isKeyPressed('W')) {
-		translateForward(-WALK_SPEED * deltaTimeMs);
+		m_pNode->translateForward(-WALK_SPEED * deltaTimeMs);
+		setDirty(CAMERA_DIRTY_VIEW);
 	}
 	else
 	if(EngineManager::isKeyPressed('S')) {
-		translateForward(WALK_SPEED * deltaTimeMs);
+		m_pNode->translateForward(WALK_SPEED * deltaTimeMs);
+		setDirty(CAMERA_DIRTY_VIEW);
 	}
 
 	if(EngineManager::isKeyPressed('A')) {
-		translateLeft(-WALK_SPEED * deltaTimeMs);
+		m_pNode->translateLeft(-WALK_SPEED * deltaTimeMs);
+		setDirty(CAMERA_DIRTY_VIEW);
 	}
 	else
 	if(EngineManager::isKeyPressed('D')) {
-		translateLeft(WALK_SPEED * deltaTimeMs);
+		m_pNode->translateLeft(WALK_SPEED * deltaTimeMs);
+		setDirty(CAMERA_DIRTY_VIEW);
 	}
 
 	if(EngineManager::isKeyPressed(VK_PRIOR)) {
-		translateUp(WALK_SPEED * deltaTimeMs);
+		m_pNode->translateUp(WALK_SPEED * deltaTimeMs);
+		setDirty(CAMERA_DIRTY_VIEW);
 	}
 	else
 	if(EngineManager::isKeyPressed(VK_NEXT)) {
-		translateUp(-WALK_SPEED * deltaTimeMs);
+		m_pNode->translateUp(-WALK_SPEED * deltaTimeMs);
+		setDirty(CAMERA_DIRTY_VIEW);
 	}
 
 	if(EngineManager::isKeyPressed(VK_UP)) {
-		if(getRotateX() < 80) {
-			rotateX(ROTATE_SPEED * deltaTimeMs);
+		if(m_pNode->getRotateX() < 80) {
+			m_pNode->rotateX(ROTATE_SPEED * deltaTimeMs);
+			setDirty(CAMERA_DIRTY_VIEW);
 		}
 	}
 	else
 	if(EngineManager::isKeyPressed(VK_DOWN)) {
-		if(getRotateX() > -80) {
-			rotateX(-ROTATE_SPEED * deltaTimeMs);
+		if(m_pNode->getRotateX() > -80) {
+			m_pNode->rotateX(-ROTATE_SPEED * deltaTimeMs);
+			setDirty(CAMERA_DIRTY_VIEW);
 		}
 	}
 }
@@ -350,4 +371,14 @@ void Camera::handleKeyboard(float deltaTimeMs) {
 void Camera::update(float deltaTimeMs) {
 	handleKeyboard(deltaTimeMs);
 	handleMouse(deltaTimeMs);
+}
+
+void Camera::setNode(Node* node) {
+	if(node != m_pNode) {
+		m_pNode = node;
+	}
+}
+
+void Camera::setDirty(int iDirty) {
+	m_iDirty |= iDirty;
 }

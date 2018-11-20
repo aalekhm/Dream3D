@@ -111,7 +111,9 @@ Dream3DTest::~Dream3DTest() {
 }
 
 void Dream3DTest::initialize() {
-	m_pCamera = Camera::createPerspective(0, 0, getWidth(), getHeight(), 45.0f, 0.01f, 10.0f);
+	Camera* pCamera = Camera::createPerspective(0, 0, getWidth(), getHeight(), 45.0f, 0.01f, 10.0f);
+	m_pCameraNode = Node::create("FirstPersonShooterCamera");
+	m_pCameraNode->setCamera(pCamera);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -438,7 +440,7 @@ void Dream3DTest::update(float deltaTimeMs) {
 	if(isKeyPressed(VK_ESCAPE))
 		exit();
 
-	m_pCamera->update(deltaTimeMs);
+	m_pCameraNode->getCamera()->update(deltaTimeMs);
 }
 
 static float rAngle = 0.0f;
@@ -448,10 +450,10 @@ void Dream3DTest::render(float deltaTimeMs) {
 	glClearColor(0.1f, 0.1f, 0.1f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
 
-	m_pCamera->setType(Camera::PERSPECTIVE);
+	m_pCameraNode->getCamera()->setType(Camera::PERSPECTIVE);
 
 	//No Transformations to the World(grid) & triangle hence load the 'view matrix'.
-	glLoadMatrixf(m_pCamera->getViewMatrix().getTranspose());
+	glLoadMatrixf(m_pCameraNode->getWorldMatrix().getTranspose());
 	drawGrid(10, 0.5);
 	drawTriangle(Vector3(0, 0.5f, -1.5f), Vector3(-0.5f, 0, -1.5f), Vector3(0.5f, 0, -1.5f));
 	
@@ -492,7 +494,7 @@ void Dream3DTest::render(float deltaTimeMs) {
 	meshBatch->draw();
 	////////////////////////////////////////////////////////////////
 
-	m_pCamera->setType(Camera::ORTHOGRAPHIC);
+	m_pCameraNode->getCamera()->setType(Camera::ORTHOGRAPHIC);
 
 	Vector4 src(0, 0, 900.0f, 695.0f);
 	spriteBatch->setClip(0, 0, getWidth(), getHeight());

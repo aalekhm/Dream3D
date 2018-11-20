@@ -4,7 +4,7 @@
 #include "Engine/KeyboardManager.h"
 #include "Engine/MouseManager.h"
 #include "Engine/Timer.h"
-#include "Engine/Camera.h"
+#include "Engine/Base.h"
 
 class EngineManager {
 

@@ -4,6 +4,8 @@
 #include <iostream>
 #include "Common/Vectors.h"
 
+#define MATH_TOLERANCE             2e-37f
+#define MATRIX_SIZE ( sizeof(float) * 16)
 const float DEG2RAD = 3.141593f / 180;
 
 ///////////////////////////////////////////////////////////////////////////
@@ -38,7 +40,8 @@ struct Matrix4
 		const float* getTranspose();                        // return transposed matrix
 		//float        getDeterminant();
 
-		Matrix4&    identity();
+		static Matrix4&		identity();
+		Matrix4&			setIdentity();
 		Matrix4&    transpose();                            // transpose itself and return reference
 		//Matrix4&    invert();                               // check best inverse method before inverse
 		//Matrix4&    invertEuclidean();                      // inverse of Euclidean transform matrix
@@ -64,6 +67,13 @@ struct Matrix4
 		Matrix4&    scaleX(float sx);
 		Matrix4&    scaleY(float sy);
 		Matrix4&    scaleZ(float sz);
+
+		static void	multiply(const Matrix4& m, float scalar, Matrix4* dst);
+		static void	multiply(const Matrix4& m1, const Matrix4& m2, Matrix4* dst);
+		static void	multiplyMatrix(const float* m1, const float* m2, float* dst);
+		static void	multiplyMatrix(const float* m, float scalar, float* dst);
+		bool		invert(Matrix4* dst) const;
+		
 
 		// operators
 		Matrix4     operator+(const Matrix4& rhs) const;    // add rhs

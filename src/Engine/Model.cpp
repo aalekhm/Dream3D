@@ -3,6 +3,7 @@
 #include "Engine/MeshPart.h"
 #include "Engine/VertexAttributeBinding.h"
 #include "Engine/Texture.h"
+#include "Engine/Node.h"
 
 Model::Model(Mesh* pMesh) 
 :	m_pMesh(pMesh),
@@ -145,6 +146,12 @@ void Model::bindTexture() {
 void Model::unbindTexture() {
 	if(m_pTexture != NULL) {
 		m_pTexture->unbind();
+	}
+}
+
+void Model::setNode(Node* node) {
+	if(node != m_pNode) {
+		m_pNode = node;
 	}
 }
 

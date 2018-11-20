@@ -60,8 +60,8 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;CCString.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -86,6 +86,7 @@
     <ClCompile Include="..\src\Engine\MeshBatch.cpp" />
     <ClCompile Include="..\src\Engine\MeshPart.cpp" />
     <ClCompile Include="..\src\Engine\Model.cpp" />
+    <ClCompile Include="..\src\Engine\Node.cpp" />
     <ClCompile Include="..\src\Engine\SpriteBatch.cpp" />
     <ClCompile Include="..\src\Engine\Transform.cpp" />
     <ClCompile Include="..\src\Engine\VertexAttributeBinding.cpp" />
@@ -104,6 +105,7 @@
     <ClCompile Include="..\src\Common\Vectors.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\Common\CCString.h" />
     <ClInclude Include="..\include\Common\Rectangle.h" />
     <ClInclude Include="..\include\Engine\Base.h" />
     <ClInclude Include="..\include\Engine\Camera.h" />
@@ -115,6 +117,7 @@
     <ClInclude Include="..\include\Engine\MeshPart.h" />
     <ClInclude Include="..\include\Engine\Model.h" />
     <ClInclude Include="..\include\Engine\MouseManager.h" />
+    <ClInclude Include="..\include\Engine\Node.h" />
     <ClInclude Include="..\include\Engine\SpriteBatch.h" />
     <ClInclude Include="..\include\Engine\Texture.h" />
     <ClInclude Include="..\include\Engine\TGA.h" />

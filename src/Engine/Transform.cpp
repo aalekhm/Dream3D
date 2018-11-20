@@ -136,9 +136,8 @@ float Transform::getRotateZ() {
 }
 
 Matrix4& Transform::getMatrix() {
-	if(m_iDirty) 
-	{
-		m_Matrix.identity();
+	if(m_iDirty) {
+		m_Matrix = Matrix4::identity();
 		//m_Matrix.translate(-m_vTranslation);
 		//m_Matrix.rotate(-m_vRotation);
 		//m_Matrix.scale(m_vScale);
@@ -178,7 +177,7 @@ Matrix4& Transform::getMatrix() {
 }
 
 void Transform::setIdentity() {
-	m_Matrix.identity();
+	m_Matrix = Matrix4::identity();
 }
 
 void Transform::setAxisX(const Vector3& vLeft) {

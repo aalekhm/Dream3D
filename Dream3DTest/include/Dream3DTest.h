@@ -2,6 +2,8 @@
 #define DREAM3DTEST_H
 
 #include "Engine/EngineManager.h"
+#include "Engine/Camera.h"
+#include "Engine/Node.h"
 
 class Dream3DTest : EngineManager
 {
@@ -13,7 +15,7 @@ class Dream3DTest : EngineManager
 		void update(float elapsedTime);
 		void render(float elapsedTime);
 	private:
-		Camera*		m_pCamera;
+		Node*		m_pCameraNode;
 };
 
 #endif

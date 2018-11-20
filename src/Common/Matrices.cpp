@@ -115,6 +115,16 @@ const float* Matrix4::getTranspose()
 
 Matrix4& Matrix4::identity()
 {
+	static Matrix4 m(
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1 );
+	return m;
+}
+
+Matrix4& Matrix4::setIdentity() {
+
 	m[0] = m[5] = m[10] = m[15] = 1.0f;
 	m[1] = m[2] = m[3] = m[4] = m[6] = m[7] = m[8] = m[9] = m[11] = m[12] = m[13] = m[14] = 0.0f;
 	return *this;
@@ -570,6 +580,114 @@ Matrix4& Matrix4::rotateZ(float angle)
     m[7] = m3 * s + m7 * c;
 
     return *this;
+}
+
+void Matrix4::multiply(const Matrix4& m1, const Matrix4& m2, Matrix4* dst) {
+
+	if( dst != NULL) {
+		multiplyMatrix(m1.m, m2.m, dst->m);
+	}
+}
+
+void Matrix4::multiplyMatrix(const float* m1, const float* m2, float* dst) {
+
+	// Support the case where m1 or m2 is the same array as dst.
+	float product[16];
+
+	product[0]  = m1[0] * m2[0]  + m1[4] * m2[1] + m1[8]   * m2[2]  + m1[12] * m2[3];
+	product[1]  = m1[1] * m2[0]  + m1[5] * m2[1] + m1[9]   * m2[2]  + m1[13] * m2[3];
+	product[2]  = m1[2] * m2[0]  + m1[6] * m2[1] + m1[10]  * m2[2]  + m1[14] * m2[3];
+	product[3]  = m1[3] * m2[0]  + m1[7] * m2[1] + m1[11]  * m2[2]  + m1[15] * m2[3];
+
+	product[4]  = m1[0] * m2[4]  + m1[4] * m2[5] + m1[8]   * m2[6]  + m1[12] * m2[7];
+	product[5]  = m1[1] * m2[4]  + m1[5] * m2[5] + m1[9]   * m2[6]  + m1[13] * m2[7];
+	product[6]  = m1[2] * m2[4]  + m1[6] * m2[5] + m1[10]  * m2[6]  + m1[14] * m2[7];
+	product[7]  = m1[3] * m2[4]  + m1[7] * m2[5] + m1[11]  * m2[6]  + m1[15] * m2[7];
+
+	product[8]  = m1[0] * m2[8]  + m1[4] * m2[9] + m1[8]   * m2[10] + m1[12] * m2[11];
+	product[9]  = m1[1] * m2[8]  + m1[5] * m2[9] + m1[9]   * m2[10] + m1[13] * m2[11];
+	product[10] = m1[2] * m2[8]  + m1[6] * m2[9] + m1[10]  * m2[10] + m1[14] * m2[11];
+	product[11] = m1[3] * m2[8]  + m1[7] * m2[9] + m1[11]  * m2[10] + m1[15] * m2[11];
+
+	product[12] = m1[0] * m2[12] + m1[4] * m2[13] + m1[8]  * m2[14] + m1[12] * m2[15];
+	product[13] = m1[1] * m2[12] + m1[5] * m2[13] + m1[9]  * m2[14] + m1[13] * m2[15];
+	product[14] = m1[2] * m2[12] + m1[6] * m2[13] + m1[10] * m2[14] + m1[14] * m2[15];
+	product[15] = m1[3] * m2[12] + m1[7] * m2[13] + m1[11] * m2[14] + m1[15] * m2[15];
+
+	memcpy(dst, product, MATRIX_SIZE);
+}
+
+bool Matrix4::invert(Matrix4* dst) const {
+	float a0 = m[0] * m[5] - m[1] * m[4];
+	float a1 = m[0] * m[6] - m[2] * m[4];
+	float a2 = m[0] * m[7] - m[3] * m[4];
+	float a3 = m[1] * m[6] - m[2] * m[5];
+	float a4 = m[1] * m[7] - m[3] * m[5];
+	float a5 = m[2] * m[7] - m[3] * m[6];
+	float b0 = m[8] * m[13] - m[9] * m[12];
+	float b1 = m[8] * m[14] - m[10] * m[12];
+	float b2 = m[8] * m[15] - m[11] * m[12];
+	float b3 = m[9] * m[14] - m[10] * m[13];
+	float b4 = m[9] * m[15] - m[11] * m[13];
+	float b5 = m[10] * m[15] - m[11] * m[14];
+
+	// Calculate the determinant.
+	float det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
+
+	// Close to zero, can't invert.
+	if (fabs(det) <= MATH_TOLERANCE)
+		return false;
+
+	// Support the case where m == dst.
+	Matrix4 inverse;
+	inverse.m[0]  = m[5] * b5 - m[6] * b4 + m[7] * b3;
+	inverse.m[1]  = -m[1] * b5 + m[2] * b4 - m[3] * b3;
+	inverse.m[2]  = m[13] * a5 - m[14] * a4 + m[15] * a3;
+	inverse.m[3]  = -m[9] * a5 + m[10] * a4 - m[11] * a3;
+
+	inverse.m[4]  = -m[4] * b5 + m[6] * b2 - m[7] * b1;
+	inverse.m[5]  = m[0] * b5 - m[2] * b2 + m[3] * b1;
+	inverse.m[6]  = -m[12] * a5 + m[14] * a2 - m[15] * a1;
+	inverse.m[7]  = m[8] * a5 - m[10] * a2 + m[11] * a1;
+
+	inverse.m[8]  = m[4] * b4 - m[5] * b2 + m[7] * b0;
+	inverse.m[9]  = -m[0] * b4 + m[1] * b2 - m[3] * b0;
+	inverse.m[10] = m[12] * a4 - m[13] * a2 + m[15] * a0;
+	inverse.m[11] = -m[8] * a4 + m[9] * a2 - m[11] * a0;
+
+	inverse.m[12] = -m[4] * b3 + m[5] * b1 - m[6] * b0;
+	inverse.m[13] = m[0] * b3 - m[1] * b1 + m[2] * b0;
+	inverse.m[14] = -m[12] * a3 + m[13] * a1 - m[14] * a0;
+	inverse.m[15] = m[8] * a3 - m[9] * a1 + m[10] * a0;
+
+	Matrix4::multiply(inverse, 1.0f / det, dst);
+
+	return true;
+}
+
+void Matrix4::multiply(const Matrix4& m, float scalar, Matrix4* dst) {
+	if(dst != NULL) {
+		Matrix4::multiplyMatrix(m.m, scalar, dst->m);
+	}
+}
+
+void Matrix4::multiplyMatrix(const float* m, float scalar, float* dst) {
+	dst[0]  = m[0]  * scalar;
+	dst[1]  = m[1]  * scalar;
+	dst[2]  = m[2]  * scalar;
+	dst[3]  = m[3]  * scalar;
+	dst[4]  = m[4]  * scalar;
+	dst[5]  = m[5]  * scalar;
+	dst[6]  = m[6]  * scalar;
+	dst[7]  = m[7]  * scalar;
+	dst[8]  = m[8]  * scalar;
+	dst[9]  = m[9]  * scalar;
+	dst[10] = m[10] * scalar;
+	dst[11] = m[11] * scalar;
+	dst[12] = m[12] * scalar;
+	dst[13] = m[13] * scalar;
+	dst[14] = m[14] * scalar;
+	dst[15] = m[15] * scalar;
 }
 
 Matrix4 Matrix4::operator+(const Matrix4& rhs) const

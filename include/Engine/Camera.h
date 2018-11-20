@@ -5,8 +5,9 @@
 #include "Common/Vectors.h"
 #include "Common/Matrices.h"
 #include "Engine/Transform.h"
+#include "Engine/Node.h"
 
-class Camera : public Transform {
+class Camera {
 	public:
 		enum Type {
 			PERSPECTIVE = 1,
@@ -23,7 +24,7 @@ class Camera : public Transform {
 		static Camera*	createPerspective(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane);
 		void			setPerspective(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane);
 		void			setFrustum(float fovY, float aspectRatio, float front, float back);
-		void			setPerspectiveFrustum(float l, float r, float b, float t, float n, float f);	
+		void			setPerspectiveFrustum(float l, float r, float b, float t, float n, float f);
 
 		static Camera*	createOrthographic(int x, int y, int w, int h, float fNearPlane, float fFarPlane);
 		void			setOrthographic(int x, int y, int w, int h, float fNearPlane, float fFarPlane);
@@ -36,6 +37,8 @@ class Camera : public Transform {
 		void			handleKeyboard(float deltaTimeMs);
 		void			handleMouse(float deltaTimeMs);
 
+		void			setNode(Node* node);
+		void			setDirty(int iDirty);
 	private:
 		Camera(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane);
 		Camera(int x, int y, int w, int h, float fNearPlane, float fFarPlane);
@@ -57,6 +60,8 @@ class Camera : public Transform {
 		Matrix4			m_MatrixView;
 		Matrix4			m_MatrixProjection;
 		Matrix4			m_MatrixViewProjection;
+
+		Node*			m_pNode;
 };
 
 #endif
