@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\include"
+				AdditionalIncludeDirectories="..\include;..\external-deps\glew\include"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -59,6 +59,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalDependencies="opengl32.lib"
+				AdditionalLibraryDirectories=""
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -180,6 +181,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\Engine\Mesh.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\Engine\MouseManager.cpp"
 					>
 				</File>
@@ -239,6 +244,10 @@
 				</File>
 				<File
 					RelativePath="..\include\Engine\KeyboardManager.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\Engine\Mesh.h"
 					>
 				</File>
 				<File

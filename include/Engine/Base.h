@@ -7,14 +7,17 @@
 #include <string>
 #include <vector>
 
-#include "windows.h"
-#include <gl\gl.h>						// Header File For The OpenGL32 Library
-#include <gl\glu.h>						// Header File For The GLu32 Library
+#include <gl\glew.h>
+//#include <gl\gl.h>						// Header File For The OpenGL32 Library
+//#include <gl\glu.h>						// Header File For The GLu32 Library
 
 // Common
 #ifndef NULL
 #define NULL     0
 #endif
+
+typedef GLuint VBOHandle;
+typedef GLuint VAOHandle;
 
 /** Global variable to hold GL errors
  * @script{ignore} */

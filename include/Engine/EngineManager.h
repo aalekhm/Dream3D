@@ -1,6 +1,6 @@
 #ifndef ENGINE_MANAGER_H
 #define ENGINE_MANAGER_H
-#include <Windows.h>
+
 #include "Engine/KeyboardManager.h"
 #include "Engine/MouseManager.h"
 #include "Engine/Timer.h"

@@ -1,9 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dream3D", "Dream3D\Dream3D.vcproj", "{ABD4AAF6-4A49-40F3-BEEC-42A64187A440}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dream3D", "Dream3D\Dream3D.vcxproj", "{ABD4AAF6-4A49-40F3-BEEC-42A64187A440}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dream3DTest", "Dream3DTest\Dream3DTest.vcproj", "{E055FB21-8F71-4637-96A4-70E08E3CA1BB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dream3DTest", "Dream3DTest\Dream3DTest.vcxproj", "{E055FB21-8F71-4637-96A4-70E08E3CA1BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

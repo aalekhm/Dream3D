@@ -2,8 +2,6 @@
 #define SCREEN_HEIGHT	768
 
 #include <windows.h>					// Header File For Windows
-#include <gl\gl.h>						// Header File For The OpenGL32 Library
-#include <gl\glu.h>						// Header File For The GLu32 Library
 #include "Engine/EngineManager.h"
 
 HDC			m_pHDC		= NULL;			// Private GDI Device Context
@@ -254,6 +252,14 @@ bool createGLWindow(char* title, int width, int height, int bits, bool isFullScr
 		killGLWindow();								// Reset The Display
 		MessageBox(NULL,"Unable to make wgl context","ERROR",MB_OK|MB_ICONEXCLAMATION);
 		return false;								// Return FALSE
+	}
+
+	// Initialize GLEW
+	if (GLEW_OK != glewInit()) {
+		wglDeleteContext(m_pHRC);
+		killGLWindow();								// Reset The Display
+		MessageBox(NULL,"Unable to init glewinit","ERROR",MB_OK|MB_ICONEXCLAMATION);
+		return false;
 	}
 
 	ShowWindow(m_pHWnd, true);

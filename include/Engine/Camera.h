@@ -12,8 +12,6 @@ class Camera {
 			ORTHOGRAPHIC = 2
 		};
 
-		Camera(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane);
-		Camera(int x, int y, int w, int h, float fNearPlane, float fFarPlane);
 		~Camera();
 
 		void		setCamera(float posX, float posY, float posZ, float targetX, float targetY, float targetZ);
@@ -41,6 +39,9 @@ class Camera {
 		void			updateViewMatrix();
 
 	private:
+		Camera(int x, int y, int w, int h, float iFieldOfView, float fNearPlane, float fFarPlane);
+		Camera(int x, int y, int w, int h, float fNearPlane, float fFarPlane);
+
 		Camera::Type	m_iCameraType;
 		unsigned int	m_iViewX;
 		unsigned int	m_iViewY;
