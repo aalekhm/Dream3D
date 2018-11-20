@@ -22,18 +22,6 @@ struct WContainer : public WComponent {
 		void					addBaseSkinChild(CHILD* pC);
 		void					removeBaseSkinChild(CHILD* pC);
 
-		// overridables
-		virtual		void		onCreateEx(LPVOID lpVoid) { };
-		virtual		void		onMouseDownEx(int x, int y, int iButton) { };
-		virtual		void		onMouseUpEx(int x, int y, int iButton) { };
-		virtual		void		onMouseEnterEx(int mCode, int x, int y, int prevX, int prevY) { };
-		virtual		void		onMouseHoverEx(int mCode, int x, int y, int prevX, int prevY) { };
-		virtual		void		onMouseLeaveEx(int mCode, int x, int y, int prevX, int prevY) { };
-		virtual		void		onMouseMoveEx(int mCode, int x, int y, int prevX, int prevY);
-		virtual		void		onMouseWheelEx(WPARAM wParam, LPARAM lParam) { }
-		virtual		void		onKeyBDownEx(unsigned int iVirtualKeycode, unsigned short ch) { };
-		virtual		void		onKeyBUpEx(unsigned int iVirtualKeycode, unsigned short ch) { };
-	
 		virtual		void		frameUpdate();
 		virtual		void		frameRender();
 		bool						canUpdateOrRender();

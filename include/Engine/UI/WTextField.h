@@ -4,9 +4,9 @@
 
 #include "Engine/UI/UIDefines.h"
 #include "Engine/UI/widgetdef.h"
-#include "Engine/UI/WContainer.h"
+#include "Engine/UI/WComponent.h"
 
-struct WTextField : public WContainer {
+struct WTextField : public WComponent {
 	
 	public:
 		WTextField();
@@ -20,7 +20,7 @@ struct WTextField : public WContainer {
 		bool				getReadOnly();
 		const char*	getText();
 		void				setText(const char* str);
-		virtual void		onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch);
+		virtual void		onKeyBDownEx(unsigned int iVirtualKeycode, unsigned short ch);
 		void				selectText();
 		void				setBorderVisibility(bool bHasBorder)	{ m_bShowBorder = bHasBorder; }
 		bool				getBorderVisibility()					{ return m_bShowBorder; }
@@ -47,7 +47,7 @@ struct WTextField : public WContainer {
 		virtual void	onMouseLeaveEx(int mCode, int x, int y, int prevX, int prevY);
 		virtual void	onMouseWheelEx(WPARAM wParam, LPARAM lParam);
 
-		virtual void	onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch);
+		virtual void	onKeyBUpEx(unsigned int iVirtualKeycode, unsigned short ch);
 
 		virtual void	onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

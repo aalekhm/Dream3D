@@ -65,7 +65,7 @@ class TTFFontEncoder {
 		TTFFontEncoder();
 		~TTFFontEncoder();
 
-		int		encode(const char* ttfFileName, unsigned int iFontSize, unsigned int iFontDPI, bool bFontpreview);
+		int		encode(const char* ttfFileName, unsigned int iFontSize, unsigned int iFontDPI, bool bFontpreview = false);
 		void	renderBitmapToMemory(unsigned char* dstBitmap, int x, int y, int dstWidth, unsigned char* srcBitmap, int srcWidth, int srcHeight);
 		void	exportToFile(const char* ttfFileName, int iFontSize, int iFontDPI, int iImageWidth, int iImageHeight, unsigned char* imageBuffer);
 		void	exportToPGM(const char* ttfFileName, int iFontSize, int iFontDPI, int iImageWidth, int iImageHeight, unsigned char* imageBuffer);

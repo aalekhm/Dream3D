@@ -132,7 +132,7 @@ struct WTable : public WContainer {
 		virtual void onMouseUpEx(int x, int y, int iButton);
 		virtual void onMouseWheelEx(WPARAM wParam, LPARAM lParam);
 		virtual void onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-		virtual void onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch);
+		virtual void onKeyBDownEx(unsigned int iVirtualKeycode, unsigned short ch);
 
 		void updateVBarPosition();
 		void updateHBarPosition();

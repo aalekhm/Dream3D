@@ -69,19 +69,19 @@ void WStatic::onRender() {
 	}
 }
 
-void WStatic::onMouseDown(int x, int y, int iButton) {
+void WStatic::onMouseDownEx(int x, int y, int iButton) {
 	if(m_pParent) {
 		m_pParent->onMessage((H_WND)this, MOUSE_DOWN, getComponentID(), 0);
 	}
 }
 
-void WStatic::onMouseUp(int x, int y, int iButton) {
+void WStatic::onMouseUpEx(int x, int y, int iButton) {
 	if(m_pParent) {
 		m_pParent->onMessage((H_WND)this, MOUSE_UP, getComponentID(), 0);
 	}
 }
 
-void WStatic::onMouseMove(int mCode, int x, int y, int prevX, int prevY) {
+void WStatic::onMouseMoveEx(int mCode, int x, int y, int prevX, int prevY) {
 	if(m_pParent) {
 		int dwDiffX = (-(prevX-x) & 0xffff);
 		int dwDiffY = (-(prevY-y) & 0xffff);
@@ -90,15 +90,15 @@ void WStatic::onMouseMove(int mCode, int x, int y, int prevX, int prevY) {
 	}
 }
 
-void WStatic::onMouseWheel(WPARAM wParam, LPARAM lParam) {
+void WStatic::onMouseWheelEx(WPARAM wParam, LPARAM lParam) {
 
 }
 
-void WStatic::onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch) {
+void WStatic::onKeyBDownEx(unsigned int iVirtualKeycode, unsigned short ch) {
 	
 }
 
-void WStatic::onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch) {
+void WStatic::onKeyBUpEx(unsigned int iVirtualKeycode, unsigned short ch) {
 
 }
 

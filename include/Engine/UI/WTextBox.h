@@ -44,8 +44,8 @@ struct WTextBox : public WContainer {
 		virtual void	onMouseLeaveEx(int mCode, int x, int y, int prevX, int prevY);
 		virtual void	onMouseWheelEx(WPARAM wParam, LPARAM lParam);
 
-		virtual void	onKeyBDown(unsigned int iVirtualKeycode, unsigned short ch);
-		virtual void	onKeyBUp(unsigned int iVirtualKeycode, unsigned short ch);
+		virtual void	onKeyBDownEx(unsigned int iVirtualKeycode, unsigned short ch);
+		virtual void	onKeyBUpEx(unsigned int iVirtualKeycode, unsigned short ch);
 		virtual void	onMessage(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 		
 		void			setClip(int x, int y , int width, int height);
