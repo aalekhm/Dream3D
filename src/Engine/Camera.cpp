@@ -113,6 +113,12 @@ void Camera::setType(Camera::Type camType) {
 			setOrthographic(m_iViewX, m_iViewY, m_iViewW, m_iViewH, m_fNearPlane, m_fFarPlane);
 		}
 
+		glMatrixMode(GL_PROJECTION);						// Setup and orthogonal, pixel-to-pixel projection matrix
+		glLoadMatrixf(m_MatrixProjection.getTranspose());	// copy projection matrix to OpenGL
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
 		m_iDirty &= ~CAMERA_DIRTY_PROJ;
 	}
 }
@@ -332,13 +338,7 @@ void Camera::setOrthographic(int x, int y, int w, int h, float fNearPlane, float
 	int bottom = (y + h);
 	int top = y;
 	setOrthogonalFrustum((float)left, (float)right, (float)bottom, (float)top, 0.0f, 1.0f);
-	////////////////////////////////////////////
-	
-	glMatrixMode(GL_PROJECTION);						// Setup and orthogonal, pixel-to-pixel projection matrix
-	glLoadMatrixf(m_MatrixProjection.getTranspose());	// copy projection matrix to OpenGL
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	////////////////////////////////////////////	
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -155,7 +155,7 @@ void Node::removeAllChildren() {
 Matrix4& Node::getViewMatrix() const {
 	//Get Scene Camera here...
 
-	Scene* pScene = getScene();
+	Scene* pScene = getScene(); 
 	Camera* pCamera = pScene ? pScene->getActiveCamera() : NULL;
 	GP_ASSERT( pCamera );
 

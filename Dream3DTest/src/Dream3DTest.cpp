@@ -219,22 +219,15 @@ L_RESULT CALLBACK UICallback(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						Rect boundsRect;
 						int iRet = SendMessageQ(hWnd, WM__GETRECT, (WPARAM)NULL, (LPARAM)&boundsRect);
-						//RectF reclaimRect = *((RectF*)lParam);
-						//RectF viewportRect;
-						//RectF boundsRectF(boundsRect.X, boundsRect.Y, boundsRect.Width, boundsRect.Height);
-						//viewportRect.Intersect(viewportRect, reclaimRect, boundsRectF);
-
+						
 						//////////////////////////// 3D SCENE
 						Camera* pCamera = gCanvasCameraNode->getCamera();
 						pCamera->setCameraValues(boundsRect.X, boundsRect.Y, boundsRect.Width, boundsRect.Height, 45.0f, 0.01f, 10.0f);
-						//pCamera->setCameraValues(viewportRect.X, viewportRect.Y, viewportRect.Width, viewportRect.Height,  45.0f, 0.01f, 10.0f);
 						pCamera->setType(Camera::PERSPECTIVE);
 						{
-							glClear(GL_DEPTH_BUFFER_BIT);
-							glClearColor(0.1f, 0.1f, 0.1f, 1);
-							glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
-														
-							pCamera->getNode()->getViewMatrix().getTranspose();
+							glClearColor(0.0f, 0.0f, 0.0f, 1);
+							glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+							
 							drawTriangle(Vector3(0, 0.5f, -1.5f), Vector3(-0.5f, 0, -1.5f), Vector3(0.5f, 0, -1.5f));
 						}
 						//////////////////////////////////////////////////
@@ -242,11 +235,11 @@ L_RESULT CALLBACK UICallback(H_WND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 						//////////////////////////// 2D SCENE
 						pCamera->setType(Camera::ORTHOGRAPHIC);
 						{
-							//FillRect(&boundsRect, 255.0f, 255.0f, 255.0f, 255.0f);
-							//DrawRect(&boundsRect, 0.0f, 0.0f, 0.0f, 255.0f);
+							//FillRect(&boundsRect, 255, 255, 255, 255);
+							//DrawRect(&boundsRect, 255, 0,	0,	 255);
 
 							SetColorQ(255, 0, 0, 255);
-							DrawString("Hi There !!!", boundsRect.X + 10, boundsRect.Y + 10, 0);
+							DrawString("Hi There !!!", boundsRect.X + 50, boundsRect.Y + 10, 0);
 							ResetColorQ();
 						}
 						//////////////////////////////////////////////////
@@ -583,6 +576,12 @@ void Dream3DTest::initialize() {
 	////////////////////// SCENE INITIALISATION
 	m_pScene = Scene::create();
 
+#ifdef USE_YAGUI
+	//////////////////// YAGUI Related initializations !!!
+	addUIListener(UICallback);
+	addDummyWindows(GetWindowQ(0));
+	////////////////////////////////////////////
+#else
 	Camera* pCamera = Camera::createPerspective(0, 0, getWidth(), getHeight(), 45.0f, 0.01f, 100.0f);
 	Node* pCameraNode = Node::create("FirstPersonShooterCamera");
 	pCameraNode->setCamera(pCamera);
@@ -594,9 +593,8 @@ void Dream3DTest::initialize() {
 	//////////////////////////////////////////////
 
 	//////////////////////////////////////////////
-#ifndef USE_YAGUI
 	glEnable(GL_DEPTH_TEST);
-#endif
+
 	magniQuadModelNode = createHearthStoneCoolShaderModelNode("data/box.material#magni");
 	{
 		magniQuadModelNode->setPosition(Vector3(0.0f, 0.0f, -3.0f));
@@ -774,12 +772,6 @@ void Dream3DTest::initialize() {
 	initMD5Models(m_pScene);
 #endif
 	//////////////////////////////////////////////
-
-#ifdef USE_YAGUI
-	//////////////////// YAGUI Related initializations !!!
-	addUIListener(UICallback);
-	addDummyWindows(GetWindowQ(0));
-	////////////////////////////////////////////
 #endif
 
 	gFrameBuffer = FrameBuffer::create("TEMP FBO_200x200", 512, 512);
@@ -1839,6 +1831,9 @@ void Dream3DTest::render2D(float deltaTimeMs) {
 		pSpriteBatch->draw(Vector3(300, 64, 0), src, Vector2(100, 100), Vector4(1, 1, 1, 1), Vector2(0.5f, 0.5f), MATH_DEG_TO_RAD(rAngle));
 		pSpriteBatch->draw(Vector3(400, 64, 0), src, Vector2(128, 128), Vector4(1, 1, 1, 1), Vector2(0.5f, 0.5f), MATH_DEG_TO_RAD(135));
 	pSpriteBatch->stop();
+
+	rAngle += deltaTimeMs*ROTATION_PER_SECOND;
+	if (rAngle >= 360.0f) rAngle = 0.0f;
 }
 
 void Dream3DTest::update(float deltaTimeMs) {
@@ -1847,37 +1842,38 @@ void Dream3DTest::update(float deltaTimeMs) {
 
 #ifndef USE_YAGUI
 	m_pScene->getActiveCamera()->update(deltaTimeMs);
-#endif
-
 #ifdef TEST_MD5_MODELS
-	for(int i = 0; i < 1; i++) {
+	for (int i = 0; i < 1; i++) {
 		MD5Model* pMD5Model = (MD5Model*)v_pMD5Models[i];
-		pMD5Model->update( deltaTimeMs );
+		pMD5Model->update(deltaTimeMs);
 	}
 #endif
-
 	
-	m_pLogger->log(m_pScene->getActiveCamera()->getNode()->getPosition());
-
+	// Log Camera pos
+	Camera* pCamera = m_pScene->getActiveCamera();
+	if (pCamera != nullptr)
+	{
+		m_pLogger->log(pCamera->getNode()->getPosition());
+	}
+#endif
 }
 
 
 void Dream3DTest::render(float deltaTimeMs) {
+#ifdef USE_YAGUI
+	gFrameBuffer->bind();
+		glClearColor(0.1f, 0.1f, 0.1f, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
+		m_pScene->render();
+	gFrameBuffer->bindDefault();
+
+	//render2D(deltaTimeMs);
+#else
 	glClearColor(0.1f, 0.1f, 0.1f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
 
 	render3D(deltaTimeMs);
-
-	//gFrameBuffer->bind();
-	//	glClearColor(0.1f, 0.1f, 0.1f, 1);
-	//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
-	//	m_pScene->render();
-	//gFrameBuffer->bindDefault();
-
-	//render2D(deltaTimeMs);
-
-	//rAngle += deltaTimeMs*ROTATION_PER_SECOND;
-	if (rAngle >= 360.0f) rAngle = 0.0f;
+#endif
 }
 
 void Dream3DTest::keyPressedEx(unsigned int iVirtualKeycode, unsigned short ch) {
