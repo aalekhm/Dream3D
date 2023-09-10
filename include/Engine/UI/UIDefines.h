@@ -3,7 +3,7 @@
 #define DEFINES_H
 
 #include <windows.h>
-#include <string.h>
+#include <string>
 #include <vector>
 #include "Common/CCString.h"
 #include "Common/RandomAccessFile.h"

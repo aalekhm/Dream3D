@@ -45,6 +45,7 @@
 #include <sys\stat.h>
 #include <string.h>
 #include "CCString.h"
+#include <string>
 
 #define SAFE_DELETE(p) { if(p) { delete p; p = NULL; } }
 #define SAFE_DELETE_ARRAY(p) { if(p) { delete[] p; p = NULL; } }
@@ -86,7 +87,7 @@ extern "C" {
 			int						read(char* buf);
 			int						read(char* buf, int offset, int len);
 
-			static CCString			readAll(const char* pFilename);
+			static std::string		readAll(const char* pFilename);
 			static void				writeAll(const char* pFilename, const char* sWriteString);
 
 			void					write(char* buf);

@@ -58,7 +58,8 @@ Effect* Effect::createFromFile(const char* vshPath, const char* fshPath, const c
 	}
 
 	// Read source from file
-	CCString sVshSource = "";
+	//CCString sVshSource = "";
+	std::string sVshSource = "";
 	sVshSource = RandomAccessFile::readAll(vshPath);
 	if (sVshSource.c_str() == NULL) {
 
@@ -66,7 +67,7 @@ Effect* Effect::createFromFile(const char* vshPath, const char* fshPath, const c
 		return NULL;
 	}
 
-	CCString sFshSource = "";
+	std::string sFshSource = "";
 	sFshSource = RandomAccessFile::readAll(fshPath);
 	if (sFshSource.c_str() == NULL)
 	{
@@ -243,7 +244,7 @@ static void replaceIncludes(const char* pFilePath, const char* pSource, CCString
 					CCString sDirectoryPath = sFilePath.substr(0, sFilePath.lastIndexOf("/") + 1)->c_str();
 					sDirectoryPath += sIncludeFile;
 
-					CCString sSource = RandomAccessFile::readAll(sDirectoryPath.c_str());
+					std::string sSource = RandomAccessFile::readAll(sDirectoryPath.c_str());
 
 					replaceIncludes(sDirectoryPath.c_str(), sSource.c_str(), sOut);
 				}

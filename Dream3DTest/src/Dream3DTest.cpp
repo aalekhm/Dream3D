@@ -1906,7 +1906,8 @@ void Dream3DTest::onMouseWheelEx(WPARAM wParam, LPARAM lParam) {
 }
 
 #ifdef USE_YAGUI
-void addDummyWindows(H_WND hParent) {
+void addDummyWindows(H_WND hParent) 
+{
 	unsigned int iYPos = 0;
 	unsigned int iXPos = 20;
 
