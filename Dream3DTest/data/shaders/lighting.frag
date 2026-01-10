@@ -107,7 +107,7 @@ vec3 computeLighting(vec3 vNormal, vec3 vLightDirection, vec3 vlightColour, floa
 		vec3 surfaceToCamera = normalize(v_cameraDirection); 		// also a unit vector
 		float cosAngle = max(0.0, dot(surfaceToCamera, reflectionVector));
 		float fSpecularContribution = pow(cosAngle, u_specularExponent);
-		vec3 vSpecularColor = fSpecularContribution;
+		vec3 vSpecularColor = vec3(fSpecularContribution);
 
 		vComputedColour += vSpecularColor * fAttenuation;
 	}

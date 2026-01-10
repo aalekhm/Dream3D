@@ -1,0 +1,443 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{dcfd1b87-19bd-48cd-a0ed-ff31f06d7bd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Common">
+      <UniqueIdentifier>{64f05f2a-b9e7-4e41-a9b3-51cf8fa8c3b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Engine">
+      <UniqueIdentifier>{5519b95e-27ff-4d35-ac85-8dc487591ace}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Engine\UI">
+      <UniqueIdentifier>{9e3df1a9-9488-4409-b141-e115284c313c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{49a05082-b518-4d67-92a6-c421b1e75ead}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Common">
+      <UniqueIdentifier>{7925979e-a8bc-4629-836a-b88c5466ed17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Engine">
+      <UniqueIdentifier>{ac3f2818-1d05-465d-aca8-8d773830a1b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Engine\UI">
+      <UniqueIdentifier>{5b81ec6d-f878-4d70-959d-5bc57606e0bc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Common\GrammerUtils.h">
+      <Filter>include\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Common\Matrices.h">
+      <Filter>include\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Common\Quaternion.h">
+      <Filter>include\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Common\RandomAccessFile.hpp">
+      <Filter>include\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Common\Rectangle.h">
+      <Filter>include\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Common\StringTokenizer.hpp">
+      <Filter>include\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Common\Token.hpp">
+      <Filter>include\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Common\Vectors.h">
+      <Filter>include\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\StringUtil.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\TTFFontEncoder.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\UIDefines.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WButton.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WCanvas.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WCheckbox.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WComboBox.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WComponent.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WComponentFactory.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WConsoleLog.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WContainer.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WDummy.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WFrame.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WGraph.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\widgetdef.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WInspector.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WInspectorTab.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WListBox.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WScrollbar.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WSlider.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WSprite.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WStatic.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WTabbedPane.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WTable.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WTextBox.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WTextField.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WTree.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WWidgetManager.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\UI\WWindow.h">
+      <Filter>include\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Base.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Camera.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\DepthStencilTarget.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Effect.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\EngineManager.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\FrameBuffer.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Image.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\KeyboardManager.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Light.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Material.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\MaterialParameter.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\MaterialReader.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\MD5Animation.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\MD5Model.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Mesh.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\MeshBatch.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\MeshObjLoader.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\MeshPart.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Model.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\MouseManager.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Node.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Pass.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Properties.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\RenderState.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\RenderTarget.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Scene.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\SpriteBatch.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Technique.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Texture.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\TGA.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Timer.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\Transform.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\VertexAttributeBinding.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine\VertexFormat.h">
+      <Filter>include\Engine</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="include\Common\Quaternion.inl">
+      <Filter>include\Common</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Common\GrammerUtils.cpp">
+      <Filter>src\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Matrices.cpp">
+      <Filter>src\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Rectangle.cpp">
+      <Filter>src\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Vectors.cpp">
+      <Filter>src\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\TTFFontEncoder.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WButton.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WCanvas.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WCheckbox.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WComboBox.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WComponent.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WComponentFactory.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WConsoleLog.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WContainer.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WDummy.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WFrame.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WGraph.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WInspector.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WInspectorTab.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WListBox.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WScrollbar.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WSlider.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WSprite.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WStatic.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WTabbedPane.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WTable.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WTextBox.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WTextField.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WTree.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WWidgetManager.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\UI\WWindow.cpp">
+      <Filter>src\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Camera.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\DepthStencilTarget.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Effect.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\EngineManager.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\FrameBuffer.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Image.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\KeyboardManager.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Light.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Material.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\MaterialParameter.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\MaterialReader.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\MD5Animation.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\MD5Model.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Mesh.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\MeshBatch.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\MeshObjLoader.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\MeshPart.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Model.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\MouseManager.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Node.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Pass.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Properties.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\RenderState.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\RenderTarget.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Scene.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\SpriteBatch.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Technique.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Texture.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\TGA.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Timer.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Transform.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\VertexAttributeBinding.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\VertexFormat.cpp">
+      <Filter>src\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WinMain.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

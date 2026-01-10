@@ -909,7 +909,7 @@ void Dream3DTest::processScene(aiMesh* pAIMesh, const aiScene* pAIScene, Vector3
 		for (int i = 0; i < POINT_LIGHT_COUNT; i++)
 		{
 			itoa(i, sBuf, 10);
-			CCString cStr;
+			std::string cStr;
 
 			cStr = "u_pointLightPosition[";	cStr += sBuf; cStr += "]";
 			MaterialParameter* pPointLightPosition_MaterialParameter = pTechnique->getParameter(cStr.c_str());
@@ -924,7 +924,7 @@ void Dream3DTest::processScene(aiMesh* pAIMesh, const aiScene* pAIScene, Vector3
 		for (int i = 0; i < SPOT_LIGHT_COUNT; i++)
 		{
 			itoa(i, sBuf, 10);
-			CCString cStr;
+			std::string cStr;
 			
 			cStr = "u_spotLightPosition["; cStr += sBuf; cStr += "]";
 			MaterialParameter* pSpotLightPosition_MaterialParameter = pTechnique->getParameter(cStr.c_str());
@@ -956,7 +956,7 @@ void Dream3DTest::processScene(aiMesh* pAIMesh, const aiScene* pAIScene, Vector3
 			for (int i = 0; i < DIRECTIONAL_LIGHT_COUNT; i++)
 			{
 				itoa(i, sBuf, 10);
-				CCString cStr;
+				std::string cStr;
 
 				cStr = "u_directionalLightDirection["; cStr += sBuf; cStr += "]";
 				MaterialParameter* pdirectionalLightDirection_MaterialParameter = pTechnique->getParameter(cStr.c_str());
@@ -2050,7 +2050,7 @@ void addDummyWindows(H_WND hParent)
 	sb1->create(hParent, 30, 170, 15, 180, 1, 1211);
 	addComponent(sb1);
 */
-	CCString sText = "New Delhi, July 26 (IANS) Hours after saying he did not wish to implicate Prime Minister Manmohan Singh or anyone else in the 2G spectrum allotment case, former telecom minister A. Raja Tuesday asked why the matter had not been referred to a ministerial panel and also wanted Home Minister P. Chidambaram to take the witness stand.\n\
+	std::string sText = "New Delhi, July 26 (IANS) Hours after saying he did not wish to implicate Prime Minister Manmohan Singh or anyone else in the 2G spectrum allotment case, former telecom minister A. Raja Tuesday asked why the matter had not been referred to a ministerial panel and also wanted Home Minister P. Chidambaram to take the witness stand.\n\
 Main kisi ko phasana nahi chahta tha (I had no intention of framing anybody),' Raja's lawyer Sushil Kumar said on his behalf when the names of Manmohan Singh and Chidambaram cropped up in a special Central Bureau of Investigation (CBI) court.\n\
 I am just defending myself -- not accusing anything or anybody,' he said, a day after stroking a political storm by dragging the prime minister into the controversy. 'They (the media) cannot put words into my mouth. Ask them to report truthfully, or go out of this court,' he added.\n\
 But the home minister must come in the court from either of the sides and be a witness in the case. When all decisions were known to the home minister, he should appear as a witness in the case,' Kumar told the special court presided over by Judge O.P. Saini.\n\

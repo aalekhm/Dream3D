@@ -38,7 +38,7 @@ vec4 findEgde(sampler2D tSampler, vec2 vTexCoord)
 	// and the other finds the color change [gradient] in the Y direction.
 
 	vec2 tSize = textureSize(tSampler, 0);
-	vec2 vPixelSize = (1 / tSize.x, 1 / tSize.y);
+	vec2 vPixelSize = vec2(1 / tSize.x, 1 / tSize.y);
 
 	vec2	offsets[9] = vec2[] (
 									vec2(-vPixelSize.x,		vPixelSize.y),
@@ -56,7 +56,7 @@ vec4 findEgde(sampler2D tSampler, vec2 vTexCoord)
 	vec3 pixelSample[9];
 	for (int i = 0; i < 9; i++)
 	{
-		pixelSample[i] = ( texture2D(tSampler, vTexCoord.st + offsets[i]) );
+		pixelSample[i] = vec3( texture2D(tSampler, vTexCoord.st + offsets[i]) );
 	}
 
 	{

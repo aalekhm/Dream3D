@@ -6,7 +6,7 @@
 #include "Engine/Camera.h"
 #include "Engine/Node.h"
 #include "Engine/Light.h"
-#include <Common/RandomAccessFile.h>
+#include <Common/RandomAccessFile.hpp>
 
 #include <assimp/cimport.h>
 #include <assimp/scene.h>
