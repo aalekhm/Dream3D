@@ -1,0 +1,9 @@
+libdir=C:/GitHub/aalekhm/Dream3D/external-deps/assimp/6.0.2/assimp/_install/x64/lib
+includedir=C:/GitHub/aalekhm/Dream3D/external-deps/assimp/6.0.2/assimp/_install/x64/include
+
+Name: Assimp
+Description: Import various well-known 3D model formats in an uniform manner.
+Version: 6.0.2
+Libs: -L${libdir} -lassimp
+Libs.private:  
+Cflags: -I${includedir}
